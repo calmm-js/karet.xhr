@@ -45,10 +45,10 @@ export const perform = U.through(
           xhr.upload.addEventListener(type, update(UP, type))
         })
         xhr.addEventListener('readystatechange', event => {
-          emit(L.set(EVENT, event, state))
+          emit((state = L.set(EVENT, event, state)))
         })
         xhr.addEventListener('loadend', event => {
-          end(emit(L.set(EVENT, event, state)))
+          end(emit((state = L.set(EVENT, event, state))))
         })
         xhr.open(method, url)
         xhr.responseType = responseType
