@@ -7,6 +7,7 @@ const initial = {type: 'initial'}
 
 const eventTypes = ['loadstart', 'progress', 'timeout', 'load', 'error']
 
+const XHR = 'xhr'
 const UP = 'up'
 const DOWN = 'down'
 
@@ -58,9 +59,8 @@ export const perform = U.through(
   U.toProperty
 )
 
-const is = I.curry((values, dir) =>
-  L.get([dir, 'type', value => values.includes(value)])
-)
+const isOneOf = I.curry((values, value) => values.includes(value))
+const is = I.curry((values, dir) => L.get([dir, 'type', isOneOf(values)]))
 const hasStarted = is(eventTypes)
 const isProgressing = is(['progress', 'loadstart'])
 const hasSucceeded = is(['load'])
@@ -92,21 +92,33 @@ export const downLoaded = loaded(DOWN)
 export const downTotal = total(DOWN)
 export const downError = error(DOWN)
 
-export const readyState = L.get(['xhr', 'readyState'])
+export const readyState = L.get([XHR, 'readyState'])
 export const response = U.through(
-  L.get(['xhr', 'response']),
+  L.get([XHR, 'response']),
   U.skipDuplicates(I.acyclicEqualsU)
 )
-export const responseType = L.get(['xhr', 'responseType'])
-export const responseURL = L.get(['xhr', 'responseURL'])
-export const status = L.get(['xhr', 'status'])
-export const statusText = L.get(['xhr', 'statusText'])
+export const responseType = L.get([XHR, 'responseType'])
+export const responseURL = L.get([XHR, 'responseURL'])
+export const responseText = L.get([
+  XHR,
+  L.when(L.get(['responseType', isOneOf(['', 'text'])])),
+  'responseText'
+])
+export const responseXML = L.get([
+  XHR,
+  L.when(L.get(['responseType', isOneOf(['', 'document'])])),
+  'responseXML'
+])
+export const status = L.get([XHR, 'status'])
+export const statusText = L.get([XHR, 'statusText'])
 export const responseHeader = I.curry((header, xhr) =>
-  L.get(['xhr', L.reread(xhr => xhr.getResponseHeader(header))], xhr)
+  L.get([XHR, L.reread(xhr => xhr.getResponseHeader(header))], xhr)
 )
 export const allResponseHeaders = L.get([
-  'xhr',
+  XHR,
   L.reread(xhr => xhr.getAllResponseHeaders())
 ])
+export const timeout = L.get([XHR, 'timeout'])
+export const withCredentials = L.get([XHR, 'withCredentials'])
 
 export const isHttpSuccess = U.lift(status => 200 <= status && status < 300)

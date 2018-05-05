@@ -25,10 +25,14 @@ ongoing upload and/or download and displaying potential errors.
     * [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
     * [`XHR.response(xhr) ~> varies`](#XHR-response)
     * [`XHR.responseHeader(header, xhr) ~> string`](#XHR-responseHeader)
+    * [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
     * [`XHR.responseType(xhr) ~> string`](#XHR-responseType)
     * [`XHR.responseURL(xhr) ~> string`](#XHR-responseURL)
+    * [`XHR.responseXML(xhr) ~> document`](#XHR-responseXML)
     * [`XHR.status(xhr) ~> number`](#XHR-status)
     * [`XHR.statusText(xhr) ~> string`](#XHR-statusText)
+    * [`XHR.timeout(xhr) ~> number`](#XHR-timeout)
+    * [`XHR.withCredentials(xhr) ~> boolean`](#XHR-withCredentials)
   * [Download state](#download-state)
     * [`XHR.downError(xhr) ~> exception`](#XHR-downError)
     * [`XHR.downHasEnded(xhr) ~> boolean`](#XHR-downHasEnded)
@@ -137,6 +141,12 @@ of an ongoing XHR.
 [`getResponseHeader(header)`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getResponseHeader)
 of an ongoing XHR.
 
+#### <a id="XHR-responseText"></a> [≡](#contents) [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
+
+`XHR.responseText` returns an observable property of the
+[`responseText`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseText)
+property of an ongoing XHR.
+
 #### <a id="XHR-responseType"></a> [≡](#contents) [`XHR.responseType(xhr) ~> string`](#XHR-responseType)
 
 `XHR.responseType` returns an observable property of the
@@ -149,6 +159,12 @@ of an ongoing XHR.
 [`responseURL`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseURL)
 of an ongoing XHR.
 
+#### <a id="XHR-responseXML"></a> [≡](#contents) [`XHR.responseXML(xhr) ~> document`](#XHR-responseXML)
+
+`XHR.responseXML` returns an observable property of the
+[`responseXML`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseXML)
+property of an ongoing XHR.
+
 #### <a id="XHR-status"></a> [≡](#contents) [`XHR.status(xhr) ~> number`](#XHR-status)
 
 `XHR.status` returns an observable property of the
@@ -160,6 +176,18 @@ of an ongoing XHR.
 `XHR.statusText` returns an observable property of the
 [`statusText`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/statusText)
 of an ongoing XHR.
+
+#### <a id="XHR-timeout"></a> [≡](#contents) [`XHR.timeout(xhr) ~> number`](#XHR-timeout)
+
+`XHR.timeout` returns an observable property of the
+[`timeout`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/timeout)
+property of an ongoing XHR.
+
+#### <a id="XHR-withCredentials"></a> [≡](#contents) [`XHR.withCredentials(xhr) ~> boolean`](#XHR-withCredentials)
+
+`XHR.withCredentials` returns an observable property of the
+[`withCredentials`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials)
+property of an ongoing XHR.
 
 ### <a id="download-state"></a> [≡](#contents) [Download state](#download-state)
 
