@@ -28,6 +28,7 @@ ongoing upload and/or download and displaying potential errors.
     * [`XHR.status(xhr) ~> number`](#XHR-status)
     * [`XHR.statusText(xhr) ~> string`](#XHR-statusText)
   * [Download state](#download-state)
+    * [`XHR.downError(xhr) ~> exception`](#XHR-downError)
     * [`XHR.downHasEnded(xhr) ~> boolean`](#XHR-downHasEnded)
     * [`XHR.downHasFailed(xhr) ~> boolean`](#XHR-downHasFailed)
     * [`XHR.downHasStarted(xhr) ~> boolean`](#XHR-downHasStarted)
@@ -37,6 +38,7 @@ ongoing upload and/or download and displaying potential errors.
     * [`XHR.downLoaded(xhr) ~> number`](#XHR-downLoaded)
     * [`XHR.downTotal(xhr) ~> number`](#XHR-downTotal)
   * [Upload state](#upload-state)
+    * [`XHR.upError(xhr) ~> exception`](#XHR-upError)
     * [`XHR.upHasEnded(xhr) ~> boolean`](#XHR-upHasEnded)
     * [`XHR.upHasFailed(xhr) ~> boolean`](#XHR-upHasFailed)
     * [`XHR.upHasStarted(xhr) ~> boolean`](#XHR-upHasStarted)
@@ -147,6 +149,12 @@ of an ongoing XHR.
 
 ### <a id="download-state"></a> [≡](#contents) [Download state](#download-state)
 
+#### <a id="XHR-downError"></a> [≡](#contents) [`XHR.downError(xhr) ~> exception`](#XHR-downError)
+
+`XHR.downError` returns an observable property of the
+[`error`](https://developer.mozilla.org/en-US/docs/Web/Events/error) property of
+a failed XHR.
+
 #### <a id="XHR-downHasEnded"></a> [≡](#contents) [`XHR.downHasEnded(xhr) ~> boolean`](#XHR-downHasEnded)
 
 `XHR.downHasEnded` returns an observable boolean property that tells whether the
@@ -198,6 +206,12 @@ property of an ongoing XHR.
 of an ongoing XHR.
 
 ### <a id="upload-state"></a> [≡](#contents) [Upload state](#upload-state)
+
+#### <a id="XHR-upError"></a> [≡](#contents) [`XHR.upError(xhr) ~> exception`](#XHR-upError)
+
+`XHR.upError` returns an observable property of the
+[`error`](https://developer.mozilla.org/en-US/docs/Web/Events/error) property of
+a failed XHR.
 
 #### <a id="XHR-upHasEnded"></a> [≡](#contents) [`XHR.upHasEnded(xhr) ~> boolean`](#XHR-upHasEnded)
 

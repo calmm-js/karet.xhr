@@ -58,16 +58,19 @@ export const perform = U.through(
   U.toProperty
 )
 
-const is = values => dir =>
+const is = I.curry((values, dir) =>
   L.get([dir, 'type', value => values.includes(value)])
+)
 const hasStarted = is(eventTypes)
 const isProgressing = is(['progress', 'loadstart'])
 const hasSucceeded = is(['load'])
 const hasFailed = is(['error'])
 const hasTimedOut = is(['timeout'])
 const hasEnded = is(['load', 'error', 'timeout'])
-const loaded = dir => L.get([dir, 'event', 'loaded'])
-const total = dir => L.get([dir, 'event', 'total'])
+const event = I.curry((prop, dir) => L.get([dir, 'event', prop]))
+const loaded = event('loaded')
+const total = event('total')
+const error = event('error')
 
 export const upHasStarted = hasStarted(UP)
 export const upIsProgressing = isProgressing(UP)
@@ -77,6 +80,7 @@ export const upHasTimedOut = hasTimedOut(UP)
 export const upHasEnded = hasEnded(UP)
 export const upLoaded = loaded(UP)
 export const upTotal = total(UP)
+export const upError = error(UP)
 
 export const downHasStarted = hasStarted(DOWN)
 export const downIsProgressing = isProgressing(DOWN)
@@ -86,6 +90,7 @@ export const downHasTimedOut = hasTimedOut(DOWN)
 export const downHasEnded = hasEnded(DOWN)
 export const downLoaded = loaded(DOWN)
 export const downTotal = total(DOWN)
+export const downError = error(DOWN)
 
 export const readyState = L.get(['xhr', 'readyState'])
 export const response = U.through(
