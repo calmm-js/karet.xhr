@@ -94,7 +94,7 @@ values:
 | [`headers`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/setRequestHeader) | `[]` | Array of `[header, value]` pairs.
 | [`overrideMimeType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/overrideMimeType) | `undefined` | If specified overrides the MIME type provided by the server.
 | [`body`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send) | `null` | A body of data to be sent.
-| [`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType) | `'text'` | Specifies type of [response](#XHR-response) data.
+| [`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType) | `''` | Specifies type of [response](#XHR-response) data.
 | [`timeout`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/timeout) | `0` | Number of milliseconds or `0` for infinite.
 | [`withCredentials`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials) | `false` | Whether cross-site `Access-Control` should use credentials.
 

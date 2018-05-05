@@ -21,9 +21,9 @@ export const perform = U.through(
       headers = I.array0,
       overrideMimeType,
       body = null,
-      responseType = '',
-      timeout = 0,
-      withCredentials = false
+      responseType,
+      timeout,
+      withCredentials
     }) =>
       K.stream(({emit, end}) => {
         const xhr = new XMLHttpRequest()
@@ -42,9 +42,9 @@ export const perform = U.through(
           end(emit((state = L.set('event', event, state))))
         })
         xhr.open(method, url, true, user, password)
-        xhr.responseType = responseType
-        xhr.timeout = timeout
-        xhr.withCredentials = withCredentials
+        if (responseType) xhr.responseType = responseType
+        if (timeout) xhr.timeout = timeout
+        if (withCredentials) xhr.withCredentials = withCredentials
         headers.forEach(hv => {
           xhr.setRequestHeader(hv[0], hv[1])
         })
