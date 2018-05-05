@@ -21,8 +21,10 @@ ongoing upload and/or download and displaying potential errors.
   * [Starting](#starting)
     * [`XHR.perform({url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
   * [Overall state](#overall-state)
+    * [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
     * [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
     * [`XHR.response(xhr) ~> varies`](#XHR-response)
+    * [`XHR.responseHeader(header, xhr) ~> string`](#XHR-responseHeader)
     * [`XHR.responseType(xhr) ~> string`](#XHR-responseType)
     * [`XHR.responseURL(xhr) ~> string`](#XHR-responseURL)
     * [`XHR.status(xhr) ~> number`](#XHR-status)
@@ -111,16 +113,28 @@ CodeSandbox for an example.
 
 ### <a id="overall-state"></a> [≡](#contents) [Overall state](#overall-state)
 
+#### <a id="XHR-allResponseHeaders"></a> [≡](#contents) [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
+
+`XHR.allResponseHeaders` returns an observable property of
+[`getAllResponseHeaders()`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders)
+of an ongoing XHR.
+
 #### <a id="XHR-readyState"></a> [≡](#contents) [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
 
 `XHR.readyState` returns an observable property of the
 [`readyState`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState)
-of an XHR.
+of an ongoing XHR.
 
 #### <a id="XHR-response"></a> [≡](#contents) [`XHR.response(xhr) ~> varies`](#XHR-response)
 
 `XHR.response` returns an observable property of the
 [`response`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response)
+of an ongoing XHR.
+
+#### <a id="XHR-responseHeader"></a> [≡](#contents) [`XHR.responseHeader(header, xhr) ~> string`](#XHR-responseHeader)
+
+`XHR.responseHeader` returns an observable property for given `header` of
+[`getResponseHeader(header)`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getResponseHeader)
 of an ongoing XHR.
 
 #### <a id="XHR-responseType"></a> [≡](#contents) [`XHR.responseType(xhr) ~> string`](#XHR-responseType)

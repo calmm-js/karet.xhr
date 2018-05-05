@@ -101,5 +101,12 @@ export const responseType = L.get(['xhr', 'responseType'])
 export const responseURL = L.get(['xhr', 'responseURL'])
 export const status = L.get(['xhr', 'status'])
 export const statusText = L.get(['xhr', 'statusText'])
+export const responseHeader = I.curry((header, xhr) =>
+  L.get(['xhr', L.reread(xhr => xhr.getResponseHeader(header))], xhr)
+)
+export const allResponseHeaders = L.get([
+  'xhr',
+  L.reread(xhr => xhr.getAllResponseHeaders())
+])
 
 export const isHttpSuccess = U.lift(status => 200 <= status && status < 300)
