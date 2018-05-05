@@ -19,6 +19,7 @@ export const perform = U.through(
       user = null,
       password = null,
       headers = I.array0,
+      overrideMimeType,
       body = null,
       responseType = '',
       timeout = 0,
@@ -47,6 +48,7 @@ export const perform = U.through(
         headers.forEach(hv => {
           xhr.setRequestHeader(hv[0], hv[1])
         })
+        if (overrideMimeType) xhr.overrideMimeType(overrideMimeType)
         xhr.send(body)
         return () => {
           xhr.abort()
