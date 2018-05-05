@@ -1,12 +1,13 @@
 import { array0, curry, acyclicEqualsU } from 'infestines';
 import { stream } from 'kefir';
-import { set, get, reread } from 'kefir.partial.lenses';
+import { set, get, when, reread } from 'kefir.partial.lenses';
 import { through, template, flatMapLatest, toProperty, skipDuplicates, lift } from 'karet.util';
 
 var initial = { type: 'initial' };
 
 var eventTypes = ['loadstart', 'progress', 'timeout', 'load', 'error'];
 
+var XHR = 'xhr';
 var UP = 'up';
 var DOWN = 'down';
 
@@ -23,12 +24,9 @@ var perform = /*#__PURE__*/through(template, /*#__PURE__*/flatMapLatest(function
       overrideMimeType = _ref.overrideMimeType,
       _ref$body = _ref.body,
       body = _ref$body === undefined ? null : _ref$body,
-      _ref$responseType = _ref.responseType,
-      responseType = _ref$responseType === undefined ? '' : _ref$responseType,
-      _ref$timeout = _ref.timeout,
-      timeout = _ref$timeout === undefined ? 0 : _ref$timeout,
-      _ref$withCredentials = _ref.withCredentials,
-      withCredentials = _ref$withCredentials === undefined ? false : _ref$withCredentials;
+      responseType = _ref.responseType,
+      timeout = _ref.timeout,
+      withCredentials = _ref.withCredentials;
   return stream(function (_ref2) {
     var emit = _ref2.emit,
         end = _ref2.end;
@@ -51,9 +49,9 @@ var perform = /*#__PURE__*/through(template, /*#__PURE__*/flatMapLatest(function
       end(emit(state = set('event', event, state)));
     });
     xhr.open(method, url, true, user, password);
-    xhr.responseType = responseType;
-    xhr.timeout = timeout;
-    xhr.withCredentials = withCredentials;
+    if (responseType) xhr.responseType = responseType;
+    if (timeout) xhr.timeout = timeout;
+    if (withCredentials) xhr.withCredentials = withCredentials;
     headers.forEach(function (hv) {
       xhr.setRequestHeader(hv[0], hv[1]);
     });
@@ -65,10 +63,11 @@ var perform = /*#__PURE__*/through(template, /*#__PURE__*/flatMapLatest(function
   });
 }), toProperty);
 
+var isOneOf = /*#__PURE__*/curry(function (values, value) {
+  return values.includes(value);
+});
 var is = /*#__PURE__*/curry(function (values, dir) {
-  return get([dir, 'type', function (value) {
-    return values.includes(value);
-  }]);
+  return get([dir, 'type', isOneOf(values)]);
 });
 var hasStarted = /*#__PURE__*/is(eventTypes);
 var isProgressing = /*#__PURE__*/is(['progress', 'loadstart']);
@@ -103,23 +102,27 @@ var downLoaded = /*#__PURE__*/loaded(DOWN);
 var downTotal = /*#__PURE__*/total(DOWN);
 var downError = /*#__PURE__*/error(DOWN);
 
-var readyState = /*#__PURE__*/get(['xhr', 'readyState']);
-var response = /*#__PURE__*/through( /*#__PURE__*/get(['xhr', 'response']), /*#__PURE__*/skipDuplicates(acyclicEqualsU));
-var responseType = /*#__PURE__*/get(['xhr', 'responseType']);
-var responseURL = /*#__PURE__*/get(['xhr', 'responseURL']);
-var status = /*#__PURE__*/get(['xhr', 'status']);
-var statusText = /*#__PURE__*/get(['xhr', 'statusText']);
+var readyState = /*#__PURE__*/get([XHR, 'readyState']);
+var response = /*#__PURE__*/through( /*#__PURE__*/get([XHR, 'response']), /*#__PURE__*/skipDuplicates(acyclicEqualsU));
+var responseType = /*#__PURE__*/get([XHR, 'responseType']);
+var responseURL = /*#__PURE__*/get([XHR, 'responseURL']);
+var responseText = /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']);
+var responseXML = /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'document'])])), 'responseXML']);
+var status = /*#__PURE__*/get([XHR, 'status']);
+var statusText = /*#__PURE__*/get([XHR, 'statusText']);
 var responseHeader = /*#__PURE__*/curry(function (header, xhr) {
-  return get(['xhr', reread(function (xhr) {
+  return get([XHR, reread(function (xhr) {
     return xhr.getResponseHeader(header);
   })], xhr);
 });
-var allResponseHeaders = /*#__PURE__*/get(['xhr', /*#__PURE__*/reread(function (xhr) {
+var allResponseHeaders = /*#__PURE__*/get([XHR, /*#__PURE__*/reread(function (xhr) {
   return xhr.getAllResponseHeaders();
 })]);
+var timeout = /*#__PURE__*/get([XHR, 'timeout']);
+var withCredentials = /*#__PURE__*/get([XHR, 'withCredentials']);
 
 var isHttpSuccess = /*#__PURE__*/lift(function (status) {
   return 200 <= status && status < 300;
 });
 
-export { perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, response, responseType, responseURL, status, statusText, responseHeader, allResponseHeaders, isHttpSuccess };
+export { perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, response, responseType, responseURL, responseText, responseXML, status, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess };

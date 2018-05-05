@@ -8,6 +8,7 @@
 
   var eventTypes = ['loadstart', 'progress', 'timeout', 'load', 'error'];
 
+  var XHR = 'xhr';
   var UP = 'up';
   var DOWN = 'down';
 
@@ -24,12 +25,9 @@
         overrideMimeType = _ref.overrideMimeType,
         _ref$body = _ref.body,
         body = _ref$body === undefined ? null : _ref$body,
-        _ref$responseType = _ref.responseType,
-        responseType = _ref$responseType === undefined ? '' : _ref$responseType,
-        _ref$timeout = _ref.timeout,
-        timeout = _ref$timeout === undefined ? 0 : _ref$timeout,
-        _ref$withCredentials = _ref.withCredentials,
-        withCredentials = _ref$withCredentials === undefined ? false : _ref$withCredentials;
+        responseType = _ref.responseType,
+        timeout = _ref.timeout,
+        withCredentials = _ref.withCredentials;
     return K.stream(function (_ref2) {
       var emit = _ref2.emit,
           end = _ref2.end;
@@ -52,9 +50,9 @@
         end(emit(state = L.set('event', event, state)));
       });
       xhr.open(method, url, true, user, password);
-      xhr.responseType = responseType;
-      xhr.timeout = timeout;
-      xhr.withCredentials = withCredentials;
+      if (responseType) xhr.responseType = responseType;
+      if (timeout) xhr.timeout = timeout;
+      if (withCredentials) xhr.withCredentials = withCredentials;
       headers.forEach(function (hv) {
         xhr.setRequestHeader(hv[0], hv[1]);
       });
@@ -66,10 +64,11 @@
     });
   }), U.toProperty);
 
+  var isOneOf = /*#__PURE__*/I.curry(function (values, value) {
+    return values.includes(value);
+  });
   var is = /*#__PURE__*/I.curry(function (values, dir) {
-    return L.get([dir, 'type', function (value) {
-      return values.includes(value);
-    }]);
+    return L.get([dir, 'type', isOneOf(values)]);
   });
   var hasStarted = /*#__PURE__*/is(eventTypes);
   var isProgressing = /*#__PURE__*/is(['progress', 'loadstart']);
@@ -104,20 +103,24 @@
   var downTotal = /*#__PURE__*/total(DOWN);
   var downError = /*#__PURE__*/error(DOWN);
 
-  var readyState = /*#__PURE__*/L.get(['xhr', 'readyState']);
-  var response = /*#__PURE__*/U.through( /*#__PURE__*/L.get(['xhr', 'response']), /*#__PURE__*/U.skipDuplicates(I.acyclicEqualsU));
-  var responseType = /*#__PURE__*/L.get(['xhr', 'responseType']);
-  var responseURL = /*#__PURE__*/L.get(['xhr', 'responseURL']);
-  var status = /*#__PURE__*/L.get(['xhr', 'status']);
-  var statusText = /*#__PURE__*/L.get(['xhr', 'statusText']);
+  var readyState = /*#__PURE__*/L.get([XHR, 'readyState']);
+  var response = /*#__PURE__*/U.through( /*#__PURE__*/L.get([XHR, 'response']), /*#__PURE__*/U.skipDuplicates(I.acyclicEqualsU));
+  var responseType = /*#__PURE__*/L.get([XHR, 'responseType']);
+  var responseURL = /*#__PURE__*/L.get([XHR, 'responseURL']);
+  var responseText = /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']);
+  var responseXML = /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get(['responseType', /*#__PURE__*/isOneOf(['', 'document'])])), 'responseXML']);
+  var status = /*#__PURE__*/L.get([XHR, 'status']);
+  var statusText = /*#__PURE__*/L.get([XHR, 'statusText']);
   var responseHeader = /*#__PURE__*/I.curry(function (header, xhr) {
-    return L.get(['xhr', L.reread(function (xhr) {
+    return L.get([XHR, L.reread(function (xhr) {
       return xhr.getResponseHeader(header);
     })], xhr);
   });
-  var allResponseHeaders = /*#__PURE__*/L.get(['xhr', /*#__PURE__*/L.reread(function (xhr) {
+  var allResponseHeaders = /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.reread(function (xhr) {
     return xhr.getAllResponseHeaders();
   })]);
+  var timeout = /*#__PURE__*/L.get([XHR, 'timeout']);
+  var withCredentials = /*#__PURE__*/L.get([XHR, 'withCredentials']);
 
   var isHttpSuccess = /*#__PURE__*/U.lift(function (status) {
     return 200 <= status && status < 300;
@@ -146,10 +149,14 @@
   exports.response = response;
   exports.responseType = responseType;
   exports.responseURL = responseURL;
+  exports.responseText = responseText;
+  exports.responseXML = responseXML;
   exports.status = status;
   exports.statusText = statusText;
   exports.responseHeader = responseHeader;
   exports.allResponseHeaders = allResponseHeaders;
+  exports.timeout = timeout;
+  exports.withCredentials = withCredentials;
   exports.isHttpSuccess = isHttpSuccess;
 
   Object.defineProperty(exports, '__esModule', { value: true });
