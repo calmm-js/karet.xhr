@@ -7,7 +7,9 @@ observable [Kefir](https://kefirjs.github.io/kefir/)
 [properties](https://kefirjs.github.io/kefir/#about-observables).  The benefit
 of this approach is that it makes it easy to implement many kinds of use cases
 ranging from just getting the response data to visualizing the progress of
-ongoing upload and/or download and displaying potential errors.
+ongoing upload and/or download and displaying potential errors.  See this live
+[GitHub repository search](https://codesandbox.io/s/l5271q0r2l) CodeSandbox for
+an example.
 
 [![npm version](https://badge.fury.io/js/karet.xhr.svg)](http://badge.fury.io/js/karet.xhr)
 [![Build Status](https://travis-ci.org/calmm-js/karet.xhr.svg?branch=master)](https://travis-ci.org/calmm-js/karet.xhr)
@@ -71,9 +73,6 @@ representing the state of an
 using [`XHR.perform`](#XHR-perform) and then observes the ongoing XHR state
 using the accessors for [overall](#overall-state), [download](#download-state),
 and [upload](#upload-state) state.
-
-See this live [GitHub repository search](https://codesandbox.io/s/l5271q0r2l)
-CodeSandbox for an example.
 
 ### <a id="starting"></a> [≡](#contents) [Starting](#starting)
 
