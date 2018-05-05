@@ -19,7 +19,7 @@ ongoing upload and/or download and displaying potential errors.
 
 * [Reference](#reference)
   * [Starting](#starting)
-    * [`XHR.perform({url[, method, headers, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
+    * [`XHR.perform({url[, method, user, password, headers, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
   * [Overall state](#overall-state)
     * [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
     * [`XHR.response(xhr) ~> varies`](#XHR-response)
@@ -68,7 +68,7 @@ CodeSandbox for an example.
 
 ### <a id="starting"></a> [≡](#contents) [Starting](#starting)
 
-#### <a id="XHR-perform"></a> [≡](#contents) [`XHR.perform({url[, method, headers, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
+#### <a id="XHR-perform"></a> [≡](#contents) [`XHR.perform({url[, method, user, password, headers, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
 
 `XHR.perform` creates an observable
 [property](https://kefirjs.github.io/kefir/#about-observables) that represents
@@ -84,6 +84,8 @@ values:
 | Parameter | Default | Explanation
 | --------- | ------- | -----------
 | [`method`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open) | `'GET'` | [HTTP request method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) to use.
+| [`user`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open) | `null` | User name for authentication.
+| [`password`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open) | `null` | Password for authentication.
 | [`headers`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/setRequestHeader) | `[]` | Array of `[header, value]` pairs.
 | [`body`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send) | `null` | A body of data to be sent.
 | [`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType) | `'text'` | Specifies type of [response](#XHR-response) data.

@@ -16,6 +16,8 @@ export const perform = U.through(
     ({
       url,
       method = 'GET',
+      user = null,
+      password = null,
       headers = I.array0,
       body = null,
       responseType = '',
@@ -38,7 +40,7 @@ export const perform = U.through(
         xhr.addEventListener('loadend', event => {
           end(emit((state = L.set('event', event, state))))
         })
-        xhr.open(method, url)
+        xhr.open(method, url, true, user, password)
         xhr.responseType = responseType
         xhr.timeout = timeout
         xhr.withCredentials = withCredentials
