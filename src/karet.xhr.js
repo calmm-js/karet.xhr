@@ -93,6 +93,7 @@ export const response = U.through(
   U.skipDuplicates(I.acyclicEqualsU)
 )
 export const responseType = L.get(['xhr', 'responseType'])
+export const responseURL = L.get(['xhr', 'responseURL'])
 export const status = L.get(['xhr', 'status'])
 export const statusText = L.get(['xhr', 'statusText'])
 

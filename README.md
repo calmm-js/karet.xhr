@@ -24,6 +24,7 @@ ongoing upload and/or download and displaying potential errors.
     * [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
     * [`XHR.response(xhr) ~> varies`](#XHR-response)
     * [`XHR.responseType(xhr) ~> string`](#XHR-responseType)
+    * [`XHR.responseURL(xhr) ~> string`](#XHR-responseURL)
     * [`XHR.status(xhr) ~> number`](#XHR-status)
     * [`XHR.statusText(xhr) ~> string`](#XHR-statusText)
   * [Download state](#download-state)
@@ -124,6 +125,12 @@ of an ongoing XHR.
 
 `XHR.responseType` returns an observable property of the
 [`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType)
+of an ongoing XHR.
+
+#### <a id="XHR-responseURL"></a> [≡](#contents) [`XHR.responseURL(xhr) ~> string`](#XHR-responseURL)
+
+`XHR.responseURL` returns an observable property of the
+[`responseURL`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseURL)
 of an ongoing XHR.
 
 #### <a id="XHR-status"></a> [≡](#contents) [`XHR.status(xhr) ~> number`](#XHR-status)
