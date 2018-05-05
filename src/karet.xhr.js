@@ -3,24 +3,12 @@ import * as K from 'kefir'
 import * as L from 'kefir.partial.lenses'
 import * as U from 'karet.util'
 
-const INITIAL = 'initial'
-const initial = {type: INITIAL}
+const initial = {type: 'initial'}
+
+const eventTypes = ['loadstart', 'progress', 'timeout', 'load', 'error']
 
 const UP = 'up'
 const DOWN = 'down'
-const TYPE = 'type'
-const EVENT = 'event'
-const LOADED = 'loaded'
-const TOTAL = 'total'
-const XHR = 'xhr'
-
-const LOADSTART = 'loadstart'
-const PROGRESS = 'progress'
-const TIMEOUT = 'timeout'
-const LOAD = 'load'
-const ERROR = 'error'
-
-const eventTypes = [LOADSTART, PROGRESS, TIMEOUT, LOAD, ERROR]
 
 export const perform = U.through(
   U.template,
@@ -45,10 +33,10 @@ export const perform = U.through(
           xhr.upload.addEventListener(type, update(UP, type))
         })
         xhr.addEventListener('readystatechange', event => {
-          emit((state = L.set(EVENT, event, state)))
+          emit((state = L.set('event', event, state)))
         })
         xhr.addEventListener('loadend', event => {
-          end(emit((state = L.set(EVENT, event, state))))
+          end(emit((state = L.set('event', event, state))))
         })
         xhr.open(method, url)
         xhr.responseType = responseType
@@ -66,15 +54,16 @@ export const perform = U.through(
   U.toProperty
 )
 
-const is = values => dir => L.get([dir, TYPE, value => values.includes(value)])
+const is = values => dir =>
+  L.get([dir, 'type', value => values.includes(value)])
 const hasStarted = is(eventTypes)
-const isProgressing = is([PROGRESS, LOADSTART])
-const hasSucceeded = is([LOAD])
-const hasFailed = is([ERROR])
-const hasTimedOut = is([TIMEOUT])
-const hasEnded = is([LOAD, ERROR, TIMEOUT])
-const loaded = dir => L.get([dir, EVENT, LOADED])
-const total = dir => L.get([dir, EVENT, TOTAL])
+const isProgressing = is(['progress', 'loadstart'])
+const hasSucceeded = is(['load'])
+const hasFailed = is(['error'])
+const hasTimedOut = is(['timeout'])
+const hasEnded = is(['load', 'error', 'timeout'])
+const loaded = dir => L.get([dir, 'event', 'loaded'])
+const total = dir => L.get([dir, 'event', 'total'])
 
 export const upHasStarted = hasStarted(UP)
 export const upIsProgressing = isProgressing(UP)
@@ -94,13 +83,13 @@ export const downHasEnded = hasEnded(DOWN)
 export const downLoaded = loaded(DOWN)
 export const downTotal = total(DOWN)
 
-export const readyState = L.get([XHR, 'readyState'])
+export const readyState = L.get(['xhr', 'readyState'])
 export const response = U.through(
-  L.get([XHR, 'response']),
+  L.get(['xhr', 'response']),
   U.skipDuplicates(I.acyclicEqualsU)
 )
-export const responseType = L.get([XHR, 'responseType'])
-export const status = L.get([XHR, 'status'])
-export const statusText = L.get([XHR, 'statusText'])
+export const responseType = L.get(['xhr', 'responseType'])
+export const status = L.get(['xhr', 'status'])
+export const statusText = L.get(['xhr', 'statusText'])
 
 export const isHttpSuccess = U.lift(status => 200 <= status && status < 300)
