@@ -59,7 +59,7 @@
       if (overrideMimeType) xhr.overrideMimeType(overrideMimeType);
       xhr.send(body);
       return function () {
-        xhr.abort();
+        if (!xhr.status) xhr.abort();
       };
     });
   }), U.toProperty);

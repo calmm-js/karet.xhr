@@ -58,7 +58,7 @@ var perform = /*#__PURE__*/through(template, /*#__PURE__*/flatMapLatest(function
     if (overrideMimeType) xhr.overrideMimeType(overrideMimeType);
     xhr.send(body);
     return function () {
-      xhr.abort();
+      if (!xhr.status) xhr.abort();
     };
   });
 }), toProperty);

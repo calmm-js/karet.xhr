@@ -52,7 +52,7 @@ export const perform = U.through(
         if (overrideMimeType) xhr.overrideMimeType(overrideMimeType)
         xhr.send(body)
         return () => {
-          xhr.abort()
+          if (!xhr.status) xhr.abort()
         }
       })
   ),

@@ -62,7 +62,7 @@ var perform = /*#__PURE__*/U.through(U.template, /*#__PURE__*/U.flatMapLatest(fu
     if (overrideMimeType) xhr.overrideMimeType(overrideMimeType);
     xhr.send(body);
     return function () {
-      xhr.abort();
+      if (!xhr.status) xhr.abort();
     };
   });
 }), U.toProperty);
