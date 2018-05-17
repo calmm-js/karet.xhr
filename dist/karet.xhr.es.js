@@ -1,7 +1,7 @@
 import { array0, curry, acyclicEqualsU } from 'infestines';
 import { stream } from 'kefir';
 import { set, get, when, reread } from 'kefir.partial.lenses';
-import { through, template, flatMapLatest, toProperty, skipDuplicates, lift } from 'karet.util';
+import { through, template, flatMapLatest, toProperty, skipDuplicates, skipUnless, lift } from 'karet.util';
 
 var initial = { type: 'initial' };
 
@@ -81,6 +81,9 @@ var event = /*#__PURE__*/curry(function (prop, dir) {
 var loaded = /*#__PURE__*/event('loaded');
 var total = /*#__PURE__*/event('total');
 var error = /*#__PURE__*/event('error');
+var isHttpSuccessU = function isHttpSuccessU(status) {
+  return 200 <= status && status < 300;
+};
 
 var upHasStarted = /*#__PURE__*/hasStarted(UP);
 var upIsProgressing = /*#__PURE__*/isProgressing(UP);
@@ -104,11 +107,15 @@ var downError = /*#__PURE__*/error(DOWN);
 
 var readyState = /*#__PURE__*/get([XHR, 'readyState']);
 var response = /*#__PURE__*/through( /*#__PURE__*/get([XHR, 'response']), /*#__PURE__*/skipDuplicates(acyclicEqualsU));
+var responseFull = /*#__PURE__*/through( /*#__PURE__*/skipUnless(function (xhr) {
+  return readyState(xhr) === 4;
+}), response);
 var responseType = /*#__PURE__*/get([XHR, 'responseType']);
 var responseURL = /*#__PURE__*/get([XHR, 'responseURL']);
 var responseText = /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']);
 var responseXML = /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'document'])])), 'responseXML']);
 var status = /*#__PURE__*/get([XHR, 'status']);
+var statusIsHttpSuccess = /*#__PURE__*/get([XHR, 'status', isHttpSuccessU]);
 var statusText = /*#__PURE__*/get([XHR, 'statusText']);
 var responseHeader = /*#__PURE__*/curry(function (header, xhr) {
   return get([XHR, reread(function (xhr) {
@@ -121,8 +128,6 @@ var allResponseHeaders = /*#__PURE__*/get([XHR, /*#__PURE__*/reread(function (xh
 var timeout = /*#__PURE__*/get([XHR, 'timeout']);
 var withCredentials = /*#__PURE__*/get([XHR, 'withCredentials']);
 
-var isHttpSuccess = /*#__PURE__*/lift(function (status) {
-  return 200 <= status && status < 300;
-});
+var isHttpSuccess = /*#__PURE__*/lift(isHttpSuccessU);
 
-export { perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, response, responseType, responseURL, responseText, responseXML, status, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess };
+export { perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess };

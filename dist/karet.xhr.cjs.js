@@ -85,6 +85,9 @@ var event = /*#__PURE__*/I.curry(function (prop, dir) {
 var loaded = /*#__PURE__*/event('loaded');
 var total = /*#__PURE__*/event('total');
 var error = /*#__PURE__*/event('error');
+var isHttpSuccessU = function isHttpSuccessU(status) {
+  return 200 <= status && status < 300;
+};
 
 var upHasStarted = /*#__PURE__*/hasStarted(UP);
 var upIsProgressing = /*#__PURE__*/isProgressing(UP);
@@ -108,11 +111,15 @@ var downError = /*#__PURE__*/error(DOWN);
 
 var readyState = /*#__PURE__*/L.get([XHR, 'readyState']);
 var response = /*#__PURE__*/U.through( /*#__PURE__*/L.get([XHR, 'response']), /*#__PURE__*/U.skipDuplicates(I.acyclicEqualsU));
+var responseFull = /*#__PURE__*/U.through( /*#__PURE__*/U.skipUnless(function (xhr) {
+  return readyState(xhr) === 4;
+}), response);
 var responseType = /*#__PURE__*/L.get([XHR, 'responseType']);
 var responseURL = /*#__PURE__*/L.get([XHR, 'responseURL']);
 var responseText = /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']);
 var responseXML = /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get(['responseType', /*#__PURE__*/isOneOf(['', 'document'])])), 'responseXML']);
 var status = /*#__PURE__*/L.get([XHR, 'status']);
+var statusIsHttpSuccess = /*#__PURE__*/L.get([XHR, 'status', isHttpSuccessU]);
 var statusText = /*#__PURE__*/L.get([XHR, 'statusText']);
 var responseHeader = /*#__PURE__*/I.curry(function (header, xhr) {
   return L.get([XHR, L.reread(function (xhr) {
@@ -125,9 +132,7 @@ var allResponseHeaders = /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.reread(function
 var timeout = /*#__PURE__*/L.get([XHR, 'timeout']);
 var withCredentials = /*#__PURE__*/L.get([XHR, 'withCredentials']);
 
-var isHttpSuccess = /*#__PURE__*/U.lift(function (status) {
-  return 200 <= status && status < 300;
-});
+var isHttpSuccess = /*#__PURE__*/U.lift(isHttpSuccessU);
 
 exports.perform = perform;
 exports.upHasStarted = upHasStarted;
@@ -150,11 +155,13 @@ exports.downTotal = downTotal;
 exports.downError = downError;
 exports.readyState = readyState;
 exports.response = response;
+exports.responseFull = responseFull;
 exports.responseType = responseType;
 exports.responseURL = responseURL;
 exports.responseText = responseText;
 exports.responseXML = responseXML;
 exports.status = status;
+exports.statusIsHttpSuccess = statusIsHttpSuccess;
 exports.statusText = statusText;
 exports.responseHeader = responseHeader;
 exports.allResponseHeaders = allResponseHeaders;
