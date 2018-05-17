@@ -71,6 +71,7 @@ const event = I.curry((prop, dir) => L.get([dir, 'event', prop]))
 const loaded = event('loaded')
 const total = event('total')
 const error = event('error')
+const isHttpSuccessU = status => 200 <= status && status < 300
 
 export const upHasStarted = hasStarted(UP)
 export const upIsProgressing = isProgressing(UP)
@@ -97,6 +98,10 @@ export const response = U.through(
   L.get([XHR, 'response']),
   U.skipDuplicates(I.acyclicEqualsU)
 )
+export const responseFull = U.through(
+  U.skipUnless(xhr => readyState(xhr) === 4),
+  response
+)
 export const responseType = L.get([XHR, 'responseType'])
 export const responseURL = L.get([XHR, 'responseURL'])
 export const responseText = L.get([
@@ -110,6 +115,7 @@ export const responseXML = L.get([
   'responseXML'
 ])
 export const status = L.get([XHR, 'status'])
+export const statusIsHttpSuccess = L.get([XHR, 'status', isHttpSuccessU])
 export const statusText = L.get([XHR, 'statusText'])
 export const responseHeader = I.curry((header, xhr) =>
   L.get([XHR, L.reread(xhr => xhr.getResponseHeader(header))], xhr)
@@ -121,4 +127,4 @@ export const allResponseHeaders = L.get([
 export const timeout = L.get([XHR, 'timeout'])
 export const withCredentials = L.get([XHR, 'withCredentials'])
 
-export const isHttpSuccess = U.lift(status => 200 <= status && status < 300)
+export const isHttpSuccess = U.lift(isHttpSuccessU)

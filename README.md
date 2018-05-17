@@ -26,12 +26,14 @@ an example.
     * [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
     * [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
     * [`XHR.response(xhr) ~> varies`](#XHR-response)
+    * [`XHR.responseFull(xhr) ~> varies`](#XHR-responseFull)
     * [`XHR.responseHeader(header, xhr) ~> string`](#XHR-responseHeader)
     * [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
     * [`XHR.responseType(xhr) ~> string`](#XHR-responseType)
     * [`XHR.responseURL(xhr) ~> string`](#XHR-responseURL)
     * [`XHR.responseXML(xhr) ~> document`](#XHR-responseXML)
     * [`XHR.status(xhr) ~> number`](#XHR-status)
+    * [`XHR.statusIsHttpSuccess(xhr) ~> number`](#XHR-statusIsHttpSuccess)
     * [`XHR.statusText(xhr) ~> string`](#XHR-statusText)
     * [`XHR.timeout(xhr) ~> number`](#XHR-timeout)
     * [`XHR.withCredentials(xhr) ~> boolean`](#XHR-withCredentials)
@@ -132,7 +134,13 @@ of an ongoing XHR.
 
 `XHR.response` returns an observable property of the
 [`response`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response)
-of an ongoing XHR.
+of an ongoing XHR.  See also [`XHR.responseFull`](#XHR-responseFull).
+
+#### <a id="XHR-responseFull"></a> [≡](#contents) [`XHR.responseFull(xhr) ~> varies`](#XHR-responseFull)
+
+`XHR.responseFull` returns an observable property that emits the
+[`response`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response)
+after the XHR has completed.  See also [`XHR.response`](#XHR-response).
 
 #### <a id="XHR-responseHeader"></a> [≡](#contents) [`XHR.responseHeader(header, xhr) ~> string`](#XHR-responseHeader)
 
@@ -169,6 +177,12 @@ property of an ongoing XHR.
 `XHR.status` returns an observable property of the
 [`status`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/status)
 of an ongoing XHR.
+
+#### <a id="XHR-statusIsHttpSuccess"></a> [≡](#contents) [`XHR.statusIsHttpSuccess(xhr) ~> boolean`](#XHR-statusIsHttpSuccess)
+
+`XHR.statusIsHttpSuccess(xhr)` is shorthand for
+`XHR.isHttpSuccess(XHR.status(xhr))`.  See also [`XHR.status`](#XHR-status) and
+[`XHR.isHttpSuccess`](#XHR-isHttpSuccess).
 
 #### <a id="XHR-statusText"></a> [≡](#contents) [`XHR.statusText(xhr) ~> string`](#XHR-statusText)
 
@@ -311,3 +325,4 @@ of an ongoing XHR.
 `XHR.isHttpSuccess` returns an observable property of whether the given numeric
 property is in the range 2xx of [HTTP success
 codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#2xx_Success).
+See also [`XHR.statusIsHttpSuccess`](#XHR-statusIsHttpSuccess).
