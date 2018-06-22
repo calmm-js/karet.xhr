@@ -1,7 +1,13 @@
-import { array0, curry, acyclicEqualsU } from 'infestines';
+import { defineNameU, array0, curry, acyclicEqualsU, curryN } from 'infestines';
 import { stream } from 'kefir';
 import { set, get, when, reread } from 'kefir.partial.lenses';
 import { through, template, flatMapLatest, toProperty, skipDuplicates, skipUnless, lift } from 'karet.util';
+
+var setName = process.env.NODE_ENV === 'production' ? function (x) {
+  return x;
+} : function (to, name) {
+  return defineNameU(to, name);
+};
 
 var initial = { type: 'initial' };
 
@@ -11,7 +17,7 @@ var XHR = 'xhr';
 var UP = 'up';
 var DOWN = 'down';
 
-var perform = /*#__PURE__*/through(template, /*#__PURE__*/flatMapLatest(function (_ref) {
+var perform = /*#__PURE__*/setName( /*#__PURE__*/through(template, /*#__PURE__*/flatMapLatest(function perform(_ref) {
   var url = _ref.url,
       _ref$method = _ref.method,
       method = _ref$method === undefined ? 'GET' : _ref$method,
@@ -27,6 +33,7 @@ var perform = /*#__PURE__*/through(template, /*#__PURE__*/flatMapLatest(function
       responseType = _ref.responseType,
       timeout = _ref.timeout,
       withCredentials = _ref.withCredentials;
+
   return stream(function (_ref2) {
     var emit = _ref2.emit,
         end = _ref2.end;
@@ -61,7 +68,7 @@ var perform = /*#__PURE__*/through(template, /*#__PURE__*/flatMapLatest(function
       if (!xhr.status) xhr.abort();
     };
   });
-}), toProperty);
+}), toProperty), 'perform');
 
 var isOneOf = /*#__PURE__*/curry(function (values, value) {
   return values.includes(value);
@@ -81,52 +88,52 @@ var event = /*#__PURE__*/curry(function (prop, dir) {
 var loaded = /*#__PURE__*/event('loaded');
 var total = /*#__PURE__*/event('total');
 var error = /*#__PURE__*/event('error');
-var isHttpSuccessU = function isHttpSuccessU(status) {
+var isHttpSuccessU = function isHttpSuccess(status) {
   return 200 <= status && status < 300;
 };
 
-var upHasStarted = /*#__PURE__*/hasStarted(UP);
-var upIsProgressing = /*#__PURE__*/isProgressing(UP);
-var upHasSucceeded = /*#__PURE__*/hasSucceeded(UP);
-var upHasFailed = /*#__PURE__*/hasFailed(UP);
-var upHasTimedOut = /*#__PURE__*/hasTimedOut(UP);
-var upHasEnded = /*#__PURE__*/hasEnded(UP);
-var upLoaded = /*#__PURE__*/loaded(UP);
-var upTotal = /*#__PURE__*/total(UP);
-var upError = /*#__PURE__*/error(UP);
+var upHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStarted(UP), 'upHasStarted');
+var upIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressing(UP), 'upIsProgressing');
+var upHasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/hasSucceeded(UP), 'upHasSucceeded');
+var upHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailed(UP), 'upHasFailed');
+var upHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOut(UP), 'upHasTimedOut');
+var upHasEnded = /*#__PURE__*/setName( /*#__PURE__*/hasEnded(UP), 'upHasEnded');
+var upLoaded = /*#__PURE__*/setName( /*#__PURE__*/loaded(UP), 'upLoaded');
+var upTotal = /*#__PURE__*/setName( /*#__PURE__*/total(UP), 'upTotal');
+var upError = /*#__PURE__*/setName( /*#__PURE__*/error(UP), 'upError');
 
-var downHasStarted = /*#__PURE__*/hasStarted(DOWN);
-var downIsProgressing = /*#__PURE__*/isProgressing(DOWN);
-var downHasSucceeded = /*#__PURE__*/hasSucceeded(DOWN);
-var downHasFailed = /*#__PURE__*/hasFailed(DOWN);
-var downHasTimedOut = /*#__PURE__*/hasTimedOut(DOWN);
-var downHasEnded = /*#__PURE__*/hasEnded(DOWN);
-var downLoaded = /*#__PURE__*/loaded(DOWN);
-var downTotal = /*#__PURE__*/total(DOWN);
-var downError = /*#__PURE__*/error(DOWN);
+var downHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStarted(DOWN), 'downHasStarted');
+var downIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressing(DOWN), 'downIsProgressing');
+var downHasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/hasSucceeded(DOWN), 'downHasSucceeded');
+var downHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailed(DOWN), 'downHasFailed');
+var downHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOut(DOWN), 'downHasTimedOut');
+var downHasEnded = /*#__PURE__*/setName( /*#__PURE__*/hasEnded(DOWN), 'downHasEnded');
+var downLoaded = /*#__PURE__*/setName( /*#__PURE__*/loaded(DOWN), 'downLoaded');
+var downTotal = /*#__PURE__*/setName( /*#__PURE__*/total(DOWN), 'downTotal');
+var downError = /*#__PURE__*/setName( /*#__PURE__*/error(DOWN), 'downError');
 
-var readyState = /*#__PURE__*/get([XHR, 'readyState']);
-var response = /*#__PURE__*/through( /*#__PURE__*/get([XHR, 'response']), /*#__PURE__*/skipDuplicates(acyclicEqualsU));
-var responseFull = /*#__PURE__*/through( /*#__PURE__*/skipUnless(function (xhr) {
+var readyState = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'readyState']), 'readyState');
+var response = /*#__PURE__*/setName( /*#__PURE__*/through( /*#__PURE__*/get([XHR, 'response']), /*#__PURE__*/skipDuplicates(acyclicEqualsU)), 'response');
+var responseFull = /*#__PURE__*/setName( /*#__PURE__*/through( /*#__PURE__*/skipUnless(function (xhr) {
   return readyState(xhr) === 4;
-}), response);
-var responseType = /*#__PURE__*/get([XHR, 'responseType']);
-var responseURL = /*#__PURE__*/get([XHR, 'responseURL']);
-var responseText = /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']);
-var responseXML = /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'document'])])), 'responseXML']);
-var status = /*#__PURE__*/get([XHR, 'status']);
-var statusIsHttpSuccess = /*#__PURE__*/get([XHR, 'status', isHttpSuccessU]);
-var statusText = /*#__PURE__*/get([XHR, 'statusText']);
-var responseHeader = /*#__PURE__*/curry(function (header, xhr) {
+}), response), 'responseFull');
+var responseType = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'responseType']), 'responseType');
+var responseURL = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'responseURL']), 'responseURL');
+var responseText = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']), 'responseText');
+var responseXML = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'document'])])), 'responseXML']), 'responseXML');
+var status = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'status']), 'status');
+var statusIsHttpSuccess = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'status', isHttpSuccessU]), 'statusIsHttpSuccess');
+var statusText = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'statusText']), 'statusText');
+var responseHeader = /*#__PURE__*/curryN(2, function responseHeader(header) {
   return get([XHR, reread(function (xhr) {
     return xhr.getResponseHeader(header);
-  })], xhr);
+  })]);
 });
-var allResponseHeaders = /*#__PURE__*/get([XHR, /*#__PURE__*/reread(function (xhr) {
+var allResponseHeaders = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, /*#__PURE__*/reread(function (xhr) {
   return xhr.getAllResponseHeaders();
-})]);
-var timeout = /*#__PURE__*/get([XHR, 'timeout']);
-var withCredentials = /*#__PURE__*/get([XHR, 'withCredentials']);
+})]), 'allResponseHeaders');
+var timeout = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'timeout']), 'timeout');
+var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'withCredentials']), 'withCredentials');
 
 var isHttpSuccess = /*#__PURE__*/lift(isHttpSuccessU);
 
