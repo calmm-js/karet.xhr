@@ -3,6 +3,11 @@ import * as K from 'kefir'
 import * as L from 'kefir.partial.lenses'
 import * as U from 'karet.util'
 
+const setName =
+  process.env.NODE_ENV === 'production'
+    ? x => x
+    : (to, name) => I.defineNameU(to, name)
+
 const initial = {type: 'initial'}
 
 const eventTypes = ['loadstart', 'progress', 'timeout', 'load', 'error']
@@ -11,10 +16,10 @@ const XHR = 'xhr'
 const UP = 'up'
 const DOWN = 'down'
 
-export const perform = U.through(
-  U.template,
-  U.flatMapLatest(
-    ({
+export const perform = setName(
+  U.through(
+    U.template,
+    U.flatMapLatest(function perform({
       url,
       method = 'GET',
       user = null,
@@ -25,8 +30,8 @@ export const perform = U.through(
       responseType,
       timeout,
       withCredentials
-    }) =>
-      K.stream(({emit, end}) => {
+    }) {
+      return K.stream(({emit, end}) => {
         const xhr = new XMLHttpRequest()
         let state = {xhr, up: initial, down: initial}
         const update = (dir, type) => event => {
@@ -55,8 +60,10 @@ export const perform = U.through(
           if (!xhr.status) xhr.abort()
         }
       })
+    }),
+    U.toProperty
   ),
-  U.toProperty
+  'perform'
 )
 
 const isOneOf = I.curry((values, value) => values.includes(value))
@@ -71,60 +78,80 @@ const event = I.curry((prop, dir) => L.get([dir, 'event', prop]))
 const loaded = event('loaded')
 const total = event('total')
 const error = event('error')
-const isHttpSuccessU = status => 200 <= status && status < 300
+const isHttpSuccessU = function isHttpSuccess(status) {
+  return 200 <= status && status < 300
+}
 
-export const upHasStarted = hasStarted(UP)
-export const upIsProgressing = isProgressing(UP)
-export const upHasSucceeded = hasSucceeded(UP)
-export const upHasFailed = hasFailed(UP)
-export const upHasTimedOut = hasTimedOut(UP)
-export const upHasEnded = hasEnded(UP)
-export const upLoaded = loaded(UP)
-export const upTotal = total(UP)
-export const upError = error(UP)
+export const upHasStarted = setName(hasStarted(UP), 'upHasStarted')
+export const upIsProgressing = setName(isProgressing(UP), 'upIsProgressing')
+export const upHasSucceeded = setName(hasSucceeded(UP), 'upHasSucceeded')
+export const upHasFailed = setName(hasFailed(UP), 'upHasFailed')
+export const upHasTimedOut = setName(hasTimedOut(UP), 'upHasTimedOut')
+export const upHasEnded = setName(hasEnded(UP), 'upHasEnded')
+export const upLoaded = setName(loaded(UP), 'upLoaded')
+export const upTotal = setName(total(UP), 'upTotal')
+export const upError = setName(error(UP), 'upError')
 
-export const downHasStarted = hasStarted(DOWN)
-export const downIsProgressing = isProgressing(DOWN)
-export const downHasSucceeded = hasSucceeded(DOWN)
-export const downHasFailed = hasFailed(DOWN)
-export const downHasTimedOut = hasTimedOut(DOWN)
-export const downHasEnded = hasEnded(DOWN)
-export const downLoaded = loaded(DOWN)
-export const downTotal = total(DOWN)
-export const downError = error(DOWN)
-
-export const readyState = L.get([XHR, 'readyState'])
-export const response = U.through(
-  L.get([XHR, 'response']),
-  U.skipDuplicates(I.acyclicEqualsU)
+export const downHasStarted = setName(hasStarted(DOWN), 'downHasStarted')
+export const downIsProgressing = setName(
+  isProgressing(DOWN),
+  'downIsProgressing'
 )
-export const responseFull = U.through(
-  U.skipUnless(xhr => readyState(xhr) === 4),
-  response
+export const downHasSucceeded = setName(hasSucceeded(DOWN), 'downHasSucceeded')
+export const downHasFailed = setName(hasFailed(DOWN), 'downHasFailed')
+export const downHasTimedOut = setName(hasTimedOut(DOWN), 'downHasTimedOut')
+export const downHasEnded = setName(hasEnded(DOWN), 'downHasEnded')
+export const downLoaded = setName(loaded(DOWN), 'downLoaded')
+export const downTotal = setName(total(DOWN), 'downTotal')
+export const downError = setName(error(DOWN), 'downError')
+
+export const readyState = setName(L.get([XHR, 'readyState']), 'readyState')
+export const response = setName(
+  U.through(L.get([XHR, 'response']), U.skipDuplicates(I.acyclicEqualsU)),
+  'response'
 )
-export const responseType = L.get([XHR, 'responseType'])
-export const responseURL = L.get([XHR, 'responseURL'])
-export const responseText = L.get([
-  XHR,
-  L.when(L.get(['responseType', isOneOf(['', 'text'])])),
+export const responseFull = setName(
+  U.through(U.skipUnless(xhr => readyState(xhr) === 4), response),
+  'responseFull'
+)
+export const responseType = setName(
+  L.get([XHR, 'responseType']),
+  'responseType'
+)
+export const responseURL = setName(L.get([XHR, 'responseURL']), 'responseURL')
+export const responseText = setName(
+  L.get([
+    XHR,
+    L.when(L.get(['responseType', isOneOf(['', 'text'])])),
+    'responseText'
+  ]),
   'responseText'
-])
-export const responseXML = L.get([
-  XHR,
-  L.when(L.get(['responseType', isOneOf(['', 'document'])])),
-  'responseXML'
-])
-export const status = L.get([XHR, 'status'])
-export const statusIsHttpSuccess = L.get([XHR, 'status', isHttpSuccessU])
-export const statusText = L.get([XHR, 'statusText'])
-export const responseHeader = I.curry((header, xhr) =>
-  L.get([XHR, L.reread(xhr => xhr.getResponseHeader(header))], xhr)
 )
-export const allResponseHeaders = L.get([
-  XHR,
-  L.reread(xhr => xhr.getAllResponseHeaders())
-])
-export const timeout = L.get([XHR, 'timeout'])
-export const withCredentials = L.get([XHR, 'withCredentials'])
+export const responseXML = setName(
+  L.get([
+    XHR,
+    L.when(L.get(['responseType', isOneOf(['', 'document'])])),
+    'responseXML'
+  ]),
+  'responseXML'
+)
+export const status = setName(L.get([XHR, 'status']), 'status')
+export const statusIsHttpSuccess = setName(
+  L.get([XHR, 'status', isHttpSuccessU]),
+  'statusIsHttpSuccess'
+)
+export const statusText = setName(L.get([XHR, 'statusText']), 'statusText')
+export const responseHeader = I.curryN(2, function responseHeader(header) {
+  return L.get([XHR, L.reread(xhr => xhr.getResponseHeader(header))])
+})
+export const allResponseHeaders = setName(
+  L.get([XHR, L.reread(xhr => xhr.getAllResponseHeaders())]),
+  'allResponseHeaders'
+)
+export const timeout = setName(L.get([XHR, 'timeout']), 'timeout')
+export const withCredentials = setName(
+  L.get([XHR, 'withCredentials']),
+  'withCredentials'
+)
 
 export const isHttpSuccess = U.lift(isHttpSuccessU)
