@@ -1,7 +1,7 @@
-import { defineNameU, array0, curry, acyclicEqualsU, curryN } from 'infestines';
+import { defineNameU, array0, id, curry, pipe2U, acyclicEqualsU, curryN } from 'infestines';
 import { stream } from 'kefir';
 import { set, get, when, reread } from 'kefir.partial.lenses';
-import { through, template, flatMapLatest, toProperty, skipDuplicates, skipUnless, lift } from 'karet.util';
+import { combine, lift } from 'karet.lift';
 
 var setName = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
@@ -17,7 +17,7 @@ var XHR = 'xhr';
 var UP = 'up';
 var DOWN = 'down';
 
-var perform = /*#__PURE__*/setName( /*#__PURE__*/through(template, /*#__PURE__*/flatMapLatest(function perform(_ref) {
+var performPlain = function perform(_ref) {
   var url = _ref.url,
       _ref$method = _ref.method,
       method = _ref$method === undefined ? 'GET' : _ref$method,
@@ -68,7 +68,12 @@ var perform = /*#__PURE__*/setName( /*#__PURE__*/through(template, /*#__PURE__*/
       if (!xhr.status) xhr.abort();
     };
   });
-}), toProperty), 'perform');
+};
+
+function perform(argsIn) {
+  var args = combine([argsIn], id);
+  return (args !== argsIn ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
+}
 
 var isOneOf = /*#__PURE__*/curry(function (values, value) {
   return values.includes(value);
@@ -113,10 +118,14 @@ var downTotal = /*#__PURE__*/setName( /*#__PURE__*/total(DOWN), 'downTotal');
 var downError = /*#__PURE__*/setName( /*#__PURE__*/error(DOWN), 'downError');
 
 var readyState = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'readyState']), 'readyState');
-var response = /*#__PURE__*/setName( /*#__PURE__*/through( /*#__PURE__*/get([XHR, 'response']), /*#__PURE__*/skipDuplicates(acyclicEqualsU)), 'response');
-var responseFull = /*#__PURE__*/setName( /*#__PURE__*/through( /*#__PURE__*/skipUnless(function (xhr) {
-  return readyState(xhr) === 4;
-}), response), 'responseFull');
+var response = /*#__PURE__*/setName( /*#__PURE__*/pipe2U( /*#__PURE__*/get([XHR, 'response']), function (xs) {
+  return xs.skipDuplicates(acyclicEqualsU);
+}), 'response');
+var responseFull = /*#__PURE__*/setName( /*#__PURE__*/pipe2U(function (xs) {
+  return xs.filter(function (xhr) {
+    return readyState(xhr) === 4;
+  });
+}, response), 'responseFull');
 var responseType = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'responseType']), 'responseType');
 var responseURL = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'responseURL']), 'responseURL');
 var responseText = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']), 'responseText');

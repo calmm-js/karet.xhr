@@ -1,7 +1,7 @@
 import * as I from 'infestines'
 import * as K from 'kefir'
 import * as L from 'kefir.partial.lenses'
-import * as U from 'karet.util'
+import * as F from 'karet.lift'
 
 const setName =
   process.env.NODE_ENV === 'production'
@@ -16,55 +16,56 @@ const XHR = 'xhr'
 const UP = 'up'
 const DOWN = 'down'
 
-export const perform = setName(
-  U.through(
-    U.template,
-    U.flatMapLatest(function perform({
-      url,
-      method = 'GET',
-      user = null,
-      password = null,
-      headers = I.array0,
-      overrideMimeType,
-      body = null,
-      responseType,
-      timeout,
-      withCredentials
-    }) {
-      return K.stream(({emit, end}) => {
-        const xhr = new XMLHttpRequest()
-        let state = {xhr, up: initial, down: initial}
-        const update = (dir, type) => event => {
-          emit((state = L.set(dir, {type, event}, state)))
-        }
-        eventTypes.forEach(type => {
-          xhr.addEventListener(type, update(DOWN, type))
-          xhr.upload.addEventListener(type, update(UP, type))
-        })
-        xhr.addEventListener('readystatechange', event => {
-          emit((state = L.set('event', event, state)))
-        })
-        xhr.addEventListener('loadend', event => {
-          end(emit((state = L.set('event', event, state))))
-        })
-        xhr.open(method, url, true, user, password)
-        if (responseType) xhr.responseType = responseType
-        if (timeout) xhr.timeout = timeout
-        if (withCredentials) xhr.withCredentials = withCredentials
-        headers.forEach(hv => {
-          xhr.setRequestHeader(hv[0], hv[1])
-        })
-        if (overrideMimeType) xhr.overrideMimeType(overrideMimeType)
-        xhr.send(body)
-        return () => {
-          if (!xhr.status) xhr.abort()
-        }
-      })
-    }),
-    U.toProperty
-  ),
-  'perform'
-)
+const performPlain = function perform({
+  url,
+  method = 'GET',
+  user = null,
+  password = null,
+  headers = I.array0,
+  overrideMimeType,
+  body = null,
+  responseType,
+  timeout,
+  withCredentials
+}) {
+  return K.stream(({emit, end}) => {
+    const xhr = new XMLHttpRequest()
+    let state = {xhr, up: initial, down: initial}
+    const update = (dir, type) => event => {
+      emit((state = L.set(dir, {type, event}, state)))
+    }
+    eventTypes.forEach(type => {
+      xhr.addEventListener(type, update(DOWN, type))
+      xhr.upload.addEventListener(type, update(UP, type))
+    })
+    xhr.addEventListener('readystatechange', event => {
+      emit((state = L.set('event', event, state)))
+    })
+    xhr.addEventListener('loadend', event => {
+      end(emit((state = L.set('event', event, state))))
+    })
+    xhr.open(method, url, true, user, password)
+    if (responseType) xhr.responseType = responseType
+    if (timeout) xhr.timeout = timeout
+    if (withCredentials) xhr.withCredentials = withCredentials
+    headers.forEach(hv => {
+      xhr.setRequestHeader(hv[0], hv[1])
+    })
+    if (overrideMimeType) xhr.overrideMimeType(overrideMimeType)
+    xhr.send(body)
+    return () => {
+      if (!xhr.status) xhr.abort()
+    }
+  })
+}
+
+export function perform(argsIn) {
+  const args = F.combine([argsIn], I.id)
+  return (args !== argsIn
+    ? args.flatMapLatest(performPlain)
+    : performPlain(args)
+  ).toProperty()
+}
 
 const isOneOf = I.curry((values, value) => values.includes(value))
 const is = I.curry((values, dir) => L.get([dir, 'type', isOneOf(values)]))
@@ -107,11 +108,11 @@ export const downError = setName(error(DOWN), 'downError')
 
 export const readyState = setName(L.get([XHR, 'readyState']), 'readyState')
 export const response = setName(
-  U.through(L.get([XHR, 'response']), U.skipDuplicates(I.acyclicEqualsU)),
+  I.pipe2U(L.get([XHR, 'response']), xs => xs.skipDuplicates(I.acyclicEqualsU)),
   'response'
 )
 export const responseFull = setName(
-  U.through(U.skipUnless(xhr => readyState(xhr) === 4), response),
+  I.pipe2U(xs => xs.filter(xhr => readyState(xhr) === 4), response),
   'responseFull'
 )
 export const responseType = setName(
@@ -154,4 +155,4 @@ export const withCredentials = setName(
   'withCredentials'
 )
 
-export const isHttpSuccess = U.lift(isHttpSuccessU)
+export const isHttpSuccess = F.lift(isHttpSuccessU)

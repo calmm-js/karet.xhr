@@ -5,7 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var I = require('infestines');
 var K = require('kefir');
 var L = require('kefir.partial.lenses');
-var U = require('karet.util');
+var F = require('karet.lift');
 
 var setName = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
@@ -21,7 +21,7 @@ var XHR = 'xhr';
 var UP = 'up';
 var DOWN = 'down';
 
-var perform = /*#__PURE__*/setName( /*#__PURE__*/U.through(U.template, /*#__PURE__*/U.flatMapLatest(function perform(_ref) {
+var performPlain = function perform(_ref) {
   var url = _ref.url,
       _ref$method = _ref.method,
       method = _ref$method === undefined ? 'GET' : _ref$method,
@@ -72,7 +72,12 @@ var perform = /*#__PURE__*/setName( /*#__PURE__*/U.through(U.template, /*#__PURE
       if (!xhr.status) xhr.abort();
     };
   });
-}), U.toProperty), 'perform');
+};
+
+function perform(argsIn) {
+  var args = F.combine([argsIn], I.id);
+  return (args !== argsIn ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
+}
 
 var isOneOf = /*#__PURE__*/I.curry(function (values, value) {
   return values.includes(value);
@@ -117,10 +122,14 @@ var downTotal = /*#__PURE__*/setName( /*#__PURE__*/total(DOWN), 'downTotal');
 var downError = /*#__PURE__*/setName( /*#__PURE__*/error(DOWN), 'downError');
 
 var readyState = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'readyState']), 'readyState');
-var response = /*#__PURE__*/setName( /*#__PURE__*/U.through( /*#__PURE__*/L.get([XHR, 'response']), /*#__PURE__*/U.skipDuplicates(I.acyclicEqualsU)), 'response');
-var responseFull = /*#__PURE__*/setName( /*#__PURE__*/U.through( /*#__PURE__*/U.skipUnless(function (xhr) {
-  return readyState(xhr) === 4;
-}), response), 'responseFull');
+var response = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/L.get([XHR, 'response']), function (xs) {
+  return xs.skipDuplicates(I.acyclicEqualsU);
+}), 'response');
+var responseFull = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(function (xs) {
+  return xs.filter(function (xhr) {
+    return readyState(xhr) === 4;
+  });
+}, response), 'responseFull');
 var responseType = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'responseType']), 'responseType');
 var responseURL = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'responseURL']), 'responseURL');
 var responseText = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']), 'responseText');
@@ -139,7 +148,7 @@ var allResponseHeaders = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PUR
 var timeout = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'timeout']), 'timeout');
 var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'withCredentials']), 'withCredentials');
 
-var isHttpSuccess = /*#__PURE__*/U.lift(isHttpSuccessU);
+var isHttpSuccess = /*#__PURE__*/F.lift(isHttpSuccessU);
 
 exports.perform = perform;
 exports.upHasStarted = upHasStarted;
