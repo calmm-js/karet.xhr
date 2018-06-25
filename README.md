@@ -7,9 +7,14 @@ observable [Kefir](https://kefirjs.github.io/kefir/)
 [properties](https://kefirjs.github.io/kefir/#about-observables).  The benefit
 of this approach is that it makes it easy to implement many kinds of use cases
 ranging from just getting the response data to visualizing the progress of
-ongoing upload and/or download and displaying potential errors.  See this live
-[GitHub repository search](https://codesandbox.io/s/l5271q0r2l) CodeSandbox for
-an example.
+ongoing upload and/or download and displaying potential errors.
+
+Examples:
+* The [Giphy](https://codesandbox.io/s/q9j8v8w1nq) CodeSandbox uses this library
+  to do simple JSON GET requests.
+* The [GitHub repository search](https://codesandbox.io/s/l5271q0r2l)
+  CodeSandbox uses this library to do JSON GET requests and exercises much of
+  the API of this library as an example.
 
 [![npm version](https://badge.fury.io/js/karet.xhr.svg)](http://badge.fury.io/js/karet.xhr)
 [![Build Status](https://travis-ci.org/calmm-js/karet.xhr.svg?branch=master)](https://travis-ci.org/calmm-js/karet.xhr)
