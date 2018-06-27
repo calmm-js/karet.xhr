@@ -21,7 +21,7 @@ const performPlain = function perform({
   method = 'GET',
   user = null,
   password = null,
-  headers = I.array0,
+  headers,
   overrideMimeType,
   body = null,
   responseType,
@@ -48,9 +48,20 @@ const performPlain = function perform({
     if (responseType) xhr.responseType = responseType
     if (timeout) xhr.timeout = timeout
     if (withCredentials) xhr.withCredentials = withCredentials
-    headers.forEach(hv => {
-      xhr.setRequestHeader(hv[0], hv[1])
-    })
+    if (null != headers) {
+      if (I.isFunction(headers.keys)) {
+        headers = Array.from(headers)
+      }
+      if (I.isArray(headers)) {
+        headers.forEach(hv => {
+          xhr.setRequestHeader(hv[0], hv[1])
+        })
+      } else {
+        for (const header in headers) {
+          xhr.setRequestHeader(header, headers[header])
+        }
+      }
+    }
     if (overrideMimeType) xhr.overrideMimeType(overrideMimeType)
     xhr.send(body)
     return () => {
