@@ -1,7 +1,16 @@
+import * as F from 'karet.lift'
 import * as I from 'infestines'
 import * as K from 'kefir'
 import * as L from 'kefir.partial.lenses'
-import * as F from 'karet.lift'
+import * as V from 'partial.lenses.validation'
+
+//
+
+export const string = I.isString
+export const boolean = x => typeof x === 'boolean'
+export const number = I.isNumber
+
+//
 
 const setName =
   process.env.NODE_ENV === 'production'
@@ -16,7 +25,33 @@ const XHR = 'xhr'
 const UP = 'up'
 const DOWN = 'down'
 
-const performPlain = function perform({
+const performPlain = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : V.validate(
+      V.freeFn(
+        V.tuple(
+          V.props({
+            url: string,
+            method: V.optional(string),
+            user: V.optional(string),
+            password: V.optional(string),
+            headers: V.optional(
+              V.cases(
+                [I.isArray, V.arrayId(V.tuple(string, V.accept))],
+                [x => null != x && I.isFunction(x.keys), V.accept],
+                [V.accept]
+              )
+            ),
+            overrideMimeType: V.optional(string),
+            body: V.optional(V.accept),
+            responseType: V.optional(string),
+            timeout: V.optional(number),
+            withCredentials: V.optional(boolean)
+          })
+        ),
+        V.accept
+      )
+    ))(function perform({
   url,
   method = 'GET',
   user = null,
@@ -68,7 +103,7 @@ const performPlain = function perform({
       if (!xhr.status) xhr.abort()
     }
   })
-}
+})
 
 export function perform(argsIn) {
   const args = F.combine([argsIn], I.id)

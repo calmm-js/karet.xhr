@@ -56,7 +56,8 @@
   "dependencies": {
     "infestines": "^0.4.9",
     "karet.lift": "^1.0.1",
-    "kefir.partial.lenses": "^13.11.0"
+    "kefir.partial.lenses": "^13.11.0",
+    "partial.lenses.validation": "^1.0.4"
   },
   "peerDependencies": {
     "kefir": "^3.7.0"

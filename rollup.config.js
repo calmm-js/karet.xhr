@@ -8,6 +8,7 @@ const globals = {
   'karet.util': 'karet.util',
   'kefir.partial.lenses': 'kefir.partial.lenses',
   'partial.lenses': 'L',
+  'partial.lenses.validation': 'V',
   infestines: 'I',
   kefir: 'Kefir'
 }

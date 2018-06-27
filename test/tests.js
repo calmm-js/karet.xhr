@@ -1,7 +1,7 @@
 import * as K from 'kefir'
 import * as R from 'ramda'
 
-import '../dist/karet.xhr.cjs'
+import * as XHR from '../dist/karet.xhr.cjs'
 
 function show(x) {
   switch (typeof x) {
@@ -39,6 +39,28 @@ const testEq = (expect, thunk) =>
     }
   })
 
-describe('foo', () => {
-  testEq('bar', () => 'bar')
+const testThrows = thunk =>
+  it(`${toExpr(thunk)} => theows`, () => {
+    try {
+      thunk()
+    } catch (_) {
+      return
+    }
+    throw Error('Did not throw as expected.')
+  })
+
+describe('smoke test', () => {
+  testEq(
+    true,
+    () =>
+      XHR.perform({url: 'https://github.com/calmm-js/karet.xhr'}) instanceof
+      K.Property
+  )
 })
+
+if (process.env.NODE_ENV !== 'production') {
+  describe('argument validation', () => {
+    testThrows(() => XHR.perform({}))
+    testThrows(() => XHR.perform({url: 'foo', unknownParameter: 'bar'}))
+  })
+}
