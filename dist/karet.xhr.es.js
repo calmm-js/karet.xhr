@@ -1,7 +1,18 @@
-import { defineNameU, array0, id, curry, pipe2U, acyclicEqualsU, curryN } from 'infestines';
+import { combine, lift } from 'karet.lift';
+import { isString, isNumber, defineNameU, id, isArray, isFunction, curry, pipe2U, acyclicEqualsU, curryN } from 'infestines';
 import { stream } from 'kefir';
 import { set, get, when, reread } from 'kefir.partial.lenses';
-import { combine, lift } from 'karet.lift';
+import { validate, freeFn, tuple, props, optional, cases, arrayId, accept } from 'partial.lenses.validation';
+
+//
+
+var string = isString;
+var boolean = function boolean(x) {
+  return typeof x === 'boolean';
+};
+var number = isNumber;
+
+//
 
 var setName = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
@@ -17,7 +28,20 @@ var XHR = 'xhr';
 var UP = 'up';
 var DOWN = 'down';
 
-var performPlain = function perform(_ref) {
+var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : validate(freeFn(tuple(props({
+  url: string,
+  method: optional(string),
+  user: optional(string),
+  password: optional(string),
+  headers: optional(cases([isArray, arrayId(tuple(string, accept))], [function (x) {
+    return null != x && isFunction(x.keys);
+  }, accept], [accept])),
+  overrideMimeType: optional(string),
+  body: optional(accept),
+  responseType: optional(string),
+  timeout: optional(number),
+  withCredentials: optional(boolean)
+})), accept)))(function perform(_ref) {
   var url = _ref.url,
       _ref$method = _ref.method,
       method = _ref$method === undefined ? 'GET' : _ref$method,
@@ -25,8 +49,7 @@ var performPlain = function perform(_ref) {
       user = _ref$user === undefined ? null : _ref$user,
       _ref$password = _ref.password,
       password = _ref$password === undefined ? null : _ref$password,
-      _ref$headers = _ref.headers,
-      headers = _ref$headers === undefined ? array0 : _ref$headers,
+      headers = _ref.headers,
       overrideMimeType = _ref.overrideMimeType,
       _ref$body = _ref.body,
       body = _ref$body === undefined ? null : _ref$body,
@@ -59,16 +82,27 @@ var performPlain = function perform(_ref) {
     if (responseType) xhr.responseType = responseType;
     if (timeout) xhr.timeout = timeout;
     if (withCredentials) xhr.withCredentials = withCredentials;
-    headers.forEach(function (hv) {
-      xhr.setRequestHeader(hv[0], hv[1]);
-    });
+    if (null != headers) {
+      if (isFunction(headers.keys)) {
+        headers = Array.from(headers);
+      }
+      if (isArray(headers)) {
+        headers.forEach(function (hv) {
+          xhr.setRequestHeader(hv[0], hv[1]);
+        });
+      } else {
+        for (var header in headers) {
+          xhr.setRequestHeader(header, headers[header]);
+        }
+      }
+    }
     if (overrideMimeType) xhr.overrideMimeType(overrideMimeType);
     xhr.send(body);
     return function () {
       if (!xhr.status) xhr.abort();
     };
   });
-};
+});
 
 function perform(argsIn) {
   var args = combine([argsIn], id);
@@ -146,4 +180,4 @@ var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'withCredenti
 
 var isHttpSuccess = /*#__PURE__*/lift(isHttpSuccessU);
 
-export { perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess };
+export { string, boolean, number, perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess };

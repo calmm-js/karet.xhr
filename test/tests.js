@@ -40,7 +40,7 @@ const testEq = (expect, thunk) =>
   })
 
 const testThrows = thunk =>
-  it(`${toExpr(thunk)} => theows`, () => {
+  it(`${toExpr(thunk)} => throws`, () => {
     try {
       thunk()
     } catch (_) {

@@ -2,10 +2,21 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+var F = require('karet.lift');
 var I = require('infestines');
 var K = require('kefir');
 var L = require('kefir.partial.lenses');
-var F = require('karet.lift');
+var V = require('partial.lenses.validation');
+
+//
+
+var string = I.isString;
+var boolean = function boolean(x) {
+  return typeof x === 'boolean';
+};
+var number = I.isNumber;
+
+//
 
 var setName = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
@@ -21,7 +32,20 @@ var XHR = 'xhr';
 var UP = 'up';
 var DOWN = 'down';
 
-var performPlain = function perform(_ref) {
+var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : V.validate(V.freeFn(V.tuple(V.props({
+  url: string,
+  method: V.optional(string),
+  user: V.optional(string),
+  password: V.optional(string),
+  headers: V.optional(V.cases([I.isArray, V.arrayId(V.tuple(string, V.accept))], [function (x) {
+    return null != x && I.isFunction(x.keys);
+  }, V.accept], [V.accept])),
+  overrideMimeType: V.optional(string),
+  body: V.optional(V.accept),
+  responseType: V.optional(string),
+  timeout: V.optional(number),
+  withCredentials: V.optional(boolean)
+})), V.accept)))(function perform(_ref) {
   var url = _ref.url,
       _ref$method = _ref.method,
       method = _ref$method === undefined ? 'GET' : _ref$method,
@@ -29,8 +53,7 @@ var performPlain = function perform(_ref) {
       user = _ref$user === undefined ? null : _ref$user,
       _ref$password = _ref.password,
       password = _ref$password === undefined ? null : _ref$password,
-      _ref$headers = _ref.headers,
-      headers = _ref$headers === undefined ? I.array0 : _ref$headers,
+      headers = _ref.headers,
       overrideMimeType = _ref.overrideMimeType,
       _ref$body = _ref.body,
       body = _ref$body === undefined ? null : _ref$body,
@@ -63,16 +86,27 @@ var performPlain = function perform(_ref) {
     if (responseType) xhr.responseType = responseType;
     if (timeout) xhr.timeout = timeout;
     if (withCredentials) xhr.withCredentials = withCredentials;
-    headers.forEach(function (hv) {
-      xhr.setRequestHeader(hv[0], hv[1]);
-    });
+    if (null != headers) {
+      if (I.isFunction(headers.keys)) {
+        headers = Array.from(headers);
+      }
+      if (I.isArray(headers)) {
+        headers.forEach(function (hv) {
+          xhr.setRequestHeader(hv[0], hv[1]);
+        });
+      } else {
+        for (var header in headers) {
+          xhr.setRequestHeader(header, headers[header]);
+        }
+      }
+    }
     if (overrideMimeType) xhr.overrideMimeType(overrideMimeType);
     xhr.send(body);
     return function () {
       if (!xhr.status) xhr.abort();
     };
   });
-};
+});
 
 function perform(argsIn) {
   var args = F.combine([argsIn], I.id);
@@ -150,6 +184,9 @@ var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'withCreden
 
 var isHttpSuccess = /*#__PURE__*/F.lift(isHttpSuccessU);
 
+exports.string = string;
+exports.boolean = boolean;
+exports.number = number;
 exports.perform = perform;
 exports.upHasStarted = upHasStarted;
 exports.upIsProgressing = upIsProgressing;

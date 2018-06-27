@@ -1,8 +1,18 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('infestines'), require('kefir'), require('kefir.partial.lenses'), require('karet.lift')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'infestines', 'kefir', 'kefir.partial.lenses', 'karet.lift'], factory) :
-  (factory((global.karet = global.karet || {}, global.karet.xhr = {}),global.I,global.Kefir,global.kefir.partial.lenses,global.karet.lift));
-}(this, (function (exports,I,K,L,F) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('karet.lift'), require('infestines'), require('kefir'), require('kefir.partial.lenses'), require('partial.lenses.validation')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'karet.lift', 'infestines', 'kefir', 'kefir.partial.lenses', 'partial.lenses.validation'], factory) :
+  (factory((global.karet = global.karet || {}, global.karet.xhr = {}),global.karet.lift,global.I,global.Kefir,global.kefir.partial.lenses,global.V));
+}(this, (function (exports,F,I,K,L,V) { 'use strict';
+
+  //
+
+  var string = I.isString;
+  var boolean = function boolean(x) {
+    return typeof x === 'boolean';
+  };
+  var number = I.isNumber;
+
+  //
 
   var setName = function (to, name) {
     return I.defineNameU(to, name);
@@ -16,7 +26,20 @@
   var UP = 'up';
   var DOWN = 'down';
 
-  var performPlain = function perform(_ref) {
+  var performPlain = /*#__PURE__*/(V.validate(V.freeFn(V.tuple(V.props({
+    url: string,
+    method: V.optional(string),
+    user: V.optional(string),
+    password: V.optional(string),
+    headers: V.optional(V.cases([I.isArray, V.arrayId(V.tuple(string, V.accept))], [function (x) {
+      return null != x && I.isFunction(x.keys);
+    }, V.accept], [V.accept])),
+    overrideMimeType: V.optional(string),
+    body: V.optional(V.accept),
+    responseType: V.optional(string),
+    timeout: V.optional(number),
+    withCredentials: V.optional(boolean)
+  })), V.accept)))(function perform(_ref) {
     var url = _ref.url,
         _ref$method = _ref.method,
         method = _ref$method === undefined ? 'GET' : _ref$method,
@@ -24,8 +47,7 @@
         user = _ref$user === undefined ? null : _ref$user,
         _ref$password = _ref.password,
         password = _ref$password === undefined ? null : _ref$password,
-        _ref$headers = _ref.headers,
-        headers = _ref$headers === undefined ? I.array0 : _ref$headers,
+        headers = _ref.headers,
         overrideMimeType = _ref.overrideMimeType,
         _ref$body = _ref.body,
         body = _ref$body === undefined ? null : _ref$body,
@@ -58,16 +80,27 @@
       if (responseType) xhr.responseType = responseType;
       if (timeout) xhr.timeout = timeout;
       if (withCredentials) xhr.withCredentials = withCredentials;
-      headers.forEach(function (hv) {
-        xhr.setRequestHeader(hv[0], hv[1]);
-      });
+      if (null != headers) {
+        if (I.isFunction(headers.keys)) {
+          headers = Array.from(headers);
+        }
+        if (I.isArray(headers)) {
+          headers.forEach(function (hv) {
+            xhr.setRequestHeader(hv[0], hv[1]);
+          });
+        } else {
+          for (var header in headers) {
+            xhr.setRequestHeader(header, headers[header]);
+          }
+        }
+      }
       if (overrideMimeType) xhr.overrideMimeType(overrideMimeType);
       xhr.send(body);
       return function () {
         if (!xhr.status) xhr.abort();
       };
     });
-  };
+  });
 
   function perform(argsIn) {
     var args = F.combine([argsIn], I.id);
@@ -145,6 +178,9 @@
 
   var isHttpSuccess = /*#__PURE__*/F.lift(isHttpSuccessU);
 
+  exports.string = string;
+  exports.boolean = boolean;
+  exports.number = number;
   exports.perform = perform;
   exports.upHasStarted = upHasStarted;
   exports.upIsProgressing = upIsProgressing;
