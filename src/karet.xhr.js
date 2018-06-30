@@ -6,9 +6,9 @@ import * as V from 'partial.lenses.validation'
 
 //
 
-export const string = I.isString
-export const boolean = x => typeof x === 'boolean'
-export const number = I.isNumber
+const string = I.isString
+const boolean = x => typeof x === 'boolean'
+const number = I.isNumber
 
 //
 
