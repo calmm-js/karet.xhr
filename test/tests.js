@@ -52,6 +52,30 @@ const testThrows = thunk =>
     throw Error('Did not throw as expected.')
   })
 
+if (process.env.NODE_ENV !== 'production') {
+  describe('Argument validation', () => {
+    testThrows(() => XHR.perform({}))
+    testThrows(() =>
+      XHR.perform({
+        url: {not: 'a string'},
+        headers: new Map(),
+        withCredentials: 'not boolean',
+        unknownParameter: 'bar'
+      })
+    )
+  })
+
+  describe('Names of exported functions', () => {
+    it('match their export names', () => {
+      for (const k in XHR) {
+        const v = XHR[k]
+        if (R.is(Function, v) && v.name !== k)
+          throw Error(`Name of exported function '${k}' was '${v.name}'`)
+      }
+    })
+  })
+}
+
 describe('XHR', () => {
   testEq(['', 'Hello, world!'], () =>
     XHR.responseText(
@@ -129,17 +153,3 @@ describe('XHR', () => {
     )
   )
 })
-
-if (process.env.NODE_ENV !== 'production') {
-  describe('Argument validation', () => {
-    testThrows(() => XHR.perform({}))
-    testThrows(() =>
-      XHR.perform({
-        url: {not: 'a string'},
-        headers: new Map(),
-        withCredentials: 'not boolean',
-        unknownParameter: 'bar'
-      })
-    )
-  })
-}
