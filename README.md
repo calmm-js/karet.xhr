@@ -133,9 +133,7 @@ of an ongoing XHR.
 #### <a id="XHR-isDone"></a> [≡](#contents) [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
 
 `XHR.isDone` returns a possibly observable boolean property that tells whether
-the
-[`readyState`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState)
-of the XHR is 4.
+the XHR operation is complete (whether success or failure).
 
 #### <a id="XHR-readyState"></a> [≡](#contents) [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
 

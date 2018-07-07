@@ -163,4 +163,9 @@ describe('XHR', () => {
       })
       .skipDuplicates(R.equals)
   )
+  testEq([true], () =>
+    XHR.perform({url: 'http://localhost:3000/text'})
+      .map(XHR.isDone)
+      .filter(R.identity)
+  )
 })
