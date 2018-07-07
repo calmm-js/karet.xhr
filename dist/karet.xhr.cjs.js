@@ -10,6 +10,26 @@ var V = require('partial.lenses.validation');
 
 //
 
+var isObservable = function isObservable(x) {
+  return x instanceof K.Observable;
+};
+
+var skipDuplicates = /*#__PURE__*/I.curry(function skipDuplicates(eq, xs) {
+  return isObservable(xs) ? xs.skipDuplicates(eq) : xs;
+});
+
+var filter = /*#__PURE__*/I.curry(function filter(pr, xs) {
+  if (isObservable(xs)) {
+    return xs.filter(pr);
+  } else if (pr(xs)) {
+    return xs;
+  } else {
+    throw Error(pr.name);
+  }
+});
+
+//
+
 var string = I.isString;
 var boolean = function boolean(x) {
   return typeof x === 'boolean';
@@ -156,14 +176,9 @@ var downTotal = /*#__PURE__*/setName( /*#__PURE__*/total(DOWN), 'downTotal');
 var downError = /*#__PURE__*/setName( /*#__PURE__*/error(DOWN), 'downError');
 
 var readyState = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'readyState']), 'readyState');
-var response = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/L.get([XHR, 'response']), function (xs) {
-  return xs.skipDuplicates(I.acyclicEqualsU);
-}), 'response');
-var responseFull = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(function (xs) {
-  return xs.filter(function (xhr) {
-    return readyState(xhr) === 4;
-  });
-}, response), 'responseFull');
+var isDone = /*#__PURE__*/I.defineNameU( /*#__PURE__*/L.get([XHR, 'readyState', /*#__PURE__*/L.is(4)]), 'isDone');
+var response = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/L.get([XHR, 'response']), /*#__PURE__*/skipDuplicates(I.acyclicEqualsU)), 'response');
+var responseFull = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/filter(isDone), response), 'responseFull');
 var responseType = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'responseType']), 'responseType');
 var responseURL = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'responseURL']), 'responseURL');
 var responseText = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']), 'responseText');
@@ -204,6 +219,7 @@ exports.downLoaded = downLoaded;
 exports.downTotal = downTotal;
 exports.downError = downError;
 exports.readyState = readyState;
+exports.isDone = isDone;
 exports.response = response;
 exports.responseFull = responseFull;
 exports.responseType = responseType;
