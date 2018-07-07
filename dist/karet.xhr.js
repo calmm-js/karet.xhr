@@ -178,9 +178,6 @@
 
   var isHttpSuccess = /*#__PURE__*/F.lift(isHttpSuccessU);
 
-  exports.string = string;
-  exports.boolean = boolean;
-  exports.number = number;
   exports.perform = perform;
   exports.upHasStarted = upHasStarted;
   exports.upIsProgressing = upIsProgressing;

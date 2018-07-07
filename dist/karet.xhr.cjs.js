@@ -184,9 +184,6 @@ var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'withCreden
 
 var isHttpSuccess = /*#__PURE__*/F.lift(isHttpSuccessU);
 
-exports.string = string;
-exports.boolean = boolean;
-exports.number = number;
 exports.perform = perform;
 exports.upHasStarted = upHasStarted;
 exports.upIsProgressing = upIsProgressing;
