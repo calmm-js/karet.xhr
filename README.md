@@ -126,67 +126,71 @@ CodeSandbox for an example.
 
 #### <a id="XHR-allResponseHeaders"></a> [≡](#contents) [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
 
-`XHR.allResponseHeaders` returns an observable property of
+`XHR.allResponseHeaders` returns a possibly observable property of
 [`getAllResponseHeaders()`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders)
 of an ongoing XHR.
 
 #### <a id="XHR-isDone"></a> [≡](#contents) [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
 
-`XHR.isDone` returns an observable boolean property that tells whether the
+`XHR.isDone` returns a possibly observable boolean property that tells whether
+the
 [`readyState`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState)
 of the XHR is 4.
 
 #### <a id="XHR-readyState"></a> [≡](#contents) [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
 
-`XHR.readyState` returns an observable property of the
+`XHR.readyState` returns a possibly observable property of the
 [`readyState`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState)
 of an ongoing XHR.
 
 #### <a id="XHR-response"></a> [≡](#contents) [`XHR.response(xhr) ~> varies`](#XHR-response)
 
-`XHR.response` returns an observable property of the
+`XHR.response` returns a possibly observable property of the
 [`response`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response)
 of an ongoing XHR.  See also [`XHR.responseFull`](#XHR-responseFull).
 
 #### <a id="XHR-responseFull"></a> [≡](#contents) [`XHR.responseFull(xhr) ~> varies`](#XHR-responseFull)
 
-`XHR.responseFull` returns an observable property that emits the
+`XHR.responseFull` returns a possibly observable property that emits the
 [`response`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response)
-after the XHR has completed.  See also [`XHR.response`](#XHR-response).
+after the XHR has completed.  When called on a non-observable XHR, its
+[`readyState` must be 4](#XHR-isDone) or an `Error` will be thrown.  See also
+[`XHR.response`](#XHR-response).
 
 #### <a id="XHR-responseHeader"></a> [≡](#contents) [`XHR.responseHeader(header, xhr) ~> string`](#XHR-responseHeader)
 
-`XHR.responseHeader` returns an observable property for given `header` of
+`XHR.responseHeader` returns a possibly observable property for given `header`
+of
 [`getResponseHeader(header)`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getResponseHeader)
 of an ongoing XHR.
 
 #### <a id="XHR-responseText"></a> [≡](#contents) [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
 
-`XHR.responseText` returns an observable property of the
+`XHR.responseText` returns a possibly observable property of the
 [`responseText`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseText)
 property of an ongoing XHR.
 
 #### <a id="XHR-responseType"></a> [≡](#contents) [`XHR.responseType(xhr) ~> string`](#XHR-responseType)
 
-`XHR.responseType` returns an observable property of the
+`XHR.responseType` returns a possibly observable property of the
 [`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType)
 of an ongoing XHR.
 
 #### <a id="XHR-responseURL"></a> [≡](#contents) [`XHR.responseURL(xhr) ~> string`](#XHR-responseURL)
 
-`XHR.responseURL` returns an observable property of the
+`XHR.responseURL` returns a possibly observable property of the
 [`responseURL`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseURL)
 of an ongoing XHR.
 
 #### <a id="XHR-responseXML"></a> [≡](#contents) [`XHR.responseXML(xhr) ~> document`](#XHR-responseXML)
 
-`XHR.responseXML` returns an observable property of the
+`XHR.responseXML` returns a possibly observable property of the
 [`responseXML`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseXML)
 property of an ongoing XHR.
 
 #### <a id="XHR-status"></a> [≡](#contents) [`XHR.status(xhr) ~> number`](#XHR-status)
 
-`XHR.status` returns an observable property of the
+`XHR.status` returns a possibly observable property of the
 [`status`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/status)
 of an ongoing XHR.
 
@@ -198,19 +202,19 @@ of an ongoing XHR.
 
 #### <a id="XHR-statusText"></a> [≡](#contents) [`XHR.statusText(xhr) ~> string`](#XHR-statusText)
 
-`XHR.statusText` returns an observable property of the
+`XHR.statusText` returns a possibly observable property of the
 [`statusText`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/statusText)
 of an ongoing XHR.
 
 #### <a id="XHR-timeout"></a> [≡](#contents) [`XHR.timeout(xhr) ~> number`](#XHR-timeout)
 
-`XHR.timeout` returns an observable property of the
+`XHR.timeout` returns a possibly observable property of the
 [`timeout`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/timeout)
 property of an ongoing XHR.
 
 #### <a id="XHR-withCredentials"></a> [≡](#contents) [`XHR.withCredentials(xhr) ~> boolean`](#XHR-withCredentials)
 
-`XHR.withCredentials` returns an observable property of the
+`XHR.withCredentials` returns a possibly observable property of the
 [`withCredentials`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials)
 property of an ongoing XHR.
 
@@ -218,57 +222,57 @@ property of an ongoing XHR.
 
 #### <a id="XHR-downError"></a> [≡](#contents) [`XHR.downError(xhr) ~> exception`](#XHR-downError)
 
-`XHR.downError` returns an observable property of the
+`XHR.downError` returns a possibly observable property of the
 [`error`](https://developer.mozilla.org/en-US/docs/Web/Events/error) property of
 a failed XHR.
 
 #### <a id="XHR-downHasEnded"></a> [≡](#contents) [`XHR.downHasEnded(xhr) ~> boolean`](#XHR-downHasEnded)
 
-`XHR.downHasEnded` returns an observable boolean property that tells whether the
-download operation of an ongoing XHR has
+`XHR.downHasEnded` returns a possibly observable boolean property that tells
+whether the download operation of an ongoing XHR has
 [ended](https://developer.mozilla.org/en-US/docs/Web/Events/loadend).
 
 #### <a id="XHR-downHasFailed"></a> [≡](#contents) [`XHR.downHasFailed(xhr) ~> boolean`](#XHR-downHasFailed)
 
-`XHR.downHasFailed` returns an observable boolean property that tells whether
-the download operation of an ongoing XHR has
+`XHR.downHasFailed` returns a possibly observable boolean property that tells
+whether the download operation of an ongoing XHR has
 [failed](https://developer.mozilla.org/en-US/docs/Web/Events/error).
 
 #### <a id="XHR-downHasStarted"></a> [≡](#contents) [`XHR.downHasStarted(xhr) ~> boolean`](#XHR-downHasStarted)
 
-`XHR.downHasStarted` returns an observable boolean property that tells whether
-the download operation of an ongoing XHR has
+`XHR.downHasStarted` returns a possibly observable boolean property that tells
+whether the download operation of an ongoing XHR has
 [started](https://developer.mozilla.org/en-US/docs/Web/Events/loadstart).
 
 #### <a id="XHR-downHasSucceeded"></a> [≡](#contents) [`XHR.downHasSucceeded(xhr) ~> boolean`](#XHR-downHasSucceeded)
 
-`XHR.downHasSucceeded` returns an observable boolean property that tells whether
-the download operation of an ongoing XHR has
+`XHR.downHasSucceeded` returns a possibly observable boolean property that tells
+whether the download operation of an ongoing XHR has
 [succeeded](https://developer.mozilla.org/en-US/docs/Web/Events/load).  Note
 that this does not take into account the HTTP response status, see
 [`XHR.status`](#XHR-status) and [`XHR.isHttpSuccess`](#XHR-isHttpSuccess).
 
 #### <a id="XHR-downHasTimedOut"></a> [≡](#contents) [`XHR.downHasTimedOut(xhr) ~> boolean`](#XHR-downHasTimedOut)
 
-`XHR.downHasTimedOut` returns an observable boolean property that tells whether
-the download operation of an ongoing XHR has [timed
+`XHR.downHasTimedOut` returns a possibly observable boolean property that tells
+whether the download operation of an ongoing XHR has [timed
 out](https://developer.mozilla.org/en-US/docs/Web/Events/timeout).
 
 #### <a id="XHR-downIsProgressing"></a> [≡](#contents) [`XHR.downIsProgressing(xhr) ~> boolean`](#XHR-downIsProgressing)
 
-`XHR.downIsProgressing` returns an observable boolean property that tells
-whether the download operation of an ongoing XHR is
+`XHR.downIsProgressing` returns a possibly observable boolean property that
+tells whether the download operation of an ongoing XHR is
 [progressing](https://developer.mozilla.org/en-US/docs/Web/Events/progress).
 
 #### <a id="XHR-downLoaded"></a> [≡](#contents) [`XHR.downLoaded(xhr) ~> number`](#XHR-downLoaded)
 
-`XHR.downLoaded` returns an observable property of the
+`XHR.downLoaded` returns a possibly observable property of the
 [`loaded`](https://developer.mozilla.org/en-US/docs/Web/Events/progress)
 property of an ongoing XHR.
 
 #### <a id="XHR-downTotal"></a> [≡](#contents) [`XHR.downTotal(xhr) ~> number`](#XHR-downTotal)
 
-`XHR.downTotal` returns an observable property of the
+`XHR.downTotal` returns a possibly observable property of the
 [`total`](https://developer.mozilla.org/en-US/docs/Web/Events/progress) property
 of an ongoing XHR.
 
@@ -276,57 +280,57 @@ of an ongoing XHR.
 
 #### <a id="XHR-upError"></a> [≡](#contents) [`XHR.upError(xhr) ~> exception`](#XHR-upError)
 
-`XHR.upError` returns an observable property of the
+`XHR.upError` returns a possibly observable property of the
 [`error`](https://developer.mozilla.org/en-US/docs/Web/Events/error) property of
 a failed XHR.
 
 #### <a id="XHR-upHasEnded"></a> [≡](#contents) [`XHR.upHasEnded(xhr) ~> boolean`](#XHR-upHasEnded)
 
-`XHR.upHasEnded` returns an observable boolean property that tells whether the
-upload operation of an ongoing XHR has
+`XHR.upHasEnded` returns a possibly observable boolean property that tells
+whether the upload operation of an ongoing XHR has
 [ended](https://developer.mozilla.org/en-US/docs/Web/Events/loadend).
 
 #### <a id="XHR-upHasFailed"></a> [≡](#contents) [`XHR.upHasFailed(xhr) ~> boolean`](#XHR-upHasFailed)
 
-`XHR.upHasFailed` returns an observable boolean property that tells whether the
-upload operation of an ongoing XHR has
+`XHR.upHasFailed` returns a possibly observable boolean property that tells
+whether the upload operation of an ongoing XHR has
 [failed](https://developer.mozilla.org/en-US/docs/Web/Events/error).
 
 #### <a id="XHR-upHasStarted"></a> [≡](#contents) [`XHR.upHasStarted(xhr) ~> boolean`](#XHR-upHasStarted)
 
-`XHR.upHasStarted` returns an observable boolean property that tells whether the
-upload operation of an ongoing XHR has
+`XHR.upHasStarted` returns a possibly observable boolean property that tells
+whether the upload operation of an ongoing XHR has
 [started](https://developer.mozilla.org/en-US/docs/Web/Events/loadstart).
 
 #### <a id="XHR-upHasSucceeded"></a> [≡](#contents) [`XHR.upHasSucceeded(xhr) ~> boolean`](#XHR-upHasSucceeded)
 
-`XHR.upHasSucceeded` returns an observable boolean property that tells whether
-the upload operation of an ongoing XHR has
+`XHR.upHasSucceeded` returns a possibly observable boolean property that tells
+whether the upload operation of an ongoing XHR has
 [succeeded](https://developer.mozilla.org/en-US/docs/Web/Events/load).  Note
 that this does not take into account the HTTP response status, see
 [`XHR.status`](#XHR-status) and [`XHR.isHttpSuccess`](#XHR-isHttpSuccess).
 
 #### <a id="XHR-upHasTimedOut"></a> [≡](#contents) [`XHR.upHasTimedOut(xhr) ~> boolean`](#XHR-upHasTimedOut)
 
-`XHR.upHasTimedOut` returns an observable boolean property that tells whether
-the upload operation of an ongoing XHR has [timed
+`XHR.upHasTimedOut` returns a possibly observable boolean property that tells
+whether the upload operation of an ongoing XHR has [timed
 out](https://developer.mozilla.org/en-US/docs/Web/Events/timeout).
 
 #### <a id="XHR-upIsProgressing"></a> [≡](#contents) [`XHR.upIsProgressing(xhr) ~> boolean`](#XHR-upIsProgressing)
 
-`XHR.upIsProgressing` returns an observable boolean property that tells whether
-the upload operation of an ongoing XHR is
+`XHR.upIsProgressing` returns a possibly observable boolean property that tells
+whether the upload operation of an ongoing XHR is
 [progressing](https://developer.mozilla.org/en-US/docs/Web/Events/progress).
 
 #### <a id="XHR-upLoaded"></a> [≡](#contents) [`XHR.upLoaded(xhr) ~> number`](#XHR-upLoaded)
 
-`XHR.upLoaded` returns an observable property of the
+`XHR.upLoaded` returns a possibly observable property of the
 [`loaded`](https://developer.mozilla.org/en-US/docs/Web/Events/progress)
 property of an ongoing XHR.
 
 #### <a id="XHR-upTotal"></a> [≡](#contents) [`XHR.upTotal(xhr) ~> number`](#XHR-upTotal)
 
-`XHR.upTotal` returns an observable property of the
+`XHR.upTotal` returns a possibly observable property of the
 [`total`](https://developer.mozilla.org/en-US/docs/Web/Events/progress) property
 of an ongoing XHR.
 
@@ -334,7 +338,7 @@ of an ongoing XHR.
 
 #### <a id="XHR-isHttpSuccess"></a> [≡](#contents) [`XHR.isHttpSuccess(number) ~> boolean`](#XHR-isHttpSuccess)
 
-`XHR.isHttpSuccess` returns an observable property of whether the given numeric
-property is in the range 2xx of [HTTP success
+`XHR.isHttpSuccess` returns a possibly observable property of whether the given
+numeric property is in the range 2xx of [HTTP success
 codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#2xx_Success).
 See also [`XHR.statusIsHttpSuccess`](#XHR-statusIsHttpSuccess).
