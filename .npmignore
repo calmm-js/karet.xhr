@@ -1,6 +1,7 @@
 *~
 .babelrc
 .eslintrc
+.eslintignore
 .nyc_output
 .prettierrc
 .travis.yml
