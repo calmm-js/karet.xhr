@@ -45,6 +45,7 @@
   var XHR = 'xhr';
   var UP = 'up';
   var DOWN = 'down';
+  var EVENT = 'event';
 
   var performPlain = /*#__PURE__*/(V.validate(V.freeFn(V.tuple(V.props({
     url: string,
@@ -91,10 +92,10 @@
         xhr.upload.addEventListener(type, update(UP, type));
       });
       xhr.addEventListener('readystatechange', function (event) {
-        emit(state = L.set('event', event, state));
+        emit(state = L.set(EVENT, event, state));
       });
       xhr.addEventListener('loadend', function (event) {
-        end(emit(state = L.set('event', event, state)));
+        end(emit(state = L.set(EVENT, event, state)));
       });
       xhr.open(method, url, true, user, password);
       if (responseType) xhr.responseType = responseType;
@@ -140,7 +141,7 @@
   var hasTimedOut = /*#__PURE__*/is(['timeout']);
   var hasEnded = /*#__PURE__*/is(['load', 'error', 'timeout']);
   var event = /*#__PURE__*/I.curry(function (prop, dir) {
-    return L.get([dir, 'event', prop]);
+    return L.get([dir, EVENT, prop]);
   });
   var loaded = /*#__PURE__*/event('loaded');
   var total = /*#__PURE__*/event('total');
@@ -170,7 +171,7 @@
   var downError = /*#__PURE__*/setName( /*#__PURE__*/error(DOWN), 'downError');
 
   var readyState = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'readyState']), 'readyState');
-  var isDone = /*#__PURE__*/I.defineNameU( /*#__PURE__*/L.get([XHR, 'readyState', /*#__PURE__*/L.is(4)]), 'isDone');
+  var isDone = /*#__PURE__*/I.defineNameU( /*#__PURE__*/L.get([EVENT, 'type', /*#__PURE__*/L.is('loadend')]), 'isDone');
   var response = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/L.get([XHR, 'response']), /*#__PURE__*/skipDuplicates(I.acyclicEqualsU)), 'response');
   var responseFull = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/filter(isDone), response), 'responseFull');
   var responseType = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'responseType']), 'responseType');
