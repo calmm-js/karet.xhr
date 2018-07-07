@@ -152,4 +152,15 @@ describe('XHR', () => {
       })
     )
   )
+  testEq([true, 'Still there?'], () =>
+    XHR.perform({url: 'http://localhost:3000/slow', timeout: 2000})
+      .map(xhr => {
+        try {
+          return XHR.responseFull(xhr)
+        } catch (e) {
+          return e.message === 'isDone'
+        }
+      })
+      .skipDuplicates(R.equals)
+  )
 })

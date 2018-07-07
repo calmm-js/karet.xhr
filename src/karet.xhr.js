@@ -12,6 +12,16 @@ const skipDuplicates = I.curry(function skipDuplicates(eq, xs) {
   return isObservable(xs) ? xs.skipDuplicates(eq) : xs
 })
 
+const filter = I.curry(function filter(pr, xs) {
+  if (isObservable(xs)) {
+    return xs.filter(pr)
+  } else if (pr(xs)) {
+    return xs
+  } else {
+    throw Error(pr.name)
+  }
+})
+
 //
 
 const string = I.isString
@@ -161,13 +171,16 @@ export const downTotal = setName(total(DOWN), 'downTotal')
 export const downError = setName(error(DOWN), 'downError')
 
 export const readyState = setName(L.get([XHR, 'readyState']), 'readyState')
-export const isDone = setName(L.get([XHR, 'readyState', L.is(4)]), 'isDone')
+export const isDone = I.defineNameU(
+  L.get([XHR, 'readyState', L.is(4)]),
+  'isDone'
+)
 export const response = setName(
   I.pipe2U(L.get([XHR, 'response']), skipDuplicates(I.acyclicEqualsU)),
   'response'
 )
 export const responseFull = setName(
-  I.pipe2U(xs => xs.filter(isDone), response),
+  I.pipe2U(filter(isDone), response),
   'responseFull'
 )
 export const responseType = setName(
