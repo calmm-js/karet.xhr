@@ -29,6 +29,7 @@ Examples:
     * [`XHR.perform({url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
   * [Overall state](#overall-state)
     * [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
+    * [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
     * [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
     * [`XHR.response(xhr) ~> varies`](#XHR-response)
     * [`XHR.responseFull(xhr) ~> varies`](#XHR-responseFull)
@@ -128,6 +129,12 @@ CodeSandbox for an example.
 `XHR.allResponseHeaders` returns an observable property of
 [`getAllResponseHeaders()`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders)
 of an ongoing XHR.
+
+#### <a id="XHR-isDone"></a> [≡](#contents) [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
+
+`XHR.isDone` returns an observable boolean property that tells whether the
+[`readyState`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState)
+of the XHR is 4.
 
 #### <a id="XHR-readyState"></a> [≡](#contents) [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
 

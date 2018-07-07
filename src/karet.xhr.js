@@ -161,12 +161,13 @@ export const downTotal = setName(total(DOWN), 'downTotal')
 export const downError = setName(error(DOWN), 'downError')
 
 export const readyState = setName(L.get([XHR, 'readyState']), 'readyState')
+export const isDone = setName(L.get([XHR, 'readyState', L.is(4)]), 'isDone')
 export const response = setName(
   I.pipe2U(L.get([XHR, 'response']), skipDuplicates(I.acyclicEqualsU)),
   'response'
 )
 export const responseFull = setName(
-  I.pipe2U(xs => xs.filter(xhr => readyState(xhr) === 4), response),
+  I.pipe2U(xs => xs.filter(isDone), response),
   'responseFull'
 )
 export const responseType = setName(
