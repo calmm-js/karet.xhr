@@ -42,6 +42,7 @@ const eventTypes = ['loadstart', 'progress', 'timeout', 'load', 'error']
 const XHR = 'xhr'
 const UP = 'up'
 const DOWN = 'down'
+const EVENT = 'event'
 
 const performPlain = (process.env.NODE_ENV === 'production'
   ? I.id
@@ -92,10 +93,10 @@ const performPlain = (process.env.NODE_ENV === 'production'
       xhr.upload.addEventListener(type, update(UP, type))
     })
     xhr.addEventListener('readystatechange', event => {
-      emit((state = L.set('event', event, state)))
+      emit((state = L.set(EVENT, event, state)))
     })
     xhr.addEventListener('loadend', event => {
-      end(emit((state = L.set('event', event, state))))
+      end(emit((state = L.set(EVENT, event, state))))
     })
     xhr.open(method, url, true, user, password)
     if (responseType) xhr.responseType = responseType
@@ -139,7 +140,7 @@ const hasSucceeded = is(['load'])
 const hasFailed = is(['error'])
 const hasTimedOut = is(['timeout'])
 const hasEnded = is(['load', 'error', 'timeout'])
-const event = I.curry((prop, dir) => L.get([dir, 'event', prop]))
+const event = I.curry((prop, dir) => L.get([dir, EVENT, prop]))
 const loaded = event('loaded')
 const total = event('total')
 const error = event('error')
@@ -172,7 +173,7 @@ export const downError = setName(error(DOWN), 'downError')
 
 export const readyState = setName(L.get([XHR, 'readyState']), 'readyState')
 export const isDone = I.defineNameU(
-  L.get([XHR, 'readyState', L.is(4)]),
+  L.get([EVENT, 'type', L.is('loadend')]),
   'isDone'
 )
 export const response = setName(
