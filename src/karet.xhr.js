@@ -6,6 +6,14 @@ import * as V from 'partial.lenses.validation'
 
 //
 
+const isObservable = x => x instanceof K.Observable
+
+const skipDuplicates = I.curry(function skipDuplicates(eq, xs) {
+  return isObservable(xs) ? xs.skipDuplicates(eq) : xs
+})
+
+//
+
 const string = I.isString
 const boolean = x => typeof x === 'boolean'
 const number = I.isNumber
@@ -154,7 +162,7 @@ export const downError = setName(error(DOWN), 'downError')
 
 export const readyState = setName(L.get([XHR, 'readyState']), 'readyState')
 export const response = setName(
-  I.pipe2U(L.get([XHR, 'response']), xs => xs.skipDuplicates(I.acyclicEqualsU)),
+  I.pipe2U(L.get([XHR, 'response']), skipDuplicates(I.acyclicEqualsU)),
   'response'
 )
 export const responseFull = setName(
