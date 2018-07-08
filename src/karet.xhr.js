@@ -25,7 +25,7 @@ const filter = I.curry(function filter(pr, xs) {
 //
 
 const string = I.isString
-const boolean = x => typeof x === 'boolean'
+const boolean = x => x === !!x
 const number = I.isNumber
 
 //
@@ -34,6 +34,11 @@ const setName =
   process.env.NODE_ENV === 'production'
     ? x => x
     : (to, name) => I.defineNameU(to, name)
+
+const copyName =
+  process.env.NODE_ENV === 'production'
+    ? x => x
+    : (to, from) => I.defineNameU(to, from.name)
 
 const initial = {type: 'initial'}
 
@@ -148,6 +153,10 @@ const isHttpSuccessU = function isHttpSuccess(status) {
   return 200 <= status && status < 300
 }
 
+const getAfter = I.curryN(3, (predicate, getter) =>
+  copyName(I.pipe2U(filter(predicate), getter), getter)
+)
+
 export const upHasStarted = setName(hasStarted(UP), 'upHasStarted')
 export const upIsProgressing = setName(isProgressing(UP), 'upIsProgressing')
 export const upHasSucceeded = setName(hasSucceeded(UP), 'upHasSucceeded')
@@ -172,6 +181,10 @@ export const downTotal = setName(total(DOWN), 'downTotal')
 export const downError = setName(error(DOWN), 'downError')
 
 export const readyState = setName(L.get([XHR, 'readyState']), 'readyState')
+export const headersReceived = I.defineNameU(
+  L.get([XHR, 'readyState', state => 2 <= state]),
+  'headersReceived'
+)
 export const isDone = I.defineNameU(
   L.get([EVENT, 'type', L.is('loadend')]),
   'isDone'
@@ -180,10 +193,7 @@ export const response = setName(
   I.pipe2U(L.get([XHR, 'response']), skipDuplicates(I.acyclicEqualsU)),
   'response'
 )
-export const responseFull = setName(
-  I.pipe2U(filter(isDone), response),
-  'responseFull'
-)
+export const responseFull = setName(getAfter(isDone, response), 'responseFull')
 export const responseType = setName(
   L.get([XHR, 'responseType']),
   'responseType'
@@ -197,13 +207,16 @@ export const responseText = setName(
   ]),
   'responseText'
 )
-export const responseXML = setName(
-  L.get([
-    XHR,
-    L.when(L.get(['responseType', isOneOf(['', 'document'])])),
+export const responseXML = getAfter(
+  isDone,
+  setName(
+    L.get([
+      XHR,
+      L.when(L.get(['responseType', isOneOf(['', 'document'])])),
+      'responseXML'
+    ]),
     'responseXML'
-  ]),
-  'responseXML'
+  )
 )
 export const status = setName(L.get([XHR, 'status']), 'status')
 export const statusIsHttpSuccess = setName(
@@ -212,11 +225,20 @@ export const statusIsHttpSuccess = setName(
 )
 export const statusText = setName(L.get([XHR, 'statusText']), 'statusText')
 export const responseHeader = I.curryN(2, function responseHeader(header) {
-  return L.get([XHR, L.reread(xhr => xhr.getResponseHeader(header))])
+  return getAfter(
+    headersReceived,
+    setName(
+      L.get([XHR, L.reread(xhr => xhr.getResponseHeader(header))]),
+      'responseHeader'
+    )
+  )
 })
-export const allResponseHeaders = setName(
-  L.get([XHR, L.reread(xhr => xhr.getAllResponseHeaders())]),
-  'allResponseHeaders'
+export const allResponseHeaders = getAfter(
+  headersReceived,
+  setName(
+    L.get([XHR, L.reread(xhr => xhr.getAllResponseHeaders())]),
+    'allResponseHeaders'
+  )
 )
 export const timeout = setName(L.get([XHR, 'timeout']), 'timeout')
 export const withCredentials = setName(

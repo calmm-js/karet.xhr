@@ -17,6 +17,12 @@ app.get('/json', ({headers: {user = 'world'}}, res) => {
   res.json({user: user})
 })
 
+app.get('/xml', ({headers: {user = 'world'}}, res) => {
+  res.set('user', user)
+  res.set('Content-Type', 'application/xml')
+  res.send(`<?xml version="1.0"?><hello>${user}</hello>`)
+})
+
 app.get('/slow', (req, res) => {
   setTimeout(() => res.send('Still there?'), 1000)
 })
