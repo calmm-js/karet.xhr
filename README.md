@@ -29,6 +29,7 @@ Examples:
     * [`XHR.perform({url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
   * [Overall state](#overall-state)
     * [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
+    * [`XHR.headersReceived(xhr) ~> boolean`](#XHR-headersReceived)
     * [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
     * [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
     * [`XHR.response(xhr) ~> varies`](#XHR-response)
@@ -126,9 +127,18 @@ CodeSandbox for an example.
 
 #### <a id="XHR-allResponseHeaders"></a> [≡](#contents) [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
 
-`XHR.allResponseHeaders` returns a possibly observable property of
+`XHR.allResponseHeaders` returns a possibly observable property that emits the
+value of
 [`getAllResponseHeaders()`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders)
-of an ongoing XHR.
+after the HTTP headers have been received.  When called on a non-observable XHR,
+its [`readyState` must be 2](#XHR-headersReceived) or an `Error` will be thrown.
+
+#### <a id="XHR-headersReceived"></a> [≡](#contents) [`XHR.headersReceived(xhr) ~> boolean`](#XHR-headersReceived)
+
+`XHR.headersReceived` returns a possibly observable boolean property that tells
+whether HTTP headers have been received and can be obtained using
+[`XHR.allResponseHeaders`](#XHR-allResponseHeaders) or
+[`XHR.responseHeader`](#XHR-responseHeader).
 
 #### <a id="XHR-isDone"></a> [≡](#contents) [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
 
@@ -157,10 +167,12 @@ after the XHR has completed.  When called on a non-observable XHR, its
 
 #### <a id="XHR-responseHeader"></a> [≡](#contents) [`XHR.responseHeader(header, xhr) ~> string`](#XHR-responseHeader)
 
-`XHR.responseHeader` returns a possibly observable property for given `header`
+`XHR.responseHeader` returns a possibly observable property that emits the value
 of
 [`getResponseHeader(header)`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getResponseHeader)
-of an ongoing XHR.
+for specified `header` after the HTTP headers have been received.  When called
+on a non-observable XHR, its [`readyState` must be 2](#XHR-headersReceived) or
+an `Error` will be thrown.
 
 #### <a id="XHR-responseText"></a> [≡](#contents) [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
 

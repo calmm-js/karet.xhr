@@ -87,10 +87,10 @@ describe('XHR', () => {
       })
     )
   )
-  testEq([null, 'world'], () =>
+  testEq(['world'], () =>
     XHR.responseHeader('user', XHR.perform({url: 'http://localhost:3000/text'}))
   )
-  testEq(['', 'got something'], () =>
+  testEq(['got something'], () =>
     XHR.allResponseHeaders(
       XHR.perform({url: 'http://localhost:3000/text'})
     ).map(text => (text ? 'got something' : text))
@@ -120,6 +120,17 @@ describe('XHR', () => {
         })
       )
     )
+  )
+  testEq(['test'], () =>
+    XHR.responseXML(
+      XHR.perform(
+        K.constant({
+          url: 'http://localhost:3000/xml',
+          responseType: 'xml',
+          headers: new Map([['user', 'test']])
+        })
+      )
+    ).map(xml => xml.firstChild.textContent)
   )
   testEq(['Still there?'], () =>
     XHR.responseFull(
