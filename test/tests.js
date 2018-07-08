@@ -126,7 +126,7 @@ describe('XHR', () => {
       XHR.perform(
         K.constant({
           url: 'http://localhost:3000/xml',
-          responseType: 'xml',
+          responseType: 'document',
           headers: new Map([['user', 'test']])
         })
       )
