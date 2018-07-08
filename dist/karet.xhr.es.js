@@ -1,5 +1,5 @@
 import { combine, lift } from 'karet.lift';
-import { curry, isString, isNumber, defineNameU, id, isArray, isFunction, pipe2U, acyclicEqualsU, curryN } from 'infestines';
+import { curry, isString, isNumber, defineNameU, id, isArray, isFunction, curryN, pipe2U, acyclicEqualsU } from 'infestines';
 import { Observable, stream } from 'kefir';
 import { set, get, is, when, reread } from 'kefir.partial.lenses';
 import { validate, freeFn, tuple, props, optional, cases, arrayId, accept } from 'partial.lenses.validation';
@@ -28,7 +28,7 @@ var filter = /*#__PURE__*/curry(function filter(pr, xs) {
 
 var string = isString;
 var boolean = function boolean(x) {
-  return typeof x === 'boolean';
+  return x === !!x;
 };
 var number = isNumber;
 
@@ -38,6 +38,12 @@ var setName = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
 } : function (to, name) {
   return defineNameU(to, name);
+};
+
+var copyName = process.env.NODE_ENV === 'production' ? function (x) {
+  return x;
+} : function (to, from) {
+  return defineNameU(to, from.name);
 };
 
 var initial = { type: 'initial' };
@@ -152,6 +158,10 @@ var isHttpSuccessU = function isHttpSuccess(status) {
   return 200 <= status && status < 300;
 };
 
+var getAfter = /*#__PURE__*/curryN(3, function (predicate, getter) {
+  return copyName(pipe2U(filter(predicate), getter), getter);
+});
+
 var upHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStarted(UP), 'upHasStarted');
 var upIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressing(UP), 'upIsProgressing');
 var upHasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/hasSucceeded(UP), 'upHasSucceeded');
@@ -173,27 +183,30 @@ var downTotal = /*#__PURE__*/setName( /*#__PURE__*/total(DOWN), 'downTotal');
 var downError = /*#__PURE__*/setName( /*#__PURE__*/error(DOWN), 'downError');
 
 var readyState = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'readyState']), 'readyState');
+var headersReceived = /*#__PURE__*/defineNameU( /*#__PURE__*/get([XHR, 'readyState', function (state) {
+  return 2 <= state;
+}]), 'headersReceived');
 var isDone = /*#__PURE__*/defineNameU( /*#__PURE__*/get([EVENT, 'type', /*#__PURE__*/is('loadend')]), 'isDone');
 var response = /*#__PURE__*/setName( /*#__PURE__*/pipe2U( /*#__PURE__*/get([XHR, 'response']), /*#__PURE__*/skipDuplicates(acyclicEqualsU)), 'response');
-var responseFull = /*#__PURE__*/setName( /*#__PURE__*/pipe2U( /*#__PURE__*/filter(isDone), response), 'responseFull');
+var responseFull = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isDone, response), 'responseFull');
 var responseType = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'responseType']), 'responseType');
 var responseURL = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'responseURL']), 'responseURL');
 var responseText = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']), 'responseText');
-var responseXML = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'document'])])), 'responseXML']), 'responseXML');
+var responseXML = /*#__PURE__*/getAfter(isDone, /*#__PURE__*/setName( /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get(['responseType', /*#__PURE__*/isOneOf(['', 'document'])])), 'responseXML']), 'responseXML'));
 var status = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'status']), 'status');
 var statusIsHttpSuccess = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'status', isHttpSuccessU]), 'statusIsHttpSuccess');
 var statusText = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'statusText']), 'statusText');
 var responseHeader = /*#__PURE__*/curryN(2, function responseHeader(header) {
-  return get([XHR, reread(function (xhr) {
+  return getAfter(headersReceived, setName(get([XHR, reread(function (xhr) {
     return xhr.getResponseHeader(header);
-  })]);
+  })]), 'responseHeader'));
 });
-var allResponseHeaders = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, /*#__PURE__*/reread(function (xhr) {
+var allResponseHeaders = /*#__PURE__*/getAfter(headersReceived, /*#__PURE__*/setName( /*#__PURE__*/get([XHR, /*#__PURE__*/reread(function (xhr) {
   return xhr.getAllResponseHeaders();
-})]), 'allResponseHeaders');
+})]), 'allResponseHeaders'));
 var timeout = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'timeout']), 'timeout');
 var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'withCredentials']), 'withCredentials');
 
 var isHttpSuccess = /*#__PURE__*/lift(isHttpSuccessU);
 
-export { perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, isDone, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess };
+export { perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, headersReceived, isDone, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess };

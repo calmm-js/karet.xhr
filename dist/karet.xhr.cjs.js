@@ -32,7 +32,7 @@ var filter = /*#__PURE__*/I.curry(function filter(pr, xs) {
 
 var string = I.isString;
 var boolean = function boolean(x) {
-  return typeof x === 'boolean';
+  return x === !!x;
 };
 var number = I.isNumber;
 
@@ -42,6 +42,12 @@ var setName = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
 } : function (to, name) {
   return I.defineNameU(to, name);
+};
+
+var copyName = process.env.NODE_ENV === 'production' ? function (x) {
+  return x;
+} : function (to, from) {
+  return I.defineNameU(to, from.name);
 };
 
 var initial = { type: 'initial' };
@@ -156,6 +162,10 @@ var isHttpSuccessU = function isHttpSuccess(status) {
   return 200 <= status && status < 300;
 };
 
+var getAfter = /*#__PURE__*/I.curryN(3, function (predicate, getter) {
+  return copyName(I.pipe2U(filter(predicate), getter), getter);
+});
+
 var upHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStarted(UP), 'upHasStarted');
 var upIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressing(UP), 'upIsProgressing');
 var upHasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/hasSucceeded(UP), 'upHasSucceeded');
@@ -177,24 +187,27 @@ var downTotal = /*#__PURE__*/setName( /*#__PURE__*/total(DOWN), 'downTotal');
 var downError = /*#__PURE__*/setName( /*#__PURE__*/error(DOWN), 'downError');
 
 var readyState = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'readyState']), 'readyState');
+var headersReceived = /*#__PURE__*/I.defineNameU( /*#__PURE__*/L.get([XHR, 'readyState', function (state) {
+  return 2 <= state;
+}]), 'headersReceived');
 var isDone = /*#__PURE__*/I.defineNameU( /*#__PURE__*/L.get([EVENT, 'type', /*#__PURE__*/L.is('loadend')]), 'isDone');
 var response = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/L.get([XHR, 'response']), /*#__PURE__*/skipDuplicates(I.acyclicEqualsU)), 'response');
-var responseFull = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/filter(isDone), response), 'responseFull');
+var responseFull = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isDone, response), 'responseFull');
 var responseType = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'responseType']), 'responseType');
 var responseURL = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'responseURL']), 'responseURL');
 var responseText = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']), 'responseText');
-var responseXML = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get(['responseType', /*#__PURE__*/isOneOf(['', 'document'])])), 'responseXML']), 'responseXML');
+var responseXML = /*#__PURE__*/getAfter(isDone, /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get(['responseType', /*#__PURE__*/isOneOf(['', 'document'])])), 'responseXML']), 'responseXML'));
 var status = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'status']), 'status');
 var statusIsHttpSuccess = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'status', isHttpSuccessU]), 'statusIsHttpSuccess');
 var statusText = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'statusText']), 'statusText');
 var responseHeader = /*#__PURE__*/I.curryN(2, function responseHeader(header) {
-  return L.get([XHR, L.reread(function (xhr) {
+  return getAfter(headersReceived, setName(L.get([XHR, L.reread(function (xhr) {
     return xhr.getResponseHeader(header);
-  })]);
+  })]), 'responseHeader'));
 });
-var allResponseHeaders = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.reread(function (xhr) {
+var allResponseHeaders = /*#__PURE__*/getAfter(headersReceived, /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.reread(function (xhr) {
   return xhr.getAllResponseHeaders();
-})]), 'allResponseHeaders');
+})]), 'allResponseHeaders'));
 var timeout = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'timeout']), 'timeout');
 var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'withCredentials']), 'withCredentials');
 
@@ -220,6 +233,7 @@ exports.downLoaded = downLoaded;
 exports.downTotal = downTotal;
 exports.downError = downError;
 exports.readyState = readyState;
+exports.headersReceived = headersReceived;
 exports.isDone = isDone;
 exports.response = response;
 exports.responseFull = responseFull;
