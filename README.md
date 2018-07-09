@@ -7,7 +7,8 @@ observable [Kefir](https://kefirjs.github.io/kefir/)
 [properties](https://kefirjs.github.io/kefir/#about-observables).  The benefit
 of this approach is that it makes it easy to implement many kinds of use cases
 ranging from just getting the response data to visualizing the progress of
-ongoing upload and/or download and displaying potential errors.
+ongoing upload and/or download and displaying potential errors.  See also [Karet
+FR](https://github.com/calmm-js/karet.fr).
 
 Examples:
 * The [Giphy](https://codesandbox.io/s/q9j8v8w1nq) CodeSandbox uses this library
