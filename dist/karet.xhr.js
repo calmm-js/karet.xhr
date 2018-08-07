@@ -217,7 +217,9 @@
     return perform(mergeOptions(defaults, overrides));
   });
 
-  var getJson = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/performWith({ responseType: 'json' }), responseFull), 'getJson');
+  var performJson = /*#__PURE__*/setName( /*#__PURE__*/performWith({ responseType: 'json' }), 'performJson');
+
+  var getJson = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(performJson, responseFull), 'getJson');
 
   exports.perform = perform;
   exports.upHasStarted = upHasStarted;
@@ -256,6 +258,7 @@
   exports.withCredentials = withCredentials;
   exports.isHttpSuccess = isHttpSuccess;
   exports.performWith = performWith;
+  exports.performJson = performJson;
   exports.getJson = getJson;
 
   Object.defineProperty(exports, '__esModule', { value: true });
