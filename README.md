@@ -28,6 +28,7 @@ Examples:
 * [Reference](#reference)
   * [Convenience](#convenience)
     * [`XHR.getJson(url | {url[, ...]}) ~> varies`](#XHR-getJson)
+    * [`XHR.performJson(url | {url[, ...]}) ~> xhr`](#XHR-performJson)
   * [Starting](#starting)
     * [`XHR.perform(url | {url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
     * [`XHR.performWith(url | {...}, url | {...}) ~> xhr`](#XHR-performWith)
@@ -92,8 +93,13 @@ and [upload](#upload-state) state.
 #### <a id="XHR-getJson"></a> [≡](#contents) [`XHR.getJson(url | {url,[, ...]}) ~> varies`](#XHR-getJson)
 
 `XHR.getJson(url)` is shorthand for
-[`XHR.responseFull(XHR.performWith({responseType: 'json'},
-url))`](#XHR-responseFull).  See also [`XHR.performWith`](#XHR-performWith).
+[`XHR.responseFull(XHR.performJson)`](#XHR-responseFull).  See also
+[`XHR.performJson`](#XHR-performJson).
+
+#### <a id="XHR-performJson"></a> [≡](#contents) [`XHR.performJson(url | {url[, ...]}) ~> xhr`](#XHR-performJson)
+
+`XHR.performJson` is shorthand for [`XHR.performWith({responseType:
+'json'})`](#XHR-performWith).
 
 ### <a id="starting"></a> [≡](#contents) [Starting](#starting)
 

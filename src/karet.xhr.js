@@ -258,7 +258,9 @@ export const performWith = I.curry(function performWith(defaults, overrides) {
   return perform(mergeOptions(defaults, overrides))
 })
 
-export const getJson = setName(
-  I.pipe2U(performWith({responseType: 'json'}), responseFull),
-  'getJson'
+export const performJson = setName(
+  performWith({responseType: 'json'}),
+  'performJson'
 )
+
+export const getJson = setName(I.pipe2U(performJson, responseFull), 'getJson')
