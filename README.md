@@ -26,8 +26,11 @@ Examples:
 ## <a id="contents"></a> [≡](#contents) Contents
 
 * [Reference](#reference)
+  * [Convenience](#convenience)
+    * [`XHR.getJson(url | {url[, ...]}) ~> varies`](#XHR-getJson)
   * [Starting](#starting)
-    * [`XHR.perform({url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
+    * [`XHR.perform(url | {url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
+    * [`XHR.performWith(url | {...}, url | {...}) ~> xhr`](#XHR-performWith)
   * [Overall state](#overall-state)
     * [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
     * [`XHR.headersReceived(xhr) ~> boolean`](#XHR-headersReceived)
@@ -84,9 +87,17 @@ using [`XHR.perform`](#XHR-perform) and then observes the ongoing XHR state
 using the accessors for [overall](#overall-state), [download](#download-state),
 and [upload](#upload-state) state.
 
+### <a id="convenience"></a> [≡](#contents) [Convenience](#convenience)
+
+#### <a id="XHR-getJson"></a> [≡](#contents) [`XHR.getJson(url | {url,[, ...]}) ~> varies`](#XHR-getJson)
+
+`XHR.getJson(url)` is shorthand for
+[`XHR.responseFull(XHR.performWith({responseType: 'json'},
+url))`](#XHR-responseFull).  See also [`XHR.performWith`](#XHR-performWith).
+
 ### <a id="starting"></a> [≡](#contents) [Starting](#starting)
 
-#### <a id="XHR-perform"></a> [≡](#contents) [`XHR.perform({url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
+#### <a id="XHR-perform"></a> [≡](#contents) [`XHR.perform(url | {url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
 
 `XHR.perform` creates an observable
 [property](https://kefirjs.github.io/kefir/#about-observables) that represents
@@ -94,10 +105,11 @@ the state of an ongoing
 [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest).
 The request is started once the property is subscribed to and is automatically
 [aborted](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort)
-in case the property is fully unsubscribed from before it has ended.
+in case the property is fully unsubscribed from before it has ended.  See also
+[`XHR.performWith`](#XHR-performWith).
 
-Only the `url` parameter is required.  Other parameters have their XHR default
-values:
+Only the `url` parameter is required and can be passed as a string.  Other
+parameters have their XHR default values:
 
 | Parameter | Default | Explanation
 | --------- | ------- | -----------
@@ -123,6 +135,20 @@ property.
 
 See this live [GitHub repository search](https://codesandbox.io/s/l5271q0r2l)
 CodeSandbox for an example.
+
+#### <a id="XHR-performWith"></a> [≡](#contents) [`XHR.performWith(url | {...}, url | {...}) ~> xhr`](#XHR-performWith)
+
+`XHR.performWith` is a curried function that allows one to define a
+[`XHR.perform`](#XHR-perform) like function with default parameters.  See
+[`XHR.perform`](#XHR-perform) for the parameters.
+
+For example:
+
+```js
+const get = XHR.performWith({responseType: 'json', timeout: 30*1000})
+// ...
+get(url)
+```
 
 ### <a id="overall-state"></a> [≡](#contents) [Overall state](#overall-state)
 
