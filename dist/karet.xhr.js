@@ -127,9 +127,13 @@
     });
   });
 
+  var toOptions = function toOptions(args) {
+    return I.isString(args) ? { url: args } : args;
+  };
+
   function perform(argsIn) {
-    var args = F.combine([argsIn], I.id);
-    return (args !== argsIn ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
+    var args = F.combine([argsIn], toOptions);
+    return (isObservable(args) ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
   }
 
   var isOneOf = /*#__PURE__*/I.curry(function (values, value) {
@@ -205,6 +209,16 @@
 
   var isHttpSuccess = /*#__PURE__*/F.lift(isHttpSuccessU);
 
+  var mergeOptions = /*#__PURE__*/F.lift(function mergeOptions(defaults, overrides) {
+    return I.assign({}, toOptions(defaults), toOptions(overrides));
+  });
+
+  var performWith = /*#__PURE__*/I.curry(function performWith(defaults, overrides) {
+    return perform(mergeOptions(defaults, overrides));
+  });
+
+  var getJson = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/performWith({ responseType: 'json' }), responseFull), 'getJson');
+
   exports.perform = perform;
   exports.upHasStarted = upHasStarted;
   exports.upIsProgressing = upIsProgressing;
@@ -241,6 +255,8 @@
   exports.timeout = timeout;
   exports.withCredentials = withCredentials;
   exports.isHttpSuccess = isHttpSuccess;
+  exports.performWith = performWith;
+  exports.getJson = getJson;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

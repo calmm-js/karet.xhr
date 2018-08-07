@@ -1,5 +1,5 @@
 import { combine, lift } from 'karet.lift';
-import { curry, isString, isNumber, defineNameU, id, isArray, isFunction, curryN, pipe2U, acyclicEqualsU } from 'infestines';
+import { curry, isString, isNumber, defineNameU, id, isArray, isFunction, curryN, pipe2U, acyclicEqualsU, assign } from 'infestines';
 import { Observable, stream } from 'kefir';
 import { set, get, is, when, reread } from 'kefir.partial.lenses';
 import { validate, freeFn, tuple, props, optional, cases, arrayId, accept } from 'partial.lenses.validation';
@@ -131,9 +131,13 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : va
   });
 });
 
+var toOptions = function toOptions(args) {
+  return isString(args) ? { url: args } : args;
+};
+
 function perform(argsIn) {
-  var args = combine([argsIn], id);
-  return (args !== argsIn ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
+  var args = combine([argsIn], toOptions);
+  return (isObservable(args) ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
 }
 
 var isOneOf = /*#__PURE__*/curry(function (values, value) {
@@ -209,4 +213,14 @@ var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'withCredenti
 
 var isHttpSuccess = /*#__PURE__*/lift(isHttpSuccessU);
 
-export { perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, headersReceived, isDone, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess };
+var mergeOptions = /*#__PURE__*/lift(function mergeOptions(defaults, overrides) {
+  return assign({}, toOptions(defaults), toOptions(overrides));
+});
+
+var performWith = /*#__PURE__*/curry(function performWith(defaults, overrides) {
+  return perform(mergeOptions(defaults, overrides));
+});
+
+var getJson = /*#__PURE__*/setName( /*#__PURE__*/pipe2U( /*#__PURE__*/performWith({ responseType: 'json' }), responseFull), 'getJson');
+
+export { perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, headersReceived, isDone, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess, performWith, getJson };
