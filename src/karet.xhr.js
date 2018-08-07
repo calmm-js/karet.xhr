@@ -129,9 +129,11 @@ const performPlain = (process.env.NODE_ENV === 'production'
   })
 })
 
+const toOptions = args => (I.isString(args) ? {url: args} : args)
+
 export function perform(argsIn) {
-  const args = F.combine([argsIn], I.id)
-  return (args !== argsIn
+  const args = F.combine([argsIn], toOptions)
+  return (isObservable(args)
     ? args.flatMapLatest(performPlain)
     : performPlain(args)
   ).toProperty()
@@ -247,3 +249,16 @@ export const withCredentials = setName(
 )
 
 export const isHttpSuccess = F.lift(isHttpSuccessU)
+
+const mergeOptions = F.lift(function mergeOptions(defaults, overrides) {
+  return I.assign({}, toOptions(defaults), toOptions(overrides))
+})
+
+export const performWith = I.curry(function performWith(defaults, overrides) {
+  return perform(mergeOptions(defaults, overrides))
+})
+
+export const getJson = setName(
+  I.pipe2U(performWith({responseType: 'json'}), responseFull),
+  'getJson'
+)
