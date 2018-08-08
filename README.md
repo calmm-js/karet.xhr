@@ -92,8 +92,8 @@ and [upload](#upload-state) state.
 
 #### <a id="XHR-getJson"></a> [≡](#contents) [`XHR.getJson(url | {url,[, ...]}) ~> varies`](#XHR-getJson)
 
-`XHR.getJson(url)` is shorthand for
-[`XHR.responseFull(XHR.performJson)`](#XHR-responseFull).  See also
+`XHR.getJson(arg)` is shorthand for
+[`XHR.responseFull(XHR.performJson(arg))`](#XHR-responseFull).  See also
 [`XHR.performJson`](#XHR-performJson).
 
 #### <a id="XHR-performJson"></a> [≡](#contents) [`XHR.performJson(url | {url[, ...]}) ~> xhr`](#XHR-performJson)
