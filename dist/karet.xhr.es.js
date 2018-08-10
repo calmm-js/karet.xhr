@@ -106,7 +106,10 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : va
       end(emit(state = set(EVENT, event, state)));
     });
     xhr.open(method, url, true, user, password);
-    if (responseType) xhr.responseType = responseType;
+    if (responseType) {
+      xhr.responseType = responseType;
+      if (responseType === 'json' && xhr.responseType !== 'json') state = set('parse', true, state);
+    }
     if (timeout) xhr.timeout = timeout;
     if (withCredentials) xhr.withCredentials = withCredentials;
     if (null != headers) {
@@ -138,6 +141,14 @@ var toOptions = function toOptions(args) {
 function perform(argsIn) {
   var args = combine([argsIn], toOptions);
   return (isObservable(args) ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
+}
+
+function tryParse(json) {
+  try {
+    return JSON.parse(json);
+  } catch (_) {
+    return null;
+  }
 }
 
 var isOneOf = /*#__PURE__*/curry(function (values, value) {
@@ -191,7 +202,13 @@ var headersReceived = /*#__PURE__*/defineNameU( /*#__PURE__*/get([XHR, 'readySta
   return 2 <= state;
 }]), 'headersReceived');
 var isDone = /*#__PURE__*/defineNameU( /*#__PURE__*/get([EVENT, 'type', /*#__PURE__*/is('loadend')]), 'isDone');
-var response = /*#__PURE__*/setName( /*#__PURE__*/pipe2U( /*#__PURE__*/get([XHR, 'response']), /*#__PURE__*/skipDuplicates(acyclicEqualsU)), 'response');
+var response = /*#__PURE__*/setName( /*#__PURE__*/pipe2U( /*#__PURE__*/lift(function (_ref3) {
+  var xhr = _ref3.xhr,
+      parse = _ref3.parse;
+
+  var response = xhr.response;
+  return parse ? tryParse(response) : response;
+}), /*#__PURE__*/skipDuplicates(acyclicEqualsU)), 'response');
 var responseFull = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isDone, response), 'responseFull');
 var responseType = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'responseType']), 'responseType');
 var responseURL = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'responseURL']), 'responseURL');
