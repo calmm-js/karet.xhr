@@ -139,6 +139,12 @@ rather computes a desired view of the property, such as a view of the
 [response](#XHR-response), and combines that further into some more interesting
 property.
 
+WARNING: Setting `responseType` to `'json'` is not supported by IE 11.  This
+library implements a workaround by calling `JSON.parse` on the returned data in
+case setting `responseType` to `'json'` fails.  In case the response does not
+parse, then [`XHR.response`](#XHR-response) and
+[`XHR.responseFull`](XHR-responseFull) return `null`.
+
 See this live [GitHub repository search](https://codesandbox.io/s/l5271q0r2l)
 CodeSandbox for an example.
 
