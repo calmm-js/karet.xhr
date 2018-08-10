@@ -104,7 +104,11 @@ const performPlain = (process.env.NODE_ENV === 'production'
       end(emit((state = L.set(EVENT, event, state))))
     })
     xhr.open(method, url, true, user, password)
-    if (responseType) xhr.responseType = responseType
+    if (responseType) {
+      xhr.responseType = responseType
+      if (responseType === 'json' && xhr.responseType !== 'json')
+        state = L.set('parse', true, state)
+    }
     if (timeout) xhr.timeout = timeout
     if (withCredentials) xhr.withCredentials = withCredentials
     if (null != headers) {
@@ -137,6 +141,14 @@ export function perform(argsIn) {
     ? args.flatMapLatest(performPlain)
     : performPlain(args)
   ).toProperty()
+}
+
+function tryParse(json) {
+  try {
+    return JSON.parse(json)
+  } catch (_) {
+    return null
+  }
 }
 
 const isOneOf = I.curry((values, value) => values.includes(value))
@@ -192,7 +204,13 @@ export const isDone = I.defineNameU(
   'isDone'
 )
 export const response = setName(
-  I.pipe2U(L.get([XHR, 'response']), skipDuplicates(I.acyclicEqualsU)),
+  I.pipe2U(
+    F.lift(({xhr, parse}) => {
+      const response = xhr.response
+      return parse ? tryParse(response) : response
+    }),
+    skipDuplicates(I.acyclicEqualsU)
+  ),
   'response'
 )
 export const responseFull = setName(getAfter(isDone, response), 'responseFull')
