@@ -49,6 +49,17 @@ const UP = 'up'
 const DOWN = 'down'
 const EVENT = 'event'
 
+const hasKeys = x => I.isFunction(x.keys)
+
+const isNull = x => x === null
+const headerValue = V.accept
+const headersArray = V.arrayId(V.tuple(string, headerValue))
+const headersMap = V.and(
+  V.acceptWith(xs => Array.from(xs)),
+  headersArray,
+  V.acceptWith(xs => new Map(xs))
+)
+
 const performPlain = (process.env.NODE_ENV === 'production'
   ? I.id
   : V.validate(
@@ -61,9 +72,10 @@ const performPlain = (process.env.NODE_ENV === 'production'
             password: V.optional(string),
             headers: V.optional(
               V.cases(
-                [I.isArray, V.arrayId(V.tuple(string, V.accept))],
-                [x => null != x && I.isFunction(x.keys), V.accept],
-                [V.accept]
+                [isNull, V.accept],
+                [I.isArray, headersArray],
+                [hasKeys, headersMap],
+                [V.propsOr(headerValue, I.object0)]
               )
             ),
             overrideMimeType: V.optional(string),
@@ -112,7 +124,7 @@ const performPlain = (process.env.NODE_ENV === 'production'
     if (timeout) xhr.timeout = timeout
     if (withCredentials) xhr.withCredentials = withCredentials
     if (null != headers) {
-      if (I.isFunction(headers.keys)) {
+      if (hasKeys(headers)) {
         headers = Array.from(headers)
       }
       if (I.isArray(headers)) {
