@@ -122,7 +122,7 @@ parameters have their XHR default values:
 | [`method`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open) | `'GET'` | [HTTP request method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) to use.
 | [`user`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open) | `null` | User name for authentication.
 | [`password`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open) | `null` | Password for authentication.
-| [`headers`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/setRequestHeader) | `{}` | An array of `[header, value]` pairs, a plain object of `{header: value}` properties, a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), or a [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object mapping headers to values.
+| [`headers`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/setRequestHeader) | `null` | An array of `[header, value]` pairs, a plain object of `{header: value}` properties, a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), or a [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object mapping headers to values.
 | [`overrideMimeType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/overrideMimeType) | `undefined` | If specified overrides the MIME type provided by the server.
 | [`body`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send) | `null` | A body of data to be sent.
 | [`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType) | `''` | Specifies type of [response](#XHR-response) data.
