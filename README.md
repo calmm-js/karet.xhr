@@ -29,9 +29,9 @@ Examples:
   * [Convenience](#convenience)
     * [`XHR.getJson(url | {url[, ...]}) ~> varies`](#XHR-getJson)
     * [`XHR.performJson(url | {url[, ...]}) ~> xhr`](#XHR-performJson)
+    * [`XHR.performWith(url | {...}, url | {...}) ~> xhr`](#XHR-performWith)
   * [Starting](#starting)
     * [`XHR.perform(url | {url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
-    * [`XHR.performWith(url | {...}, url | {...}) ~> xhr`](#XHR-performWith)
   * [Overall state](#overall-state)
     * [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
     * [`XHR.headersReceived(xhr) ~> boolean`](#XHR-headersReceived)
@@ -101,6 +101,20 @@ and [upload](#upload-state) state.
 `XHR.performJson` is shorthand for [`XHR.performWith({responseType:
 'json'})`](#XHR-performWith).
 
+#### <a id="XHR-performWith"></a> [≡](#contents) [`XHR.performWith(url | {...}, url | {...}) ~> xhr`](#XHR-performWith)
+
+`XHR.performWith` is a curried function that allows one to define a
+[`XHR.perform`](#XHR-perform) like function with default parameters.  See
+[`XHR.perform`](#XHR-perform) for the parameters.
+
+For example:
+
+```js
+const get = XHR.performWith({responseType: 'json', timeout: 30*1000})
+// ...
+get(url)
+```
+
 ### <a id="starting"></a> [≡](#contents) [Starting](#starting)
 
 #### <a id="XHR-perform"></a> [≡](#contents) [`XHR.perform(url | {url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
@@ -147,20 +161,6 @@ parse, then [`XHR.response`](#XHR-response) and
 
 See this live [GitHub repository search](https://codesandbox.io/s/l5271q0r2l)
 CodeSandbox for an example.
-
-#### <a id="XHR-performWith"></a> [≡](#contents) [`XHR.performWith(url | {...}, url | {...}) ~> xhr`](#XHR-performWith)
-
-`XHR.performWith` is a curried function that allows one to define a
-[`XHR.perform`](#XHR-perform) like function with default parameters.  See
-[`XHR.perform`](#XHR-perform) for the parameters.
-
-For example:
-
-```js
-const get = XHR.performWith({responseType: 'json', timeout: 30*1000})
-// ...
-get(url)
-```
 
 ### <a id="overall-state"></a> [≡](#contents) [Overall state](#overall-state)
 
