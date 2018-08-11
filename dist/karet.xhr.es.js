@@ -1,8 +1,8 @@
 import { combine, lift } from 'karet.lift';
-import { curry, isString, isNumber, defineNameU, id, isArray, isFunction, curryN, pipe2U, acyclicEqualsU, assign } from 'infestines';
+import { curry, isString, isNumber, defineNameU, isFunction, id, isArray, object0, curryN, pipe2U, acyclicEqualsU, assign } from 'infestines';
 import { Observable, stream } from 'kefir';
 import { set, get, is, when, reread } from 'kefir.partial.lenses';
-import { validate, freeFn, tuple, props, optional, cases, arrayId, accept } from 'partial.lenses.validation';
+import { accept, arrayId, tuple, and, acceptWith, validate, freeFn, props, optional, cases, propsOr } from 'partial.lenses.validation';
 
 //
 
@@ -55,14 +55,27 @@ var UP = 'up';
 var DOWN = 'down';
 var EVENT = 'event';
 
+var hasKeys = function hasKeys(x) {
+  return isFunction(x.keys);
+};
+
+var isNull = function isNull(x) {
+  return x === null;
+};
+var headerValue = accept;
+var headersArray = /*#__PURE__*/arrayId( /*#__PURE__*/tuple(string, headerValue));
+var headersMap = /*#__PURE__*/and( /*#__PURE__*/acceptWith(function (xs) {
+  return Array.from(xs);
+}), headersArray, /*#__PURE__*/acceptWith(function (xs) {
+  return new Map(xs);
+}));
+
 var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : validate(freeFn(tuple(props({
   url: string,
   method: optional(string),
   user: optional(string),
   password: optional(string),
-  headers: optional(cases([isArray, arrayId(tuple(string, accept))], [function (x) {
-    return null != x && isFunction(x.keys);
-  }, accept], [accept])),
+  headers: optional(cases([isNull, accept], [isArray, headersArray], [hasKeys, headersMap], [propsOr(headerValue, object0)])),
   overrideMimeType: optional(string),
   body: optional(accept),
   responseType: optional(string),
@@ -113,7 +126,7 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : va
     if (timeout) xhr.timeout = timeout;
     if (withCredentials) xhr.withCredentials = withCredentials;
     if (null != headers) {
-      if (isFunction(headers.keys)) {
+      if (hasKeys(headers)) {
         headers = Array.from(headers);
       }
       if (isArray(headers)) {

@@ -59,14 +59,27 @@ var UP = 'up';
 var DOWN = 'down';
 var EVENT = 'event';
 
+var hasKeys = function hasKeys(x) {
+  return I.isFunction(x.keys);
+};
+
+var isNull = function isNull(x) {
+  return x === null;
+};
+var headerValue = V.accept;
+var headersArray = /*#__PURE__*/V.arrayId( /*#__PURE__*/V.tuple(string, headerValue));
+var headersMap = /*#__PURE__*/V.and( /*#__PURE__*/V.acceptWith(function (xs) {
+  return Array.from(xs);
+}), headersArray, /*#__PURE__*/V.acceptWith(function (xs) {
+  return new Map(xs);
+}));
+
 var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : V.validate(V.freeFn(V.tuple(V.props({
   url: string,
   method: V.optional(string),
   user: V.optional(string),
   password: V.optional(string),
-  headers: V.optional(V.cases([I.isArray, V.arrayId(V.tuple(string, V.accept))], [function (x) {
-    return null != x && I.isFunction(x.keys);
-  }, V.accept], [V.accept])),
+  headers: V.optional(V.cases([isNull, V.accept], [I.isArray, headersArray], [hasKeys, headersMap], [V.propsOr(headerValue, I.object0)])),
   overrideMimeType: V.optional(string),
   body: V.optional(V.accept),
   responseType: V.optional(string),
@@ -117,7 +130,7 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : 
     if (timeout) xhr.timeout = timeout;
     if (withCredentials) xhr.withCredentials = withCredentials;
     if (null != headers) {
-      if (I.isFunction(headers.keys)) {
+      if (hasKeys(headers)) {
         headers = Array.from(headers);
       }
       if (I.isArray(headers)) {
