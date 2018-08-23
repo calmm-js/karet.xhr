@@ -1,8 +1,8 @@
-import { combine, lift } from 'karet.lift';
+import { lift } from 'karet.lift';
 import { curry, isString, isNumber, defineNameU, isFunction, id, object0, isArray, pipe2U, curryN, acyclicEqualsU, assign } from 'infestines';
 import { Observable, stream } from 'kefir';
 import { set, get, array, cross, reread, identity, inverse, keyed, transform, ifElse, modifyOp, branch, cond, setOp, keys, is, when } from 'kefir.partial.lenses';
-import { accept, arrayId, tuple, and, acceptWith, validate, freeFn, props, optional, propsOr, or, cases } from 'partial.lenses.validation';
+import { accept, arrayId, tuple, and, acceptWith, validate, freeFn, props, optional, propsOr, modifyAfter, or, cases } from 'partial.lenses.validation';
 
 //
 
@@ -144,16 +144,16 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : va
 
 var toLowerKeyedObject = /*#__PURE__*/get([/*#__PURE__*/array( /*#__PURE__*/cross([/*#__PURE__*/reread(toLower), identity])), /*#__PURE__*/inverse(keyed)]);
 
-var normalizeOptions = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : validate(freeFn(tuple(or(isString, propsOr(accept, {
+var normalizeOptions = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : validate(modifyAfter(freeFn(tuple(or(string, propsOr(accept, {
   headers: optional(cases([isNil, accept], [isArray, headersArray], [hasKeys, headersMap], [propsOr(headerValue, object0)]))
-}))), accept)))( /*#__PURE__*/transform( /*#__PURE__*/ifElse(isString, /*#__PURE__*/modifyOp(function (url) {
+}))), accept), lift)))( /*#__PURE__*/transform( /*#__PURE__*/ifElse(isString, /*#__PURE__*/modifyOp(function (url) {
   return { url: url, headers: object0 };
 }), /*#__PURE__*/branch({
   headers: /*#__PURE__*/cond([isNil, /*#__PURE__*/setOp(object0)], [isArray, /*#__PURE__*/modifyOp(toLowerKeyedObject)], [hasKeys, /*#__PURE__*/modifyOp( /*#__PURE__*/pipe2U(Array.from, toLowerKeyedObject))], [[keys, /*#__PURE__*/modifyOp(toLower)]])
 }))));
 
 function perform(argsIn) {
-  var args = combine([argsIn], normalizeOptions);
+  var args = normalizeOptions(argsIn);
   return (isObservable(args) ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
 }
 

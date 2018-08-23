@@ -148,16 +148,16 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : 
 
 var toLowerKeyedObject = /*#__PURE__*/L.get([/*#__PURE__*/L.array( /*#__PURE__*/L.cross([/*#__PURE__*/L.reread(toLower), L.identity])), /*#__PURE__*/L.inverse(L.keyed)]);
 
-var normalizeOptions = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : V.validate(V.freeFn(V.tuple(V.or(I.isString, V.propsOr(V.accept, {
+var normalizeOptions = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : V.validate(V.modifyAfter(V.freeFn(V.tuple(V.or(string, V.propsOr(V.accept, {
   headers: V.optional(V.cases([isNil, V.accept], [I.isArray, headersArray], [hasKeys, headersMap], [V.propsOr(headerValue, I.object0)]))
-}))), V.accept)))( /*#__PURE__*/L.transform( /*#__PURE__*/L.ifElse(I.isString, /*#__PURE__*/L.modifyOp(function (url) {
+}))), V.accept), F.lift)))( /*#__PURE__*/L.transform( /*#__PURE__*/L.ifElse(I.isString, /*#__PURE__*/L.modifyOp(function (url) {
   return { url: url, headers: I.object0 };
 }), /*#__PURE__*/L.branch({
   headers: /*#__PURE__*/L.cond([isNil, /*#__PURE__*/L.setOp(I.object0)], [I.isArray, /*#__PURE__*/L.modifyOp(toLowerKeyedObject)], [hasKeys, /*#__PURE__*/L.modifyOp( /*#__PURE__*/I.pipe2U(Array.from, toLowerKeyedObject))], [[L.keys, /*#__PURE__*/L.modifyOp(toLower)]])
 }))));
 
 function perform(argsIn) {
-  var args = F.combine([argsIn], normalizeOptions);
+  var args = normalizeOptions(argsIn);
   return (isObservable(args) ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
 }
 
