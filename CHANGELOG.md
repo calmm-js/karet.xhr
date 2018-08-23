@@ -1,3 +1,8 @@
+# 0.3.0
+
+`performWith` now also merges default headers with override headers.
+`performJson` also includes header `Content-Type: application/json`.
+
 # 0.2.0
 
 Previously `allResponseHeaders` and `responseHeader` produced `''` and `null`,

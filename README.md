@@ -99,13 +99,14 @@ and [upload](#upload-state) state.
 #### <a id="XHR-performJson"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-peformJson) [`XHR.performJson(url | {url[, ...]}) ~> xhr`](#XHR-performJson)
 
 `XHR.performJson` is shorthand for [`XHR.performWith({responseType:
-'json'})`](#XHR-performWith).
+'json', headers: {'Content-Type': 'application/json'}})`](#XHR-performWith).
 
 #### <a id="XHR-performWith"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-performWith) [`XHR.performWith(url | {...}, url | {...}) ~> xhr`](#XHR-performWith)
 
 `XHR.performWith` is a curried function that allows one to define a
-[`XHR.perform`](#XHR-perform) like function with default parameters.  See
-[`XHR.perform`](#XHR-perform) for the parameters.
+[`XHR.perform`](#XHR-perform) like function with default parameters.  The
+defaults (first parameter) are merged with the overrides (second parameter).
+Headers are also merged.  See [`XHR.perform`](#XHR-perform) for the parameters.
 
 For example:
 
