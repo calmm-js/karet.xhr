@@ -139,23 +139,26 @@ const toLowerKeyedObject = L.get([
 const normalizeOptions = (process.env.NODE_ENV === 'production'
   ? I.id
   : V.validate(
-      V.freeFn(
-        V.tuple(
-          V.or(
-            I.isString,
-            V.propsOr(V.accept, {
-              headers: V.optional(
-                V.cases(
-                  [isNil, V.accept],
-                  [I.isArray, headersArray],
-                  [hasKeys, headersMap],
-                  [V.propsOr(headerValue, I.object0)]
+      V.modifyAfter(
+        V.freeFn(
+          V.tuple(
+            V.or(
+              string,
+              V.propsOr(V.accept, {
+                headers: V.optional(
+                  V.cases(
+                    [isNil, V.accept],
+                    [I.isArray, headersArray],
+                    [hasKeys, headersMap],
+                    [V.propsOr(headerValue, I.object0)]
+                  )
                 )
-              )
-            })
-          )
+              })
+            )
+          ),
+          V.accept
         ),
-        V.accept
+        F.lift
       )
     ))(
   L.transform(
@@ -175,7 +178,7 @@ const normalizeOptions = (process.env.NODE_ENV === 'production'
 )
 
 export function perform(argsIn) {
-  const args = F.combine([argsIn], normalizeOptions)
+  const args = normalizeOptions(argsIn)
   return (isObservable(args)
     ? args.flatMapLatest(performPlain)
     : performPlain(args)
