@@ -1,8 +1,8 @@
 import { combine, lift } from 'karet.lift';
-import { curry, isString, isNumber, defineNameU, isFunction, id, isArray, object0, curryN, pipe2U, acyclicEqualsU, assign } from 'infestines';
+import { curry, isString, isNumber, defineNameU, isFunction, id, object0, isArray, pipe2U, curryN, acyclicEqualsU, assign } from 'infestines';
 import { Observable, stream } from 'kefir';
-import { set, get, is, when, reread } from 'kefir.partial.lenses';
-import { accept, arrayId, tuple, and, acceptWith, validate, freeFn, props, optional, cases, propsOr } from 'partial.lenses.validation';
+import { set, get, array, cross, reread, identity, inverse, keyed, transform, ifElse, modifyOp, branch, cond, setOp, keys, is, when } from 'kefir.partial.lenses';
+import { accept, arrayId, tuple, and, acceptWith, validate, freeFn, props, optional, propsOr, or, cases } from 'partial.lenses.validation';
 
 //
 
@@ -23,6 +23,12 @@ var filter = /*#__PURE__*/curry(function filter(pr, xs) {
     throw Error(pr.name);
   }
 });
+
+//
+
+var toLower = function toLower(s) {
+  return s.toLowerCase();
+};
 
 //
 
@@ -59,8 +65,8 @@ var hasKeys = function hasKeys(x) {
   return isFunction(x.keys);
 };
 
-var isNull = function isNull(x) {
-  return x === null;
+var isNil = function isNil(x) {
+  return x == null;
 };
 var headerValue = accept;
 var headersArray = /*#__PURE__*/arrayId( /*#__PURE__*/tuple(string, headerValue));
@@ -75,7 +81,7 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : va
   method: optional(string),
   user: optional(string),
   password: optional(string),
-  headers: optional(cases([isNull, accept], [isArray, headersArray], [hasKeys, headersMap], [propsOr(headerValue, object0)])),
+  headers: propsOr(headerValue, object0),
   overrideMimeType: optional(string),
   body: optional(accept),
   responseType: optional(string),
@@ -125,19 +131,8 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : va
     }
     if (timeout) xhr.timeout = timeout;
     if (withCredentials) xhr.withCredentials = withCredentials;
-    if (null != headers) {
-      if (hasKeys(headers)) {
-        headers = Array.from(headers);
-      }
-      if (isArray(headers)) {
-        headers.forEach(function (hv) {
-          xhr.setRequestHeader(hv[0], hv[1]);
-        });
-      } else {
-        for (var header in headers) {
-          xhr.setRequestHeader(header, headers[header]);
-        }
-      }
+    for (var header in headers) {
+      xhr.setRequestHeader(header, headers[header]);
     }
     if (overrideMimeType) xhr.overrideMimeType(overrideMimeType);
     xhr.send(body);
@@ -147,12 +142,18 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : va
   });
 });
 
-var toOptions = function toOptions(args) {
-  return isString(args) ? { url: args } : args;
-};
+var toLowerKeyedObject = /*#__PURE__*/get([/*#__PURE__*/array( /*#__PURE__*/cross([/*#__PURE__*/reread(toLower), identity])), /*#__PURE__*/inverse(keyed)]);
+
+var normalizeOptions = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : validate(freeFn(tuple(or(isString, propsOr(accept, {
+  headers: optional(cases([isNil, accept], [isArray, headersArray], [hasKeys, headersMap], [propsOr(headerValue, object0)]))
+}))), accept)))( /*#__PURE__*/transform( /*#__PURE__*/ifElse(isString, /*#__PURE__*/modifyOp(function (url) {
+  return { url: url, headers: object0 };
+}), /*#__PURE__*/branch({
+  headers: /*#__PURE__*/cond([isNil, /*#__PURE__*/setOp(object0)], [isArray, /*#__PURE__*/modifyOp(toLowerKeyedObject)], [hasKeys, /*#__PURE__*/modifyOp( /*#__PURE__*/pipe2U(Array.from, toLowerKeyedObject))], [[keys, /*#__PURE__*/modifyOp(toLower)]])
+}))));
 
 function perform(argsIn) {
-  var args = combine([argsIn], toOptions);
+  var args = combine([argsIn], normalizeOptions);
   return (isObservable(args) ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
 }
 
@@ -244,14 +245,18 @@ var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, 'withCredenti
 var isHttpSuccess = /*#__PURE__*/lift(isHttpSuccessU);
 
 var mergeOptions = /*#__PURE__*/lift(function mergeOptions(defaults, overrides) {
-  return assign({}, toOptions(defaults), toOptions(overrides));
+  var headers = assign({}, defaults.headers, overrides.headers);
+  return assign({}, defaults, overrides, { headers: headers });
 });
 
 var performWith = /*#__PURE__*/curry(function performWith(defaults, overrides) {
-  return perform(mergeOptions(defaults, overrides));
+  return perform(mergeOptions(normalizeOptions(defaults), normalizeOptions(overrides)));
 });
 
-var performJson = /*#__PURE__*/setName( /*#__PURE__*/performWith({ responseType: 'json' }), 'performJson');
+var performJson = /*#__PURE__*/setName( /*#__PURE__*/performWith({
+  responseType: 'json',
+  headers: { 'Content-Type': 'application/json' }
+}), 'performJson');
 
 var getJson = /*#__PURE__*/setName( /*#__PURE__*/pipe2U(performJson, responseFull), 'getJson');
 

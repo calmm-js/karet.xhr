@@ -134,11 +134,12 @@ and <a href="#upload-state">upload</a> state.</p>
 <a href="#XHR-performJson"><code>XHR.performJson</code></a>.</p>
 <h4><a id="XHR-performJson"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-peformJson">■</a> <a href="#XHR-performJson"><code>XHR.performJson(url | {url[, ...]}) ~&gt; xhr</code></a></h4>
 <p><code>XHR.performJson</code> is shorthand for <a href="#XHR-performWith"><code>XHR.performWith({responseType:
-&#39;json&#39;})</code></a>.</p>
+&#39;json&#39;, headers: {&#39;Content-Type&#39;: &#39;application/json&#39;}})</code></a>.</p>
 <h4><a id="XHR-performWith"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-performWith">■</a> <a href="#XHR-performWith"><code>XHR.performWith(url | {...}, url | {...}) ~&gt; xhr</code></a></h4>
 <p><code>XHR.performWith</code> is a curried function that allows one to define a
-<a href="#XHR-perform"><code>XHR.perform</code></a> like function with default parameters.  See
-<a href="#XHR-perform"><code>XHR.perform</code></a> for the parameters.</p>
+<a href="#XHR-perform"><code>XHR.perform</code></a> like function with default parameters.  The
+defaults (first parameter) are merged with the overrides (second parameter).
+Headers are also merged.  See <a href="#XHR-perform"><code>XHR.perform</code></a> for the parameters.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-jsx">var get = XHR.performWith({responseType: &#39;json&#39;, timeout: 30*1000})
 // ...

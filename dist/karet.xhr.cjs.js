@@ -30,6 +30,12 @@ var filter = /*#__PURE__*/I.curry(function filter(pr, xs) {
 
 //
 
+var toLower = function toLower(s) {
+  return s.toLowerCase();
+};
+
+//
+
 var string = I.isString;
 var boolean = function boolean(x) {
   return x === !!x;
@@ -63,8 +69,8 @@ var hasKeys = function hasKeys(x) {
   return I.isFunction(x.keys);
 };
 
-var isNull = function isNull(x) {
-  return x === null;
+var isNil = function isNil(x) {
+  return x == null;
 };
 var headerValue = V.accept;
 var headersArray = /*#__PURE__*/V.arrayId( /*#__PURE__*/V.tuple(string, headerValue));
@@ -79,7 +85,7 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : 
   method: V.optional(string),
   user: V.optional(string),
   password: V.optional(string),
-  headers: V.optional(V.cases([isNull, V.accept], [I.isArray, headersArray], [hasKeys, headersMap], [V.propsOr(headerValue, I.object0)])),
+  headers: V.propsOr(headerValue, I.object0),
   overrideMimeType: V.optional(string),
   body: V.optional(V.accept),
   responseType: V.optional(string),
@@ -129,19 +135,8 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : 
     }
     if (timeout) xhr.timeout = timeout;
     if (withCredentials) xhr.withCredentials = withCredentials;
-    if (null != headers) {
-      if (hasKeys(headers)) {
-        headers = Array.from(headers);
-      }
-      if (I.isArray(headers)) {
-        headers.forEach(function (hv) {
-          xhr.setRequestHeader(hv[0], hv[1]);
-        });
-      } else {
-        for (var header in headers) {
-          xhr.setRequestHeader(header, headers[header]);
-        }
-      }
+    for (var header in headers) {
+      xhr.setRequestHeader(header, headers[header]);
     }
     if (overrideMimeType) xhr.overrideMimeType(overrideMimeType);
     xhr.send(body);
@@ -151,12 +146,18 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : 
   });
 });
 
-var toOptions = function toOptions(args) {
-  return I.isString(args) ? { url: args } : args;
-};
+var toLowerKeyedObject = /*#__PURE__*/L.get([/*#__PURE__*/L.array( /*#__PURE__*/L.cross([/*#__PURE__*/L.reread(toLower), L.identity])), /*#__PURE__*/L.inverse(L.keyed)]);
+
+var normalizeOptions = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : V.validate(V.freeFn(V.tuple(V.or(I.isString, V.propsOr(V.accept, {
+  headers: V.optional(V.cases([isNil, V.accept], [I.isArray, headersArray], [hasKeys, headersMap], [V.propsOr(headerValue, I.object0)]))
+}))), V.accept)))( /*#__PURE__*/L.transform( /*#__PURE__*/L.ifElse(I.isString, /*#__PURE__*/L.modifyOp(function (url) {
+  return { url: url, headers: I.object0 };
+}), /*#__PURE__*/L.branch({
+  headers: /*#__PURE__*/L.cond([isNil, /*#__PURE__*/L.setOp(I.object0)], [I.isArray, /*#__PURE__*/L.modifyOp(toLowerKeyedObject)], [hasKeys, /*#__PURE__*/L.modifyOp( /*#__PURE__*/I.pipe2U(Array.from, toLowerKeyedObject))], [[L.keys, /*#__PURE__*/L.modifyOp(toLower)]])
+}))));
 
 function perform(argsIn) {
-  var args = F.combine([argsIn], toOptions);
+  var args = F.combine([argsIn], normalizeOptions);
   return (isObservable(args) ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
 }
 
@@ -248,14 +249,18 @@ var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'withCreden
 var isHttpSuccess = /*#__PURE__*/F.lift(isHttpSuccessU);
 
 var mergeOptions = /*#__PURE__*/F.lift(function mergeOptions(defaults, overrides) {
-  return I.assign({}, toOptions(defaults), toOptions(overrides));
+  var headers = I.assign({}, defaults.headers, overrides.headers);
+  return I.assign({}, defaults, overrides, { headers: headers });
 });
 
 var performWith = /*#__PURE__*/I.curry(function performWith(defaults, overrides) {
-  return perform(mergeOptions(defaults, overrides));
+  return perform(mergeOptions(normalizeOptions(defaults), normalizeOptions(overrides)));
 });
 
-var performJson = /*#__PURE__*/setName( /*#__PURE__*/performWith({ responseType: 'json' }), 'performJson');
+var performJson = /*#__PURE__*/setName( /*#__PURE__*/performWith({
+  responseType: 'json',
+  headers: { 'Content-Type': 'application/json' }
+}), 'performJson');
 
 var getJson = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(performJson, responseFull), 'getJson');
 
