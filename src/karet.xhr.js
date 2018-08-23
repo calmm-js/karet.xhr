@@ -24,6 +24,10 @@ const filter = I.curry(function filter(pr, xs) {
 
 //
 
+const toLower = s => s.toLowerCase()
+
+//
+
 const string = I.isString
 const boolean = x => x === !!x
 const number = I.isNumber
@@ -51,7 +55,7 @@ const EVENT = 'event'
 
 const hasKeys = x => I.isFunction(x.keys)
 
-const isNull = x => x === null
+const isNil = x => x == null
 const headerValue = V.accept
 const headersArray = V.arrayId(V.tuple(string, headerValue))
 const headersMap = V.and(
@@ -70,14 +74,7 @@ const performPlain = (process.env.NODE_ENV === 'production'
             method: V.optional(string),
             user: V.optional(string),
             password: V.optional(string),
-            headers: V.optional(
-              V.cases(
-                [isNull, V.accept],
-                [I.isArray, headersArray],
-                [hasKeys, headersMap],
-                [V.propsOr(headerValue, I.object0)]
-              )
-            ),
+            headers: V.propsOr(headerValue, I.object0),
             overrideMimeType: V.optional(string),
             body: V.optional(V.accept),
             responseType: V.optional(string),
@@ -123,19 +120,8 @@ const performPlain = (process.env.NODE_ENV === 'production'
     }
     if (timeout) xhr.timeout = timeout
     if (withCredentials) xhr.withCredentials = withCredentials
-    if (null != headers) {
-      if (hasKeys(headers)) {
-        headers = Array.from(headers)
-      }
-      if (I.isArray(headers)) {
-        headers.forEach(hv => {
-          xhr.setRequestHeader(hv[0], hv[1])
-        })
-      } else {
-        for (const header in headers) {
-          xhr.setRequestHeader(header, headers[header])
-        }
-      }
+    for (const header in headers) {
+      xhr.setRequestHeader(header, headers[header])
     }
     if (overrideMimeType) xhr.overrideMimeType(overrideMimeType)
     xhr.send(body)
@@ -145,10 +131,51 @@ const performPlain = (process.env.NODE_ENV === 'production'
   })
 })
 
-const toOptions = args => (I.isString(args) ? {url: args} : args)
+const toLowerKeyedObject = L.get([
+  L.array(L.cross([L.reread(toLower), L.identity])),
+  L.inverse(L.keyed)
+])
+
+const normalizeOptions = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : V.validate(
+      V.freeFn(
+        V.tuple(
+          V.or(
+            I.isString,
+            V.propsOr(V.accept, {
+              headers: V.optional(
+                V.cases(
+                  [isNil, V.accept],
+                  [I.isArray, headersArray],
+                  [hasKeys, headersMap],
+                  [V.propsOr(headerValue, I.object0)]
+                )
+              )
+            })
+          )
+        ),
+        V.accept
+      )
+    ))(
+  L.transform(
+    L.ifElse(
+      I.isString,
+      L.modifyOp(url => ({url, headers: I.object0})),
+      L.branch({
+        headers: L.cond(
+          [isNil, L.setOp(I.object0)],
+          [I.isArray, L.modifyOp(toLowerKeyedObject)],
+          [hasKeys, L.modifyOp(I.pipe2U(Array.from, toLowerKeyedObject))],
+          [[L.keys, L.modifyOp(toLower)]]
+        )
+      })
+    )
+  )
+)
 
 export function perform(argsIn) {
-  const args = F.combine([argsIn], toOptions)
+  const args = F.combine([argsIn], normalizeOptions)
   return (isObservable(args)
     ? args.flatMapLatest(performPlain)
     : performPlain(args)
@@ -281,15 +308,21 @@ export const withCredentials = setName(
 export const isHttpSuccess = F.lift(isHttpSuccessU)
 
 const mergeOptions = F.lift(function mergeOptions(defaults, overrides) {
-  return I.assign({}, toOptions(defaults), toOptions(overrides))
+  const headers = I.assign({}, defaults.headers, overrides.headers)
+  return I.assign({}, defaults, overrides, {headers})
 })
 
 export const performWith = I.curry(function performWith(defaults, overrides) {
-  return perform(mergeOptions(defaults, overrides))
+  return perform(
+    mergeOptions(normalizeOptions(defaults), normalizeOptions(overrides))
+  )
 })
 
 export const performJson = setName(
-  performWith({responseType: 'json'}),
+  performWith({
+    responseType: 'json',
+    headers: {'Content-Type': 'application/json'}
+  }),
   'performJson'
 )
 
