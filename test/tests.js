@@ -110,7 +110,9 @@ describe('XHR', () => {
       })
     )
   )
-  testEq([{user: 'world'}], () => XHR.getJson('http://localhost:3000/json'))
+  testEq([{user: 'world'}], () =>
+    XHR.getJson(K.constant('http://localhost:3000/json'))
+  )
   testEq([{user: '101'}], () =>
     XHR.responseFull(
       XHR.perform({
