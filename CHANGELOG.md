@@ -1,3 +1,8 @@
+# 0.3.1
+
+Fixed a bug introduced in 0.3.0 where observables were not properly eliminated
+from `perform` parameters in non-production mode.
+
 # 0.3.0
 
 `performWith` now also merges default headers with override headers.
