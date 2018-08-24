@@ -28,8 +28,8 @@ export default {
       namedExports: {
         'node_modules/kefir/dist/kefir.js': [
           'Observable',
-          'Stream',
           'Property',
+          'Stream',
           'combine',
           'concat',
           'constant',
@@ -39,6 +39,7 @@ export default {
           'later',
           'merge',
           'never',
+          'sequentially',
           'stream'
         ]
       }

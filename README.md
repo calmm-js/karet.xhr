@@ -36,6 +36,7 @@ Examples:
     * [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
     * [`XHR.headersReceived(xhr) ~> boolean`](#XHR-headersReceived)
     * [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
+    * [`XHR.isProgressing(xhr) ~> boolean`](#XHR-isProgressing)
     * [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
     * [`XHR.response(xhr) ~> varies`](#XHR-response)
     * [`XHR.responseFull(xhr) ~> varies`](#XHR-responseFull)
@@ -184,6 +185,11 @@ whether HTTP headers have been received and can be obtained using
 
 `XHR.isDone` returns a possibly observable boolean property that tells whether
 the XHR operation is complete (whether success or failure).
+
+#### <a id="XHR-isProgressing"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-isProgressing) [`XHR.isProgressing(xhr) ~> boolean`](#XHR-isProgressing)
+
+`XHR.isProgressing` returns a possibly observable boolean property that tells
+whether the XHR operation has started, but has not yet [completed](#XHR-isDone).
 
 #### <a id="XHR-readyState"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-readyState) [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
 
