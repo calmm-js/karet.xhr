@@ -172,7 +172,7 @@ var is$1 = /*#__PURE__*/curry(function (values, dir) {
   return get([dir, 'type', isOneOf(values)]);
 });
 var hasStarted = /*#__PURE__*/is$1(eventTypes);
-var isProgressing = /*#__PURE__*/is$1(['progress', 'loadstart']);
+var isProgressingOn = /*#__PURE__*/is$1(['progress', 'loadstart']);
 var hasSucceeded = /*#__PURE__*/is$1(['load']);
 var hasFailed = /*#__PURE__*/is$1(['error']);
 var hasTimedOut = /*#__PURE__*/is$1(['timeout']);
@@ -192,7 +192,7 @@ var getAfter = /*#__PURE__*/curryN(3, function (predicate, getter) {
 });
 
 var upHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStarted(UP), 'upHasStarted');
-var upIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressing(UP), 'upIsProgressing');
+var upIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressingOn(UP), 'upIsProgressing');
 var upHasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/hasSucceeded(UP), 'upHasSucceeded');
 var upHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailed(UP), 'upHasFailed');
 var upHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOut(UP), 'upHasTimedOut');
@@ -202,7 +202,7 @@ var upTotal = /*#__PURE__*/setName( /*#__PURE__*/total(UP), 'upTotal');
 var upError = /*#__PURE__*/setName( /*#__PURE__*/error(UP), 'upError');
 
 var downHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStarted(DOWN), 'downHasStarted');
-var downIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressing(DOWN), 'downIsProgressing');
+var downIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressingOn(DOWN), 'downIsProgressing');
 var downHasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/hasSucceeded(DOWN), 'downHasSucceeded');
 var downHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailed(DOWN), 'downHasFailed');
 var downHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOut(DOWN), 'downHasTimedOut');
@@ -216,6 +216,8 @@ var headersReceived = /*#__PURE__*/defineNameU( /*#__PURE__*/get([XHR, 'readySta
   return 2 <= state;
 }]), 'headersReceived');
 var isDone = /*#__PURE__*/defineNameU( /*#__PURE__*/get([EVENT, 'type', /*#__PURE__*/is('loadend')]), 'isDone');
+var isProgressing = /*#__PURE__*/setName( /*#__PURE__*/get([EVENT, 'type', /*#__PURE__*/is('readystatechange')]), 'isProgressing');
+
 var response = /*#__PURE__*/setName( /*#__PURE__*/pipe2U( /*#__PURE__*/lift(function (_ref3) {
   var xhr = _ref3.xhr,
       parse = _ref3.parse;
@@ -260,4 +262,4 @@ var performJson = /*#__PURE__*/setName( /*#__PURE__*/performWith({
 
 var getJson = /*#__PURE__*/setName( /*#__PURE__*/pipe2U(performJson, responseFull), 'getJson');
 
-export { perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, headersReceived, isDone, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess, performWith, performJson, getJson };
+export { perform, upHasStarted, upIsProgressing, upHasSucceeded, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasSucceeded, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, headersReceived, isDone, isProgressing, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess, performWith, performJson, getJson };

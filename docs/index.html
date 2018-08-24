@@ -71,6 +71,7 @@ the API of this library as an example.</li>
 <li><a href="#XHR-allResponseHeaders"><code>XHR.allResponseHeaders(xhr) ~&gt; string</code></a></li>
 <li><a href="#XHR-headersReceived"><code>XHR.headersReceived(xhr) ~&gt; boolean</code></a></li>
 <li><a href="#XHR-isDone"><code>XHR.isDone(xhr) ~&gt; boolean</code></a></li>
+<li><a href="#XHR-isProgressing"><code>XHR.isProgressing(xhr) ~&gt; boolean</code></a></li>
 <li><a href="#XHR-readyState"><code>XHR.readyState(xhr) ~&gt; number</code></a></li>
 <li><a href="#XHR-response"><code>XHR.response(xhr) ~&gt; varies</code></a></li>
 <li><a href="#XHR-responseFull"><code>XHR.responseFull(xhr) ~&gt; varies</code></a></li>
@@ -240,6 +241,9 @@ whether HTTP headers have been received and can be obtained using
 <h4><a id="XHR-isDone"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isDone">■</a> <a href="#XHR-isDone"><code>XHR.isDone(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.isDone</code> returns a possibly observable boolean property that tells whether
 the XHR operation is complete (whether success or failure).</p>
+<h4><a id="XHR-isProgressing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isProgressing">■</a> <a href="#XHR-isProgressing"><code>XHR.isProgressing(xhr) ~&gt; boolean</code></a></h4>
+<p><code>XHR.isProgressing</code> returns a possibly observable boolean property that tells
+whether the XHR operation has started, but has not yet <a href="#XHR-isDone">completed</a>.</p>
 <h4><a id="XHR-readyState"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-readyState">■</a> <a href="#XHR-readyState"><code>XHR.readyState(xhr) ~&gt; number</code></a></h4>
 <p><code>XHR.readyState</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState"><code>readyState</code></a>

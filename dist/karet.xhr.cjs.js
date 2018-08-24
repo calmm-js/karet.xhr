@@ -176,7 +176,7 @@ var is = /*#__PURE__*/I.curry(function (values, dir) {
   return L.get([dir, 'type', isOneOf(values)]);
 });
 var hasStarted = /*#__PURE__*/is(eventTypes);
-var isProgressing = /*#__PURE__*/is(['progress', 'loadstart']);
+var isProgressingOn = /*#__PURE__*/is(['progress', 'loadstart']);
 var hasSucceeded = /*#__PURE__*/is(['load']);
 var hasFailed = /*#__PURE__*/is(['error']);
 var hasTimedOut = /*#__PURE__*/is(['timeout']);
@@ -196,7 +196,7 @@ var getAfter = /*#__PURE__*/I.curryN(3, function (predicate, getter) {
 });
 
 var upHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStarted(UP), 'upHasStarted');
-var upIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressing(UP), 'upIsProgressing');
+var upIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressingOn(UP), 'upIsProgressing');
 var upHasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/hasSucceeded(UP), 'upHasSucceeded');
 var upHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailed(UP), 'upHasFailed');
 var upHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOut(UP), 'upHasTimedOut');
@@ -206,7 +206,7 @@ var upTotal = /*#__PURE__*/setName( /*#__PURE__*/total(UP), 'upTotal');
 var upError = /*#__PURE__*/setName( /*#__PURE__*/error(UP), 'upError');
 
 var downHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStarted(DOWN), 'downHasStarted');
-var downIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressing(DOWN), 'downIsProgressing');
+var downIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressingOn(DOWN), 'downIsProgressing');
 var downHasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/hasSucceeded(DOWN), 'downHasSucceeded');
 var downHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailed(DOWN), 'downHasFailed');
 var downHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOut(DOWN), 'downHasTimedOut');
@@ -220,6 +220,8 @@ var headersReceived = /*#__PURE__*/I.defineNameU( /*#__PURE__*/L.get([XHR, 'read
   return 2 <= state;
 }]), 'headersReceived');
 var isDone = /*#__PURE__*/I.defineNameU( /*#__PURE__*/L.get([EVENT, 'type', /*#__PURE__*/L.is('loadend')]), 'isDone');
+var isProgressing = /*#__PURE__*/setName( /*#__PURE__*/L.get([EVENT, 'type', /*#__PURE__*/L.is('readystatechange')]), 'isProgressing');
+
 var response = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/F.lift(function (_ref3) {
   var xhr = _ref3.xhr,
       parse = _ref3.parse;
@@ -286,6 +288,7 @@ exports.downError = downError;
 exports.readyState = readyState;
 exports.headersReceived = headersReceived;
 exports.isDone = isDone;
+exports.isProgressing = isProgressing;
 exports.response = response;
 exports.responseFull = responseFull;
 exports.responseType = responseType;
