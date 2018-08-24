@@ -196,7 +196,7 @@ function tryParse(json) {
 const isOneOf = I.curry((values, value) => values.includes(value))
 const is = I.curry((values, dir) => L.get([dir, 'type', isOneOf(values)]))
 const hasStarted = is(eventTypes)
-const isProgressing = is(['progress', 'loadstart'])
+const isProgressingOn = is(['progress', 'loadstart'])
 const hasSucceeded = is(['load'])
 const hasFailed = is(['error'])
 const hasTimedOut = is(['timeout'])
@@ -214,7 +214,7 @@ const getAfter = I.curryN(3, (predicate, getter) =>
 )
 
 export const upHasStarted = setName(hasStarted(UP), 'upHasStarted')
-export const upIsProgressing = setName(isProgressing(UP), 'upIsProgressing')
+export const upIsProgressing = setName(isProgressingOn(UP), 'upIsProgressing')
 export const upHasSucceeded = setName(hasSucceeded(UP), 'upHasSucceeded')
 export const upHasFailed = setName(hasFailed(UP), 'upHasFailed')
 export const upHasTimedOut = setName(hasTimedOut(UP), 'upHasTimedOut')
@@ -225,7 +225,7 @@ export const upError = setName(error(UP), 'upError')
 
 export const downHasStarted = setName(hasStarted(DOWN), 'downHasStarted')
 export const downIsProgressing = setName(
-  isProgressing(DOWN),
+  isProgressingOn(DOWN),
   'downIsProgressing'
 )
 export const downHasSucceeded = setName(hasSucceeded(DOWN), 'downHasSucceeded')
@@ -245,6 +245,11 @@ export const isDone = I.defineNameU(
   L.get([EVENT, 'type', L.is('loadend')]),
   'isDone'
 )
+export const isProgressing = setName(
+  L.get([EVENT, 'type', L.is('readystatechange')]),
+  'isProgressing'
+)
+
 export const response = setName(
   I.pipe2U(
     F.lift(({xhr, parse}) => {

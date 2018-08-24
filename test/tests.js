@@ -113,6 +113,14 @@ describe('XHR', () => {
   testEq([{user: 'world'}], () =>
     XHR.getJson(K.constant('http://localhost:3000/json'))
   )
+  testEq([false, true, false], () =>
+    XHR.isProgressing(
+      K.concat([
+        K.sequentially(0, [false, {}, undefined]),
+        XHR.performJson({url: 'http://localhost:3000/json'})
+      ]).toProperty()
+    )
+  )
   testEq([{user: '101'}], () =>
     XHR.responseFull(
       XHR.perform({
