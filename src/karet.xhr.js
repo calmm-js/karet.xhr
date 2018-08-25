@@ -195,16 +195,18 @@ function tryParse(json) {
 
 const isOneOf = I.curry((values, value) => values.includes(value))
 const is = I.curry((values, dir) => L.get([dir, 'type', isOneOf(values)]))
-const hasStarted = is(eventTypes)
+const hasStartedOn = is(eventTypes)
 const isProgressingOn = is(['progress', 'loadstart'])
-const hasSucceeded = is(['load'])
-const hasFailed = is(['error'])
-const hasTimedOut = is(['timeout'])
-const hasEnded = is(['load', 'error', 'timeout'])
+const hasSucceededOn = is(['load'])
+const hasFailedOn = is(['error'])
+const hasTimedOutOn = is(['timeout'])
+const hasEndedOn = is(['load', 'error', 'timeout'])
+
 const event = I.curry((prop, dir) => L.get([dir, EVENT, prop]))
-const loaded = event('loaded')
-const total = event('total')
-const error = event('error')
+const loadedOn = event('loaded')
+const totalOn = event('total')
+const errorOn = event('error')
+
 const isHttpSuccessU = function isHttpSuccess(status) {
   return 200 <= status && status < 300
 }
@@ -213,28 +215,31 @@ const getAfter = I.curryN(3, (predicate, getter) =>
   copyName(I.pipe2U(filter(predicate), getter), getter)
 )
 
-export const upHasStarted = setName(hasStarted(UP), 'upHasStarted')
+export const upHasStarted = setName(hasStartedOn(UP), 'upHasStarted')
 export const upIsProgressing = setName(isProgressingOn(UP), 'upIsProgressing')
-export const upHasSucceeded = setName(hasSucceeded(UP), 'upHasSucceeded')
-export const upHasFailed = setName(hasFailed(UP), 'upHasFailed')
-export const upHasTimedOut = setName(hasTimedOut(UP), 'upHasTimedOut')
-export const upHasEnded = setName(hasEnded(UP), 'upHasEnded')
-export const upLoaded = setName(loaded(UP), 'upLoaded')
-export const upTotal = setName(total(UP), 'upTotal')
-export const upError = setName(error(UP), 'upError')
+export const upHasSucceeded = setName(hasSucceededOn(UP), 'upHasSucceeded')
+export const upHasFailed = setName(hasFailedOn(UP), 'upHasFailed')
+export const upHasTimedOut = setName(hasTimedOutOn(UP), 'upHasTimedOut')
+export const upHasEnded = setName(hasEndedOn(UP), 'upHasEnded')
+export const upLoaded = setName(loadedOn(UP), 'upLoaded')
+export const upTotal = setName(totalOn(UP), 'upTotal')
+export const upError = setName(errorOn(UP), 'upError')
 
-export const downHasStarted = setName(hasStarted(DOWN), 'downHasStarted')
+export const downHasStarted = setName(hasStartedOn(DOWN), 'downHasStarted')
 export const downIsProgressing = setName(
   isProgressingOn(DOWN),
   'downIsProgressing'
 )
-export const downHasSucceeded = setName(hasSucceeded(DOWN), 'downHasSucceeded')
-export const downHasFailed = setName(hasFailed(DOWN), 'downHasFailed')
-export const downHasTimedOut = setName(hasTimedOut(DOWN), 'downHasTimedOut')
-export const downHasEnded = setName(hasEnded(DOWN), 'downHasEnded')
-export const downLoaded = setName(loaded(DOWN), 'downLoaded')
-export const downTotal = setName(total(DOWN), 'downTotal')
-export const downError = setName(error(DOWN), 'downError')
+export const downHasSucceeded = setName(
+  hasSucceededOn(DOWN),
+  'downHasSucceeded'
+)
+export const downHasFailed = setName(hasFailedOn(DOWN), 'downHasFailed')
+export const downHasTimedOut = setName(hasTimedOutOn(DOWN), 'downHasTimedOut')
+export const downHasEnded = setName(hasEndedOn(DOWN), 'downHasEnded')
+export const downLoaded = setName(loadedOn(DOWN), 'downLoaded')
+export const downTotal = setName(totalOn(DOWN), 'downTotal')
+export const downError = setName(errorOn(DOWN), 'downError')
 
 export const readyState = setName(L.get([XHR, 'readyState']), 'readyState')
 export const headersReceived = I.defineNameU(
@@ -249,7 +254,6 @@ export const isProgressing = setName(
   L.get([EVENT, 'type', L.is('readystatechange')]),
   'isProgressing'
 )
-
 export const response = setName(
   I.pipe2U(
     F.lift(({xhr, parse}) => {
