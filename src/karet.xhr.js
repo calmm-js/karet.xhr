@@ -44,18 +44,42 @@ const copyName =
     ? x => x
     : (to, from) => I.defineNameU(to, from.name)
 
-const initial = {type: 'initial'}
-
-const eventTypes = ['loadstart', 'progress', 'timeout', 'load', 'error']
-
-const XHR = 'xhr'
-const UP = 'up'
+const ADD_EVENT_LISTENER = 'addEventListener'
 const DOWN = 'down'
+const ERROR = 'error'
 const EVENT = 'event'
+const INITIAL = 'initial'
+const JSON = 'json'
+const LOAD = 'load'
+const LOADED = 'loaded'
+const LOADEND = 'loadend'
+const LOADSTART = 'loadstart'
+const OVERRIDE_MIME_TYPE = 'overrideMimeType'
+const PARSE = 'parse'
+const PROGRESS = 'progress'
+const READYSTATECHANGE = 'readystatechange'
+const READY_STATE = 'readyState'
+const RESPONSE = 'response'
+const RESPONSE_TEXT = 'responseText'
+const RESPONSE_TYPE = 'responseType'
+const RESPONSE_URL = 'responseURL'
+const RESPONSE_XML = 'responseXML'
+const STATUS = 'status'
+const STATUS_TEXT = 'statusText'
+const TIMEOUT = 'timeout'
+const TOTAL = 'total'
+const TYPE = 'type'
+const UP = 'up'
+const WITH_CREDENTIALS = 'withCredentials'
+const XHR = 'xhr'
+
+const initial = {type: INITIAL}
+
+const eventTypes = [LOADSTART, PROGRESS, TIMEOUT, LOAD, ERROR]
 
 const hasKeys = x => I.isFunction(x.keys)
 
-const isNil = x => x == null
+const isNil = x => null == x
 const headerValue = V.accept
 const headersArray = V.arrayId(V.tuple(string, headerValue))
 const headersMap = V.and(
@@ -84,49 +108,55 @@ const performPlain = (process.env.NODE_ENV === 'production'
         ),
         V.accept
       )
-    ))(function perform({
-  url,
-  method = 'GET',
-  user = null,
-  password = null,
-  headers,
-  overrideMimeType,
-  body = null,
-  responseType,
-  timeout,
-  withCredentials
-}) {
+    ))(function perform(args) {
   return K.stream(({emit, end}) => {
+    const url = args.url
+    const method = args.method
+    const user = args.user
+    const password = args.password
+    const headers = args.headers
+    const overrideMimeType = args[OVERRIDE_MIME_TYPE]
+    const body = args.body
+    const responseType = args[RESPONSE_TYPE]
+    const timeout = args[TIMEOUT]
+    const withCredentials = args[WITH_CREDENTIALS]
+
     const xhr = new XMLHttpRequest()
     let state = {xhr, up: initial, down: initial}
     const update = (dir, type) => event => {
       emit((state = L.set(dir, {type, event}, state)))
     }
     eventTypes.forEach(type => {
-      xhr.addEventListener(type, update(DOWN, type))
-      xhr.upload.addEventListener(type, update(UP, type))
+      xhr[ADD_EVENT_LISTENER](type, update(DOWN, type))
+      xhr.upload[ADD_EVENT_LISTENER](type, update(UP, type))
     })
-    xhr.addEventListener('readystatechange', event => {
+    xhr[ADD_EVENT_LISTENER](READYSTATECHANGE, event => {
       emit((state = L.set(EVENT, event, state)))
     })
-    xhr.addEventListener('loadend', event => {
+    xhr[ADD_EVENT_LISTENER](LOADEND, event => {
       end(emit((state = L.set(EVENT, event, state))))
     })
-    xhr.open(method, url, true, user, password)
+    xhr.open(
+      isNil(method) ? 'GET' : method,
+      url,
+      true,
+      isNil(user) ? null : user,
+      isNil(password) ? null : password
+    )
     if (responseType) {
-      xhr.responseType = responseType
-      if (responseType === 'json' && xhr.responseType !== 'json')
-        state = L.set('parse', true, state)
+      xhr[RESPONSE_TYPE] = responseType
+      if (responseType === JSON && xhr[RESPONSE_TYPE] !== JSON)
+        state = L.set(PARSE, true, state)
     }
-    if (timeout) xhr.timeout = timeout
-    if (withCredentials) xhr.withCredentials = withCredentials
+    if (timeout) xhr[TIMEOUT] = timeout
+    if (withCredentials) xhr[WITH_CREDENTIALS] = withCredentials
     for (const header in headers) {
       xhr.setRequestHeader(header, headers[header])
     }
-    if (overrideMimeType) xhr.overrideMimeType(overrideMimeType)
-    xhr.send(body)
+    if (overrideMimeType) xhr[OVERRIDE_MIME_TYPE](overrideMimeType)
+    xhr.send(isNil(body) ? null : body)
     return () => {
-      if (!xhr.status) xhr.abort()
+      if (!xhr[STATUS]) xhr.abort()
     }
   })
 })
@@ -194,18 +224,18 @@ function tryParse(json) {
 }
 
 const isOneOf = I.curry((values, value) => values.includes(value))
-const is = I.curry((values, dir) => L.get([dir, 'type', isOneOf(values)]))
+const is = I.curry((values, dir) => L.get([dir, TYPE, isOneOf(values)]))
 const hasStartedOn = is(eventTypes)
-const isProgressingOn = is(['progress', 'loadstart'])
-const hasSucceededOn = is(['load'])
-const hasFailedOn = is(['error'])
-const hasTimedOutOn = is(['timeout'])
-const hasEndedOn = is(['load', 'error', 'timeout'])
+const isProgressingOn = is([PROGRESS, LOADSTART])
+const hasSucceededOn = is([LOAD])
+const hasFailedOn = is([ERROR])
+const hasTimedOutOn = is([TIMEOUT])
+const hasEndedOn = is([LOAD, ERROR, TIMEOUT])
 
 const event = I.curry((prop, dir) => L.get([dir, EVENT, prop]))
-const loadedOn = event('loaded')
-const totalOn = event('total')
-const errorOn = event('error')
+const loadedOn = event(LOADED)
+const totalOn = event(TOTAL)
+const errorOn = event(ERROR)
 
 const isHttpSuccessU = function isHttpSuccess(status) {
   return 200 <= status && status < 300
@@ -241,60 +271,54 @@ export const downLoaded = setName(loadedOn(DOWN), 'downLoaded')
 export const downTotal = setName(totalOn(DOWN), 'downTotal')
 export const downError = setName(errorOn(DOWN), 'downError')
 
-export const readyState = setName(L.get([XHR, 'readyState']), 'readyState')
-export const headersReceived = I.defineNameU(
-  L.get([XHR, 'readyState', state => 2 <= state]),
+export const readyState = setName(L.get([XHR, READY_STATE]), READY_STATE)
+export const headersReceived = setName(
+  L.get([XHR, READY_STATE, state => 2 <= state]),
   'headersReceived'
 )
-export const isDone = I.defineNameU(
-  L.get([EVENT, 'type', L.is('loadend')]),
-  'isDone'
-)
+export const isDone = setName(L.get([EVENT, TYPE, L.is(LOADEND)]), 'isDone')
 export const isProgressing = setName(
-  L.get([EVENT, 'type', L.is('readystatechange')]),
+  L.get([EVENT, TYPE, L.is(READYSTATECHANGE)]),
   'isProgressing'
 )
 export const response = setName(
   I.pipe2U(
     F.lift(({xhr, parse}) => {
-      const response = xhr.response
+      const response = xhr[RESPONSE]
       return parse ? tryParse(response) : response
     }),
     skipDuplicates(I.acyclicEqualsU)
   ),
-  'response'
+  RESPONSE
 )
 export const responseFull = setName(getAfter(isDone, response), 'responseFull')
-export const responseType = setName(
-  L.get([XHR, 'responseType']),
-  'responseType'
-)
-export const responseURL = setName(L.get([XHR, 'responseURL']), 'responseURL')
+export const responseType = setName(L.get([XHR, RESPONSE_TYPE]), RESPONSE_TYPE)
+export const responseURL = setName(L.get([XHR, RESPONSE_URL]), RESPONSE_URL)
 export const responseText = setName(
   L.get([
     XHR,
-    L.when(L.get(['responseType', isOneOf(['', 'text'])])),
-    'responseText'
+    L.when(L.get([RESPONSE_TYPE, isOneOf(['', 'text'])])),
+    RESPONSE_TEXT
   ]),
-  'responseText'
+  RESPONSE_TEXT
 )
 export const responseXML = getAfter(
   isDone,
   setName(
     L.get([
       XHR,
-      L.when(L.get(['responseType', isOneOf(['', 'document'])])),
-      'responseXML'
+      L.when(L.get([RESPONSE_TYPE, isOneOf(['', 'document'])])),
+      RESPONSE_XML
     ]),
-    'responseXML'
+    RESPONSE_XML
   )
 )
-export const status = setName(L.get([XHR, 'status']), 'status')
+export const status = setName(L.get([XHR, STATUS]), STATUS)
 export const statusIsHttpSuccess = setName(
-  L.get([XHR, 'status', isHttpSuccessU]),
+  L.get([XHR, STATUS, isHttpSuccessU]),
   'statusIsHttpSuccess'
 )
-export const statusText = setName(L.get([XHR, 'statusText']), 'statusText')
+export const statusText = setName(L.get([XHR, STATUS_TEXT]), STATUS_TEXT)
 export const responseHeader = I.curryN(2, function responseHeader(header) {
   return getAfter(
     headersReceived,
@@ -311,10 +335,10 @@ export const allResponseHeaders = getAfter(
     'allResponseHeaders'
   )
 )
-export const timeout = setName(L.get([XHR, 'timeout']), 'timeout')
+export const timeout = setName(L.get([XHR, TIMEOUT]), TIMEOUT)
 export const withCredentials = setName(
-  L.get([XHR, 'withCredentials']),
-  'withCredentials'
+  L.get([XHR, WITH_CREDENTIALS]),
+  WITH_CREDENTIALS
 )
 
 export const isHttpSuccess = F.lift(isHttpSuccessU)
@@ -332,7 +356,7 @@ export const performWith = I.curry(function performWith(defaults, overrides) {
 
 export const performJson = setName(
   performWith({
-    responseType: 'json',
+    responseType: JSON,
     headers: {'Content-Type': 'application/json'}
   }),
   'performJson'
