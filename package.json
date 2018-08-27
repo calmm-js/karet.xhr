@@ -1,6 +1,6 @@
 {
   "name": "karet.xhr",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "An observable wrapper for XMLHttpRequest using Kefir",
   "module": "dist/karet.xhr.es.js",
   "main": "dist/karet.xhr.cjs.js",

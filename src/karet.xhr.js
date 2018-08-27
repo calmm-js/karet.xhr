@@ -12,6 +12,8 @@ const skipDuplicates = I.curry(function skipDuplicates(eq, xs) {
   return isObservable(xs) ? xs.skipDuplicates(eq) : xs
 })
 
+const skipAcyclicEquals = skipDuplicates(I.acyclicEqualsU)
+
 const filter = I.curry(function filter(pr, xs) {
   if (isObservable(xs)) {
     return xs.filter(pr)
@@ -38,11 +40,6 @@ const setName =
   process.env.NODE_ENV === 'production'
     ? x => x
     : (to, name) => I.defineNameU(to, name)
-
-const copyName =
-  process.env.NODE_ENV === 'production'
-    ? x => x
-    : (to, from) => I.defineNameU(to, from.name)
 
 const ADD_EVENT_LISTENER = 'addEventListener'
 const DOWN = 'down'
@@ -227,59 +224,68 @@ const isOneOf = I.curry((values, value) => values.includes(value))
 const is = I.curry((values, dir) => L.get([dir, TYPE, isOneOf(values)]))
 const hasStartedOn = is(eventTypes)
 const isProgressingOn = is([PROGRESS, LOADSTART])
-const hasSucceededOn = is([LOAD])
+const load = [LOAD]
+const hasCompletedOn = is(load)
 const hasFailedOn = is([ERROR])
 const hasTimedOutOn = is([TIMEOUT])
-const hasEndedOn = is([LOAD, ERROR, TIMEOUT])
+const ended = [LOAD, ERROR, TIMEOUT]
+const hasEndedOn = is(ended)
 
-const event = I.curry((prop, dir) => L.get([dir, EVENT, prop]))
-const loadedOn = event(LOADED)
-const totalOn = event(TOTAL)
-const errorOn = event(ERROR)
+const event = I.curry((prop, op, dir) => op([dir, EVENT, prop]))
+const loadedOn = event(LOADED, L.sum)
+const totalOn = event(TOTAL, L.sum)
+const errorsWithOn = event(ERROR)
 
 const isHttpSuccessU = function isHttpSuccess(status) {
   return 200 <= status && status < 300
 }
 
 const getAfter = I.curryN(3, (predicate, getter) =>
-  copyName(I.pipe2U(filter(predicate), getter), getter)
+  I.pipe2U(filter(predicate), getter)
 )
+
+const either = L.branches(DOWN, UP)
 
 export const upHasStarted = setName(hasStartedOn(UP), 'upHasStarted')
 export const upIsProgressing = setName(isProgressingOn(UP), 'upIsProgressing')
-export const upHasSucceeded = setName(hasSucceededOn(UP), 'upHasSucceeded')
+export const upHasCompleted = setName(hasCompletedOn(UP), 'upHasCompleted')
 export const upHasFailed = setName(hasFailedOn(UP), 'upHasFailed')
 export const upHasTimedOut = setName(hasTimedOutOn(UP), 'upHasTimedOut')
 export const upHasEnded = setName(hasEndedOn(UP), 'upHasEnded')
 export const upLoaded = setName(loadedOn(UP), 'upLoaded')
 export const upTotal = setName(totalOn(UP), 'upTotal')
-export const upError = setName(errorOn(UP), 'upError')
+export const upError = setName(errorsWithOn(L.get, UP), 'upError')
 
 export const downHasStarted = setName(hasStartedOn(DOWN), 'downHasStarted')
 export const downIsProgressing = setName(
   isProgressingOn(DOWN),
   'downIsProgressing'
 )
-export const downHasSucceeded = setName(
-  hasSucceededOn(DOWN),
-  'downHasSucceeded'
+export const downHasCompleted = setName(
+  hasCompletedOn(DOWN),
+  'downHasCompleted'
 )
 export const downHasFailed = setName(hasFailedOn(DOWN), 'downHasFailed')
 export const downHasTimedOut = setName(hasTimedOutOn(DOWN), 'downHasTimedOut')
 export const downHasEnded = setName(hasEndedOn(DOWN), 'downHasEnded')
 export const downLoaded = setName(loadedOn(DOWN), 'downLoaded')
 export const downTotal = setName(totalOn(DOWN), 'downTotal')
-export const downError = setName(errorOn(DOWN), 'downError')
+export const downError = setName(errorsWithOn(L.get, DOWN), 'downError')
 
 export const readyState = setName(L.get([XHR, READY_STATE]), READY_STATE)
-export const headersReceived = setName(
+export const isStatusAvailable = setName(
   L.get([XHR, READY_STATE, state => 2 <= state]),
-  'headersReceived'
+  'isStatusAvailable'
 )
-export const isDone = setName(L.get([EVENT, TYPE, L.is(LOADEND)]), 'isDone')
-export const isProgressing = setName(
-  L.get([EVENT, TYPE, L.is(READYSTATECHANGE)]),
-  'isProgressing'
+export const isDone = setName(is([LOADEND], EVENT), 'isDone')
+export const isProgressing = setName(isProgressingOn(either), 'isProgressing')
+export const hasFailed = setName(hasFailedOn(either), 'hasFailed')
+export const hasTimedOut = setName(hasTimedOutOn(either), 'hasTimedOut')
+export const loaded = setName(loadedOn(either), 'loaded')
+export const total = setName(totalOn(either), 'total')
+export const errors = setName(
+  I.pipe2U(errorsWithOn(L.collect, either), skipAcyclicEquals),
+  'errors'
 )
 export const response = setName(
   I.pipe2U(
@@ -287,13 +293,16 @@ export const response = setName(
       const response = xhr[RESPONSE]
       return parse ? tryParse(response) : response
     }),
-    skipDuplicates(I.acyclicEqualsU)
+    skipAcyclicEquals
   ),
   RESPONSE
 )
 export const responseFull = setName(getAfter(isDone, response), 'responseFull')
 export const responseType = setName(L.get([XHR, RESPONSE_TYPE]), RESPONSE_TYPE)
-export const responseURL = setName(L.get([XHR, RESPONSE_URL]), RESPONSE_URL)
+export const responseURL = setName(
+  getAfter(isStatusAvailable, L.get([XHR, RESPONSE_URL])),
+  RESPONSE_URL
+)
 export const responseText = setName(
   L.get([
     XHR,
@@ -302,39 +311,44 @@ export const responseText = setName(
   ]),
   RESPONSE_TEXT
 )
-export const responseXML = getAfter(
-  isDone,
-  setName(
+export const responseXML = setName(
+  getAfter(
+    isDone,
     L.get([
       XHR,
       L.when(L.get([RESPONSE_TYPE, isOneOf(['', 'document'])])),
       RESPONSE_XML
-    ]),
-    RESPONSE_XML
-  )
+    ])
+  ),
+  RESPONSE_XML
 )
-export const status = setName(L.get([XHR, STATUS]), STATUS)
+export const status = setName(
+  getAfter(isStatusAvailable, L.get([XHR, STATUS])),
+  STATUS
+)
 export const statusIsHttpSuccess = setName(
   L.get([XHR, STATUS, isHttpSuccessU]),
   'statusIsHttpSuccess'
 )
-export const statusText = setName(L.get([XHR, STATUS_TEXT]), STATUS_TEXT)
+export const statusText = setName(
+  getAfter(isStatusAvailable, L.get([XHR, STATUS_TEXT])),
+  STATUS_TEXT
+)
+
 export const responseHeader = I.curryN(2, function responseHeader(header) {
   return getAfter(
-    headersReceived,
-    setName(
-      L.get([XHR, L.reread(xhr => xhr.getResponseHeader(header))]),
-      'responseHeader'
-    )
+    isStatusAvailable,
+    L.get([XHR, L.reread(xhr => xhr.getResponseHeader(header))])
   )
 })
-export const allResponseHeaders = getAfter(
-  headersReceived,
-  setName(
-    L.get([XHR, L.reread(xhr => xhr.getAllResponseHeaders())]),
-    'allResponseHeaders'
-  )
+export const allResponseHeaders = setName(
+  getAfter(
+    isStatusAvailable,
+    L.get([XHR, L.reread(xhr => xhr.getAllResponseHeaders())])
+  ),
+  'allResponseHeaders'
 )
+
 export const timeout = setName(L.get([XHR, TIMEOUT]), TIMEOUT)
 export const withCredentials = setName(
   L.get([XHR, WITH_CREDENTIALS]),
@@ -363,3 +377,37 @@ export const performJson = setName(
 )
 
 export const getJson = setName(I.pipe2U(performJson, responseFull), 'getJson')
+
+const typeIsSuccess = [TYPE, isOneOf([INITIAL, LOAD])]
+
+export const hasSucceeded = setName(
+  L.and(
+    L.branch({
+      event: [TYPE, L.is(LOADEND)],
+      up: typeIsSuccess,
+      down: typeIsSuccess,
+      xhr: [STATUS, isHttpSuccessU]
+    })
+  ),
+  'hasSucceeded'
+)
+
+const renamed =
+  process.env.NODE_ENV === 'production'
+    ? x => x
+    : function renamed(fn, name) {
+        let warned = false
+        return setName(function deprecated(x) {
+          if (!warned) {
+            warned = true
+            console.warn(
+              'karet.xhr: `' + name + '` has been renamed to `' + fn.name + '`'
+            )
+          }
+          return fn(x)
+        }, name)
+      }
+
+export const downHasSucceeded = renamed(downHasCompleted, 'downHasSucceeded')
+export const headersReceived = renamed(isStatusAvailable, 'headersReceived')
+export const upHasSucceeded = renamed(upHasCompleted, 'upHasSucceeded')

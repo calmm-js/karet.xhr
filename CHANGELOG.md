@@ -1,3 +1,22 @@
+# 0.4.0
+
+Renamed
+
+* `XHR.downHasSucceeded` to `XHR.downHasCompleted`, and
+* `XHR.upHasSucceeded` to `XHR.upHasCompleted`
+
+to avoid them being confused with having the entire HTTP request being
+successful.
+
+Also renamed
+
+* `XHR.headersReceived` to `XHR.isStatusAvailable`
+
+so that it sounds like a query.
+
+Changed `XHR.status`, `XHR.statusText`, `XHR.responseURL`, and `XHR.responseXML`
+to wait for / require a meaningful ready state.
+
 # 0.3.1
 
 Fixed a bug introduced in 0.3.0 where observables were not properly eliminated
