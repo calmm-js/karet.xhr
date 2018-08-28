@@ -77,6 +77,9 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 describe('XHR', () => {
+  const startingWithNonXHRs = xhr =>
+    K.concat([K.sequentially(0, [false, {}, undefined]), xhr]).toProperty()
+
   testEq(['', 'Hello, world!'], () =>
     XHR.responseText(
       XHR.perform({
@@ -113,15 +116,40 @@ describe('XHR', () => {
   testEq([{user: 'world'}], () =>
     XHR.getJson(K.constant('http://localhost:3000/json'))
   )
+  testEq(['http://localhost:3000/json'], () =>
+    XHR.responseURL(XHR.performJson('http://localhost:3000/json'))
+  )
   testEq([true, false], () =>
     XHR.isProgressing(XHR.performJson({url: 'http://localhost:3000/json'}))
   )
   testEq([false, true, false], () =>
     XHR.isProgressing(
-      K.concat([
-        K.sequentially(0, [false, {}, undefined]),
-        XHR.performJson({url: 'http://localhost:3000/json'})
-      ]).toProperty()
+      startingWithNonXHRs(XHR.performJson({url: 'http://localhost:3000/json'}))
+    )
+  )
+  testEq([0, 16], () =>
+    XHR.loaded(
+      startingWithNonXHRs(XHR.performJson({url: 'http://localhost:3000/json'}))
+    )
+  )
+  testEq([0, 16], () =>
+    XHR.total(
+      startingWithNonXHRs(XHR.performJson({url: 'http://localhost:3000/json'}))
+    )
+  )
+  testEq([[]], () =>
+    XHR.errors(
+      startingWithNonXHRs(XHR.performJson({url: 'http://localhost:3000/json'}))
+    )
+  )
+  testEq([false], () =>
+    XHR.hasFailed(
+      startingWithNonXHRs(XHR.performJson({url: 'http://localhost:3000/json'}))
+    )
+  )
+  testEq([false, true], () =>
+    XHR.hasSucceeded(
+      startingWithNonXHRs(XHR.performJson({url: 'http://localhost:3000/json'}))
     )
   )
   testEq([{user: '101'}], () =>
@@ -155,12 +183,17 @@ describe('XHR', () => {
     )
   )
   testEq([false, true], () =>
-    XHR.downHasTimedOut(
+    XHR.hasTimedOut(
       XHR.perform({url: 'http://localhost:3000/slow', timeout: 200})
     )
   )
   testEq([false], () =>
-    XHR.downHasTimedOut(
+    XHR.hasSucceeded(
+      XHR.perform({url: 'http://localhost:3000/slow', timeout: 200})
+    )
+  )
+  testEq([false], () =>
+    XHR.hasTimedOut(
       XHR.perform({url: 'http://localhost:3000/slow', timeout: 2000})
     ).takeUntilBy(K.later(200, 'anything'))
   )
@@ -190,5 +223,11 @@ describe('XHR', () => {
     XHR.perform({url: 'http://localhost:3000/text'})
       .map(XHR.isDone)
       .filter(R.identity)
+  )
+})
+
+describe('XHR deprecated', () => {
+  testEq([false, true], () =>
+    XHR.downHasSucceeded(XHR.perform('http://localhost:3000/json'))
   )
 })
