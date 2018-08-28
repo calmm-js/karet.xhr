@@ -14,6 +14,8 @@
     return isObservable(xs) ? xs.skipDuplicates(eq) : xs;
   });
 
+  var skipAcyclicEquals = /*#__PURE__*/skipDuplicates(I.acyclicEqualsU);
+
   var filter = /*#__PURE__*/I.curry(function filter(pr, xs) {
     if (isObservable(xs)) {
       return xs.filter(pr);
@@ -44,25 +46,45 @@
     return I.defineNameU(to, name);
   };
 
-  var copyName = function (to, from) {
-    return I.defineNameU(to, from.name);
-  };
-
-  var initial = { type: 'initial' };
-
-  var eventTypes = ['loadstart', 'progress', 'timeout', 'load', 'error'];
-
-  var XHR = 'xhr';
-  var UP = 'up';
+  var ADD_EVENT_LISTENER = 'addEventListener';
   var DOWN = 'down';
+  var ERROR = 'error';
   var EVENT = 'event';
+  var INITIAL = 'initial';
+  var JSON = 'json';
+  var LOAD = 'load';
+  var LOADED = 'loaded';
+  var LOADEND = 'loadend';
+  var LOADSTART = 'loadstart';
+  var OVERRIDE_MIME_TYPE = 'overrideMimeType';
+  var PARSE = 'parse';
+  var PROGRESS = 'progress';
+  var READYSTATECHANGE = 'readystatechange';
+  var READY_STATE = 'readyState';
+  var RESPONSE = 'response';
+  var RESPONSE_TEXT = 'responseText';
+  var RESPONSE_TYPE = 'responseType';
+  var RESPONSE_URL = 'responseURL';
+  var RESPONSE_XML = 'responseXML';
+  var STATUS = 'status';
+  var STATUS_TEXT = 'statusText';
+  var TIMEOUT = 'timeout';
+  var TOTAL = 'total';
+  var TYPE = 'type';
+  var UP = 'up';
+  var WITH_CREDENTIALS = 'withCredentials';
+  var XHR = 'xhr';
+
+  var initial = { type: INITIAL };
+
+  var eventTypes = [LOADSTART, PROGRESS, TIMEOUT, LOAD, ERROR];
 
   var hasKeys = function hasKeys(x) {
     return I.isFunction(x.keys);
   };
 
   var isNil = function isNil(x) {
-    return x == null;
+    return null == x;
   };
   var headerValue = V.accept;
   var headersArray = /*#__PURE__*/V.arrayId( /*#__PURE__*/V.tuple(string, headerValue));
@@ -83,25 +105,21 @@
     responseType: V.optional(string),
     timeout: V.optional(number),
     withCredentials: V.optional(boolean)
-  })), V.accept)))(function perform(_ref) {
-    var url = _ref.url,
-        _ref$method = _ref.method,
-        method = _ref$method === undefined ? 'GET' : _ref$method,
-        _ref$user = _ref.user,
-        user = _ref$user === undefined ? null : _ref$user,
-        _ref$password = _ref.password,
-        password = _ref$password === undefined ? null : _ref$password,
-        headers = _ref.headers,
-        overrideMimeType = _ref.overrideMimeType,
-        _ref$body = _ref.body,
-        body = _ref$body === undefined ? null : _ref$body,
-        responseType = _ref.responseType,
-        timeout = _ref.timeout,
-        withCredentials = _ref.withCredentials;
+  })), V.accept)))(function perform(args) {
+    return K.stream(function (_ref) {
+      var emit = _ref.emit,
+          end = _ref.end;
 
-    return K.stream(function (_ref2) {
-      var emit = _ref2.emit,
-          end = _ref2.end;
+      var url = args.url;
+      var method = args.method;
+      var user = args.user;
+      var password = args.password;
+      var headers = args.headers;
+      var overrideMimeType = args[OVERRIDE_MIME_TYPE];
+      var body = args.body;
+      var responseType = args[RESPONSE_TYPE];
+      var timeout = args[TIMEOUT];
+      var withCredentials = args[WITH_CREDENTIALS];
 
       var xhr = new XMLHttpRequest();
       var state = { xhr: xhr, up: initial, down: initial };
@@ -111,29 +129,29 @@
         };
       };
       eventTypes.forEach(function (type) {
-        xhr.addEventListener(type, update(DOWN, type));
-        xhr.upload.addEventListener(type, update(UP, type));
+        xhr[ADD_EVENT_LISTENER](type, update(DOWN, type));
+        xhr.upload[ADD_EVENT_LISTENER](type, update(UP, type));
       });
-      xhr.addEventListener('readystatechange', function (event) {
+      xhr[ADD_EVENT_LISTENER](READYSTATECHANGE, function (event) {
         emit(state = L.set(EVENT, event, state));
       });
-      xhr.addEventListener('loadend', function (event) {
+      xhr[ADD_EVENT_LISTENER](LOADEND, function (event) {
         end(emit(state = L.set(EVENT, event, state)));
       });
-      xhr.open(method, url, true, user, password);
+      xhr.open(isNil(method) ? 'GET' : method, url, true, isNil(user) ? null : user, isNil(password) ? null : password);
       if (responseType) {
-        xhr.responseType = responseType;
-        if (responseType === 'json' && xhr.responseType !== 'json') state = L.set('parse', true, state);
+        xhr[RESPONSE_TYPE] = responseType;
+        if (responseType === JSON && xhr[RESPONSE_TYPE] !== JSON) state = L.set(PARSE, true, state);
       }
-      if (timeout) xhr.timeout = timeout;
-      if (withCredentials) xhr.withCredentials = withCredentials;
+      if (timeout) xhr[TIMEOUT] = timeout;
+      if (withCredentials) xhr[WITH_CREDENTIALS] = withCredentials;
       for (var header in headers) {
         xhr.setRequestHeader(header, headers[header]);
       }
-      if (overrideMimeType) xhr.overrideMimeType(overrideMimeType);
-      xhr.send(body);
+      if (overrideMimeType) xhr[OVERRIDE_MIME_TYPE](overrideMimeType);
+      xhr.send(isNil(body) ? null : body);
       return function () {
-        if (!xhr.status) xhr.abort();
+        if (!xhr[STATUS]) xhr.abort();
       };
     });
   });
@@ -165,80 +183,92 @@
     return values.includes(value);
   });
   var is = /*#__PURE__*/I.curry(function (values, dir) {
-    return L.get([dir, 'type', isOneOf(values)]);
+    return L.get([dir, TYPE, isOneOf(values)]);
   });
-  var hasStarted = /*#__PURE__*/is(eventTypes);
-  var isProgressingOn = /*#__PURE__*/is(['progress', 'loadstart']);
-  var hasSucceeded = /*#__PURE__*/is(['load']);
-  var hasFailed = /*#__PURE__*/is(['error']);
-  var hasTimedOut = /*#__PURE__*/is(['timeout']);
-  var hasEnded = /*#__PURE__*/is(['load', 'error', 'timeout']);
-  var event = /*#__PURE__*/I.curry(function (prop, dir) {
-    return L.get([dir, EVENT, prop]);
+  var hasStartedOn = /*#__PURE__*/is(eventTypes);
+  var isProgressingOn = /*#__PURE__*/is([PROGRESS, LOADSTART]);
+  var load = [LOAD];
+  var hasCompletedOn = /*#__PURE__*/is(load);
+  var hasFailedOn = /*#__PURE__*/is([ERROR]);
+  var hasTimedOutOn = /*#__PURE__*/is([TIMEOUT]);
+  var ended = [LOAD, ERROR, TIMEOUT];
+  var hasEndedOn = /*#__PURE__*/is(ended);
+
+  var event = /*#__PURE__*/I.curry(function (prop, op, dir) {
+    return op([dir, EVENT, prop]);
   });
-  var loaded = /*#__PURE__*/event('loaded');
-  var total = /*#__PURE__*/event('total');
-  var error = /*#__PURE__*/event('error');
+  var loadedOn = /*#__PURE__*/event(LOADED, L.sum);
+  var totalOn = /*#__PURE__*/event(TOTAL, L.sum);
+  var errorsWithOn = /*#__PURE__*/event(ERROR);
+
   var isHttpSuccessU = function isHttpSuccess(status) {
     return 200 <= status && status < 300;
   };
 
   var getAfter = /*#__PURE__*/I.curryN(3, function (predicate, getter) {
-    return copyName(I.pipe2U(filter(predicate), getter), getter);
+    return I.pipe2U(filter(predicate), getter);
   });
 
-  var upHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStarted(UP), 'upHasStarted');
+  var either = /*#__PURE__*/L.branches(DOWN, UP);
+
+  var upHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStartedOn(UP), 'upHasStarted');
   var upIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressingOn(UP), 'upIsProgressing');
-  var upHasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/hasSucceeded(UP), 'upHasSucceeded');
-  var upHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailed(UP), 'upHasFailed');
-  var upHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOut(UP), 'upHasTimedOut');
-  var upHasEnded = /*#__PURE__*/setName( /*#__PURE__*/hasEnded(UP), 'upHasEnded');
-  var upLoaded = /*#__PURE__*/setName( /*#__PURE__*/loaded(UP), 'upLoaded');
-  var upTotal = /*#__PURE__*/setName( /*#__PURE__*/total(UP), 'upTotal');
-  var upError = /*#__PURE__*/setName( /*#__PURE__*/error(UP), 'upError');
+  var upHasCompleted = /*#__PURE__*/setName( /*#__PURE__*/hasCompletedOn(UP), 'upHasCompleted');
+  var upHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailedOn(UP), 'upHasFailed');
+  var upHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOutOn(UP), 'upHasTimedOut');
+  var upHasEnded = /*#__PURE__*/setName( /*#__PURE__*/hasEndedOn(UP), 'upHasEnded');
+  var upLoaded = /*#__PURE__*/setName( /*#__PURE__*/loadedOn(UP), 'upLoaded');
+  var upTotal = /*#__PURE__*/setName( /*#__PURE__*/totalOn(UP), 'upTotal');
+  var upError = /*#__PURE__*/setName( /*#__PURE__*/errorsWithOn(L.get, UP), 'upError');
 
-  var downHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStarted(DOWN), 'downHasStarted');
+  var downHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStartedOn(DOWN), 'downHasStarted');
   var downIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressingOn(DOWN), 'downIsProgressing');
-  var downHasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/hasSucceeded(DOWN), 'downHasSucceeded');
-  var downHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailed(DOWN), 'downHasFailed');
-  var downHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOut(DOWN), 'downHasTimedOut');
-  var downHasEnded = /*#__PURE__*/setName( /*#__PURE__*/hasEnded(DOWN), 'downHasEnded');
-  var downLoaded = /*#__PURE__*/setName( /*#__PURE__*/loaded(DOWN), 'downLoaded');
-  var downTotal = /*#__PURE__*/setName( /*#__PURE__*/total(DOWN), 'downTotal');
-  var downError = /*#__PURE__*/setName( /*#__PURE__*/error(DOWN), 'downError');
+  var downHasCompleted = /*#__PURE__*/setName( /*#__PURE__*/hasCompletedOn(DOWN), 'downHasCompleted');
+  var downHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailedOn(DOWN), 'downHasFailed');
+  var downHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOutOn(DOWN), 'downHasTimedOut');
+  var downHasEnded = /*#__PURE__*/setName( /*#__PURE__*/hasEndedOn(DOWN), 'downHasEnded');
+  var downLoaded = /*#__PURE__*/setName( /*#__PURE__*/loadedOn(DOWN), 'downLoaded');
+  var downTotal = /*#__PURE__*/setName( /*#__PURE__*/totalOn(DOWN), 'downTotal');
+  var downError = /*#__PURE__*/setName( /*#__PURE__*/errorsWithOn(L.get, DOWN), 'downError');
 
-  var readyState = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'readyState']), 'readyState');
-  var headersReceived = /*#__PURE__*/I.defineNameU( /*#__PURE__*/L.get([XHR, 'readyState', function (state) {
+  var readyState = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, READY_STATE]), READY_STATE);
+  var isStatusAvailable = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, READY_STATE, function (state) {
     return 2 <= state;
-  }]), 'headersReceived');
-  var isDone = /*#__PURE__*/I.defineNameU( /*#__PURE__*/L.get([EVENT, 'type', /*#__PURE__*/L.is('loadend')]), 'isDone');
-  var isProgressing = /*#__PURE__*/setName( /*#__PURE__*/L.get([EVENT, 'type', /*#__PURE__*/L.is('readystatechange')]), 'isProgressing');
+  }]), 'isStatusAvailable');
+  var isDone = /*#__PURE__*/setName( /*#__PURE__*/is([LOADEND], EVENT), 'isDone');
+  var isProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressingOn(either), 'isProgressing');
+  var hasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailedOn(either), 'hasFailed');
+  var hasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOutOn(either), 'hasTimedOut');
+  var loaded = /*#__PURE__*/setName( /*#__PURE__*/loadedOn(either), 'loaded');
+  var total = /*#__PURE__*/setName( /*#__PURE__*/totalOn(either), 'total');
+  var errors = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/errorsWithOn(L.collect, either), skipAcyclicEquals), 'errors');
+  var response = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/F.lift(function (_ref2) {
+    var xhr = _ref2.xhr,
+        parse = _ref2.parse;
 
-  var response = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/F.lift(function (_ref3) {
-    var xhr = _ref3.xhr,
-        parse = _ref3.parse;
-
-    var response = xhr.response;
+    var response = xhr[RESPONSE];
     return parse ? tryParse(response) : response;
-  }), /*#__PURE__*/skipDuplicates(I.acyclicEqualsU)), 'response');
+  }), skipAcyclicEquals), RESPONSE);
   var responseFull = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isDone, response), 'responseFull');
-  var responseType = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'responseType']), 'responseType');
-  var responseURL = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'responseURL']), 'responseURL');
-  var responseText = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get(['responseType', /*#__PURE__*/isOneOf(['', 'text'])])), 'responseText']), 'responseText');
-  var responseXML = /*#__PURE__*/getAfter(isDone, /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get(['responseType', /*#__PURE__*/isOneOf(['', 'document'])])), 'responseXML']), 'responseXML'));
-  var status = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'status']), 'status');
-  var statusIsHttpSuccess = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'status', isHttpSuccessU]), 'statusIsHttpSuccess');
-  var statusText = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'statusText']), 'statusText');
+  var responseType = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, RESPONSE_TYPE]), RESPONSE_TYPE);
+  var responseURL = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/L.get([XHR, RESPONSE_URL])), RESPONSE_URL);
+  var responseText = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get([RESPONSE_TYPE, /*#__PURE__*/isOneOf(['', 'text'])])), RESPONSE_TEXT]), RESPONSE_TEXT);
+  var responseXML = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isDone, /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get([RESPONSE_TYPE, /*#__PURE__*/isOneOf(['', 'document'])])), RESPONSE_XML])), RESPONSE_XML);
+  var status = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/L.get([XHR, STATUS])), STATUS);
+  var statusIsHttpSuccess = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, STATUS, isHttpSuccessU]), 'statusIsHttpSuccess');
+  var statusText = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/L.get([XHR, STATUS_TEXT])), STATUS_TEXT);
+
   var responseHeader = /*#__PURE__*/I.curryN(2, function responseHeader(header) {
-    return getAfter(headersReceived, setName(L.get([XHR, L.reread(function (xhr) {
+    return getAfter(isStatusAvailable, L.get([XHR, L.reread(function (xhr) {
       return xhr.getResponseHeader(header);
-    })]), 'responseHeader'));
+    })]));
   });
-  var allResponseHeaders = /*#__PURE__*/getAfter(headersReceived, /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.reread(function (xhr) {
+  var allResponseHeaders = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.reread(function (xhr) {
     return xhr.getAllResponseHeaders();
-  })]), 'allResponseHeaders'));
-  var timeout = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'timeout']), 'timeout');
-  var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, 'withCredentials']), 'withCredentials');
+  })])), 'allResponseHeaders');
+
+  var timeout = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, TIMEOUT]), TIMEOUT);
+  var withCredentials = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, WITH_CREDENTIALS]), WITH_CREDENTIALS);
 
   var isHttpSuccess = /*#__PURE__*/F.lift(isHttpSuccessU);
 
@@ -252,16 +282,40 @@
   });
 
   var performJson = /*#__PURE__*/setName( /*#__PURE__*/performWith({
-    responseType: 'json',
+    responseType: JSON,
     headers: { 'Content-Type': 'application/json' }
   }), 'performJson');
 
   var getJson = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(performJson, responseFull), 'getJson');
 
+  var typeIsSuccess = [TYPE, /*#__PURE__*/isOneOf([INITIAL, LOAD])];
+
+  var hasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/L.and( /*#__PURE__*/L.branch({
+    event: [TYPE, /*#__PURE__*/L.is(LOADEND)],
+    up: typeIsSuccess,
+    down: typeIsSuccess,
+    xhr: [STATUS, isHttpSuccessU]
+  })), 'hasSucceeded');
+
+  var renamed = function renamed(fn, name) {
+    var warned = false;
+    return setName(function deprecated(x) {
+      if (!warned) {
+        warned = true;
+        console.warn('karet.xhr: `' + name + '` has been renamed to `' + fn.name + '`');
+      }
+      return fn(x);
+    }, name);
+  };
+
+  var downHasSucceeded = /*#__PURE__*/renamed(downHasCompleted, 'downHasSucceeded');
+  var headersReceived = /*#__PURE__*/renamed(isStatusAvailable, 'headersReceived');
+  var upHasSucceeded = /*#__PURE__*/renamed(upHasCompleted, 'upHasSucceeded');
+
   exports.perform = perform;
   exports.upHasStarted = upHasStarted;
   exports.upIsProgressing = upIsProgressing;
-  exports.upHasSucceeded = upHasSucceeded;
+  exports.upHasCompleted = upHasCompleted;
   exports.upHasFailed = upHasFailed;
   exports.upHasTimedOut = upHasTimedOut;
   exports.upHasEnded = upHasEnded;
@@ -270,7 +324,7 @@
   exports.upError = upError;
   exports.downHasStarted = downHasStarted;
   exports.downIsProgressing = downIsProgressing;
-  exports.downHasSucceeded = downHasSucceeded;
+  exports.downHasCompleted = downHasCompleted;
   exports.downHasFailed = downHasFailed;
   exports.downHasTimedOut = downHasTimedOut;
   exports.downHasEnded = downHasEnded;
@@ -278,9 +332,14 @@
   exports.downTotal = downTotal;
   exports.downError = downError;
   exports.readyState = readyState;
-  exports.headersReceived = headersReceived;
+  exports.isStatusAvailable = isStatusAvailable;
   exports.isDone = isDone;
   exports.isProgressing = isProgressing;
+  exports.hasFailed = hasFailed;
+  exports.hasTimedOut = hasTimedOut;
+  exports.loaded = loaded;
+  exports.total = total;
+  exports.errors = errors;
   exports.response = response;
   exports.responseFull = responseFull;
   exports.responseType = responseType;
@@ -298,6 +357,10 @@
   exports.performWith = performWith;
   exports.performJson = performJson;
   exports.getJson = getJson;
+  exports.hasSucceeded = hasSucceeded;
+  exports.downHasSucceeded = downHasSucceeded;
+  exports.headersReceived = headersReceived;
+  exports.upHasSucceeded = upHasSucceeded;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
