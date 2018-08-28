@@ -8,6 +8,8 @@ import * as V from 'partial.lenses.validation'
 
 const isObservable = x => x instanceof K.Observable
 
+const never = K.never()
+
 const skipDuplicates = I.curry(function skipDuplicates(eq, xs) {
   return isObservable(xs) ? xs.skipDuplicates(eq) : xs
 })
@@ -22,6 +24,13 @@ const filter = I.curry(function filter(pr, xs) {
   } else {
     throw Error(pr.name)
   }
+})
+
+const flatMapLatestToProperty = I.curry(function flatMapLatestToProperty(
+  fn,
+  x
+) {
+  return (isObservable(x) ? x.flatMapLatest(fn) : fn(x)).toProperty()
 })
 
 //
@@ -204,13 +213,10 @@ const normalizeOptions = (process.env.NODE_ENV === 'production'
   )
 )
 
-export function perform(argsIn) {
-  const args = normalizeOptions(argsIn)
-  return (isObservable(args)
-    ? args.flatMapLatest(performPlain)
-    : performPlain(args)
-  ).toProperty()
-}
+export const perform = setName(
+  I.pipe2U(normalizeOptions, flatMapLatestToProperty(performPlain)),
+  'perform'
+)
 
 function tryParse(json) {
   try {
@@ -297,7 +303,10 @@ export const response = setName(
   ),
   RESPONSE
 )
-export const responseFull = setName(getAfter(isDone, response), 'responseFull')
+export const responseFull = setName(
+  getAfter(downHasCompleted, response),
+  'responseFull'
+)
 export const responseType = setName(L.get([XHR, RESPONSE_TYPE]), RESPONSE_TYPE)
 export const responseURL = setName(
   getAfter(isStatusAvailable, L.get([XHR, RESPONSE_URL])),
@@ -313,7 +322,7 @@ export const responseText = setName(
 )
 export const responseXML = setName(
   getAfter(
-    isDone,
+    downHasCompleted,
     L.get([
       XHR,
       L.when(L.get([RESPONSE_TYPE, isOneOf(['', 'document'])])),
@@ -376,8 +385,6 @@ export const performJson = setName(
   'performJson'
 )
 
-export const getJson = setName(I.pipe2U(performJson, responseFull), 'getJson')
-
 const typeIsSuccess = [TYPE, isOneOf([INITIAL, LOAD])]
 
 export const hasSucceeded = setName(
@@ -390,6 +397,22 @@ export const hasSucceeded = setName(
     })
   ),
   'hasSucceeded'
+)
+
+export const getJson = setName(
+  I.pipe2U(
+    performJson,
+    flatMapLatestToProperty(xhr => {
+      if (hasSucceeded(xhr)) {
+        return K.constant(responseFull(xhr))
+      } else if (isDone(xhr) && (hasFailed(xhr) || hasTimedOut(xhr))) {
+        return K.constantError(xhr)
+      } else {
+        return never
+      }
+    })
+  ),
+  'getJson'
 )
 
 const renamed =
