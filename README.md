@@ -113,9 +113,9 @@ and [upload](#upload-state) state.
 
 #### <a id="XHR-getJson"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-getJson) [`XHR.getJson(url | {url,[, ...]}) ~> varies`](#XHR-getJson)
 
-`XHR.getJson(arg)` is shorthand for
-[`XHR.responseFull(XHR.performJson(arg))`](#XHR-responseFull).  See also
-[`XHR.performJson`](#XHR-performJson).
+`XHR.getJson(arg)` returns an observable that emits the [full
+response](#XHR-responseFull) after the [XHR has succeeded](#XHR-hasSucceeded).
+In case the XHR fails or times out, the XHR is emitted as an error.
 
 #### <a id="XHR-performJson"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-peformJson) [`XHR.performJson(url | {url[, ...]}) ~> xhr`](#XHR-performJson)
 
@@ -302,9 +302,9 @@ of an ongoing XHR.  See also [`XHR.responseFull`](#XHR-responseFull).
 
 `XHR.responseFull` returns a possibly observable property that emits the
 [`response`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response)
-after the XHR has completed.  When called on a non-observable XHR, its
-[`readyState` must be 4](#XHR-isDone) or an `Error` will be thrown.  See also
-[`XHR.response`](#XHR-response).
+after the [download operation of the XHR has completed](#XHR-downHasCompleted).
+When called on a non-observable XHR, the download operation must be completed or
+an `Error` will be thrown.  See also [`XHR.response`](#XHR-response).
 
 ##### <a id="XHR-responseText"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-responseText) [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
 

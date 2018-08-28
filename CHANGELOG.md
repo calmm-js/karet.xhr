@@ -1,3 +1,12 @@
+# 0.5.0
+
+Changed `XHR.responseFull` to require that the download has completed
+successfully.
+
+Changed `XHR.getJson` to wait that the XHR has completed successfully with a
+HTTP success status and to emit the XHR as an error in case the XHR fails or
+times out.
+
 # 0.4.0
 
 Renamed

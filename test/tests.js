@@ -177,7 +177,7 @@ describe('XHR', () => {
       XHR.perform({url: 'http://localhost:3000/slow', timeout: 2000})
     )
   )
-  testEq([''], () =>
+  testEq([], () =>
     XHR.responseFull(
       XHR.perform({url: 'http://localhost:3000/slow', timeout: 200})
     )
@@ -214,7 +214,7 @@ describe('XHR', () => {
         try {
           return XHR.responseFull(xhr)
         } catch (e) {
-          return e.message === 'isDone'
+          return e.message === 'downHasCompleted'
         }
       })
       .skipDuplicates(R.equals)
