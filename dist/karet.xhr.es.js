@@ -1,6 +1,6 @@
 import { lift } from 'karet.lift';
 import { curry, acyclicEqualsU, isString, isNumber, defineNameU, isFunction, id, object0, isArray, pipe2U, curryN, assign } from 'infestines';
-import { Observable, stream } from 'kefir';
+import { Observable, never, stream, constant, constantError } from 'kefir';
 import { set, get, array, cross, reread, identity, inverse, keyed, transform, ifElse, modifyOp, branch, cond, setOp, keys, sum, branches, collect, when, and, is } from 'kefir.partial.lenses';
 import { accept, arrayId, tuple, and as and$1, acceptWith, validate, freeFn, props, optional, propsOr, modifyAfter, or, cases } from 'partial.lenses.validation';
 
@@ -9,6 +9,8 @@ import { accept, arrayId, tuple, and as and$1, acceptWith, validate, freeFn, pro
 var isObservable = function isObservable(x) {
   return x instanceof Observable;
 };
+
+var never$1 = /*#__PURE__*/never();
 
 var skipDuplicates = /*#__PURE__*/curry(function skipDuplicates(eq, xs) {
   return isObservable(xs) ? xs.skipDuplicates(eq) : xs;
@@ -24,6 +26,10 @@ var filter = /*#__PURE__*/curry(function filter(pr, xs) {
   } else {
     throw Error(pr.name);
   }
+});
+
+var flatMapLatestToProperty = /*#__PURE__*/curry(function flatMapLatestToProperty(fn, x) {
+  return (isObservable(x) ? x.flatMapLatest(fn) : fn(x)).toProperty();
 });
 
 //
@@ -168,10 +174,7 @@ var normalizeOptions = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id 
   headers: /*#__PURE__*/cond([isNil, /*#__PURE__*/setOp(object0)], [isArray, /*#__PURE__*/modifyOp(toLowerKeyedObject)], [hasKeys, /*#__PURE__*/modifyOp( /*#__PURE__*/pipe2U(Array.from, toLowerKeyedObject))], [[keys, /*#__PURE__*/modifyOp(toLower)]])
 }))));
 
-function perform(argsIn) {
-  var args = normalizeOptions(argsIn);
-  return (isObservable(args) ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
-}
+var perform = /*#__PURE__*/setName( /*#__PURE__*/pipe2U(normalizeOptions, /*#__PURE__*/flatMapLatestToProperty(performPlain)), 'perform');
 
 function tryParse(json) {
   try {
@@ -251,11 +254,11 @@ var response = /*#__PURE__*/setName( /*#__PURE__*/pipe2U( /*#__PURE__*/lift(func
   var response = xhr[RESPONSE];
   return parse ? tryParse(response) : response;
 }), skipAcyclicEquals), RESPONSE);
-var responseFull = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isDone, response), 'responseFull');
+var responseFull = /*#__PURE__*/setName( /*#__PURE__*/getAfter(downHasCompleted, response), 'responseFull');
 var responseType = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, RESPONSE_TYPE]), RESPONSE_TYPE);
 var responseURL = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/get([XHR, RESPONSE_URL])), RESPONSE_URL);
 var responseText = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get([RESPONSE_TYPE, /*#__PURE__*/isOneOf(['', 'text'])])), RESPONSE_TEXT]), RESPONSE_TEXT);
-var responseXML = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isDone, /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get([RESPONSE_TYPE, /*#__PURE__*/isOneOf(['', 'document'])])), RESPONSE_XML])), RESPONSE_XML);
+var responseXML = /*#__PURE__*/setName( /*#__PURE__*/getAfter(downHasCompleted, /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get([RESPONSE_TYPE, /*#__PURE__*/isOneOf(['', 'document'])])), RESPONSE_XML])), RESPONSE_XML);
 var status = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/get([XHR, STATUS])), STATUS);
 var statusIsHttpSuccess = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, STATUS, isHttpSuccessU]), 'statusIsHttpSuccess');
 var statusText = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/get([XHR, STATUS_TEXT])), STATUS_TEXT);
@@ -288,8 +291,6 @@ var performJson = /*#__PURE__*/setName( /*#__PURE__*/performWith({
   headers: { 'Content-Type': 'application/json' }
 }), 'performJson');
 
-var getJson = /*#__PURE__*/setName( /*#__PURE__*/pipe2U(performJson, responseFull), 'getJson');
-
 var typeIsSuccess = [TYPE, /*#__PURE__*/isOneOf([INITIAL, LOAD])];
 
 var hasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/and( /*#__PURE__*/branch({
@@ -298,6 +299,16 @@ var hasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/and( /*#__PURE__*/branch({
   down: typeIsSuccess,
   xhr: [STATUS, isHttpSuccessU]
 })), 'hasSucceeded');
+
+var getJson = /*#__PURE__*/setName( /*#__PURE__*/pipe2U(performJson, /*#__PURE__*/flatMapLatestToProperty(function (xhr) {
+  if (hasSucceeded(xhr)) {
+    return constant(responseFull(xhr));
+  } else if (isDone(xhr) && (hasFailed(xhr) || hasTimedOut(xhr))) {
+    return constantError(xhr);
+  } else {
+    return never$1;
+  }
+})), 'getJson');
 
 var renamed = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
@@ -316,4 +327,4 @@ var downHasSucceeded = /*#__PURE__*/renamed(downHasCompleted, 'downHasSucceeded'
 var headersReceived = /*#__PURE__*/renamed(isStatusAvailable, 'headersReceived');
 var upHasSucceeded = /*#__PURE__*/renamed(upHasCompleted, 'upHasSucceeded');
 
-export { perform, upHasStarted, upIsProgressing, upHasCompleted, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasCompleted, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, isStatusAvailable, isDone, isProgressing, hasFailed, hasTimedOut, loaded, total, errors, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess, performWith, performJson, getJson, hasSucceeded, downHasSucceeded, headersReceived, upHasSucceeded };
+export { perform, upHasStarted, upIsProgressing, upHasCompleted, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasCompleted, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, isStatusAvailable, isDone, isProgressing, hasFailed, hasTimedOut, loaded, total, errors, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess, performWith, performJson, hasSucceeded, getJson, downHasSucceeded, headersReceived, upHasSucceeded };

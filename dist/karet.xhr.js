@@ -10,6 +10,8 @@
     return x instanceof K.Observable;
   };
 
+  var never = /*#__PURE__*/K.never();
+
   var skipDuplicates = /*#__PURE__*/I.curry(function skipDuplicates(eq, xs) {
     return isObservable(xs) ? xs.skipDuplicates(eq) : xs;
   });
@@ -24,6 +26,10 @@
     } else {
       throw Error(pr.name);
     }
+  });
+
+  var flatMapLatestToProperty = /*#__PURE__*/I.curry(function flatMapLatestToProperty(fn, x) {
+    return (isObservable(x) ? x.flatMapLatest(fn) : fn(x)).toProperty();
   });
 
   //
@@ -166,10 +172,7 @@
     headers: /*#__PURE__*/L.cond([isNil, /*#__PURE__*/L.setOp(I.object0)], [I.isArray, /*#__PURE__*/L.modifyOp(toLowerKeyedObject)], [hasKeys, /*#__PURE__*/L.modifyOp( /*#__PURE__*/I.pipe2U(Array.from, toLowerKeyedObject))], [[L.keys, /*#__PURE__*/L.modifyOp(toLower)]])
   }))));
 
-  function perform(argsIn) {
-    var args = normalizeOptions(argsIn);
-    return (isObservable(args) ? args.flatMapLatest(performPlain) : performPlain(args)).toProperty();
-  }
+  var perform = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(normalizeOptions, /*#__PURE__*/flatMapLatestToProperty(performPlain)), 'perform');
 
   function tryParse(json) {
     try {
@@ -249,11 +252,11 @@
     var response = xhr[RESPONSE];
     return parse ? tryParse(response) : response;
   }), skipAcyclicEquals), RESPONSE);
-  var responseFull = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isDone, response), 'responseFull');
+  var responseFull = /*#__PURE__*/setName( /*#__PURE__*/getAfter(downHasCompleted, response), 'responseFull');
   var responseType = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, RESPONSE_TYPE]), RESPONSE_TYPE);
   var responseURL = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/L.get([XHR, RESPONSE_URL])), RESPONSE_URL);
   var responseText = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get([RESPONSE_TYPE, /*#__PURE__*/isOneOf(['', 'text'])])), RESPONSE_TEXT]), RESPONSE_TEXT);
-  var responseXML = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isDone, /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get([RESPONSE_TYPE, /*#__PURE__*/isOneOf(['', 'document'])])), RESPONSE_XML])), RESPONSE_XML);
+  var responseXML = /*#__PURE__*/setName( /*#__PURE__*/getAfter(downHasCompleted, /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get([RESPONSE_TYPE, /*#__PURE__*/isOneOf(['', 'document'])])), RESPONSE_XML])), RESPONSE_XML);
   var status = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/L.get([XHR, STATUS])), STATUS);
   var statusIsHttpSuccess = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, STATUS, isHttpSuccessU]), 'statusIsHttpSuccess');
   var statusText = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/L.get([XHR, STATUS_TEXT])), STATUS_TEXT);
@@ -286,8 +289,6 @@
     headers: { 'Content-Type': 'application/json' }
   }), 'performJson');
 
-  var getJson = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(performJson, responseFull), 'getJson');
-
   var typeIsSuccess = [TYPE, /*#__PURE__*/isOneOf([INITIAL, LOAD])];
 
   var hasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/L.and( /*#__PURE__*/L.branch({
@@ -296,6 +297,16 @@
     down: typeIsSuccess,
     xhr: [STATUS, isHttpSuccessU]
   })), 'hasSucceeded');
+
+  var getJson = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(performJson, /*#__PURE__*/flatMapLatestToProperty(function (xhr) {
+    if (hasSucceeded(xhr)) {
+      return K.constant(responseFull(xhr));
+    } else if (isDone(xhr) && (hasFailed(xhr) || hasTimedOut(xhr))) {
+      return K.constantError(xhr);
+    } else {
+      return never;
+    }
+  })), 'getJson');
 
   var renamed = function renamed(fn, name) {
     var warned = false;
@@ -356,8 +367,8 @@
   exports.isHttpSuccess = isHttpSuccess;
   exports.performWith = performWith;
   exports.performJson = performJson;
-  exports.getJson = getJson;
   exports.hasSucceeded = hasSucceeded;
+  exports.getJson = getJson;
   exports.downHasSucceeded = downHasSucceeded;
   exports.headersReceived = headersReceived;
   exports.upHasSucceeded = upHasSucceeded;

@@ -172,9 +172,9 @@ using the accessors for <a href="#overall-state">overall</a>, <a href="#download
 and <a href="#upload-state">upload</a> state.</p>
 <h3><a id="convenience"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#convenience">■</a> <a href="#convenience">Convenience</a></h3>
 <h4><a id="XHR-getJson"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-getJson">■</a> <a href="#XHR-getJson"><code>XHR.getJson(url | {url,[, ...]}) ~&gt; varies</code></a></h4>
-<p><code>XHR.getJson(arg)</code> is shorthand for
-<a href="#XHR-responseFull"><code>XHR.responseFull(XHR.performJson(arg))</code></a>.  See also
-<a href="#XHR-performJson"><code>XHR.performJson</code></a>.</p>
+<p><code>XHR.getJson(arg)</code> returns an observable that emits the <a href="#XHR-responseFull">full
+response</a> after the <a href="#XHR-hasSucceeded">XHR has succeeded</a>.
+In case the XHR fails or times out, the XHR is emitted as an error.</p>
 <h4><a id="XHR-performJson"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-peformJson">■</a> <a href="#XHR-performJson"><code>XHR.performJson(url | {url[, ...]}) ~&gt; xhr</code></a></h4>
 <p><code>XHR.performJson</code> is shorthand for <a href="#XHR-performWith"><code>XHR.performWith({responseType:
 &#39;json&#39;, headers: {&#39;Content-Type&#39;: &#39;application/json&#39;}})</code></a>.</p>
@@ -347,9 +347,9 @@ of an ongoing XHR.  See also <a href="#XHR-responseFull"><code>XHR.responseFull<
 <h5><a id="XHR-responseFull"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseFull">■</a> <a href="#XHR-responseFull"><code>XHR.responseFull(xhr) ~&gt; varies</code></a></h5>
 <p><code>XHR.responseFull</code> returns a possibly observable property that emits the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response"><code>response</code></a>
-after the XHR has completed.  When called on a non-observable XHR, its
-<a href="#XHR-isDone"><code>readyState</code> must be 4</a> or an <code>Error</code> will be thrown.  See also
-<a href="#XHR-response"><code>XHR.response</code></a>.</p>
+after the <a href="#XHR-downHasCompleted">download operation of the XHR has completed</a>.
+When called on a non-observable XHR, the download operation must be completed or
+an <code>Error</code> will be thrown.  See also <a href="#XHR-response"><code>XHR.response</code></a>.</p>
 <h5><a id="XHR-responseText"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseText">■</a> <a href="#XHR-responseText"><code>XHR.responseText(xhr) ~&gt; string</code></a></h5>
 <p><code>XHR.responseText</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseText"><code>responseText</code></a>
