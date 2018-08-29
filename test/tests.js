@@ -205,11 +205,9 @@ describe('XHR', () => {
   )
   testEq([{returnTo: 'sender'}], () =>
     XHR.response(
-      XHR.perform({
+      XHR.performJson({
         url: 'http://localhost:3000/echo',
         method: 'POST',
-        responseType: 'json',
-        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({returnTo: 'sender'})
       })
     )
