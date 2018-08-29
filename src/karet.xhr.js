@@ -130,7 +130,7 @@ const performPlain = (process.env.NODE_ENV === 'production'
     const xhr = new XMLHttpRequest()
     let state = {xhr, up: initial, down: initial}
     const update = (dir, type) => event => {
-      if (type !== PROGRESS && state[dir].type !== LOAD)
+      if (type !== PROGRESS || state[dir].type !== LOAD)
         emit((state = L.set(dir, {type, event}, state)))
     }
     eventTypes.forEach(type => {

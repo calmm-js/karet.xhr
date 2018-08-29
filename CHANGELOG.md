@@ -1,11 +1,16 @@
 # Karet XHR Changelog
 
+## 0.6.2
+
+Fix work around for IE11 where `'progress'` events may be sent after `'load'`
+events.
+
 ## 0.6.1
 
 Fixed bug in IE11 `responseType` workaround.
 
-Added work around for IE11 where `'progress'` events were sent after `'load'`
-events.
+Added work around for IE11 where `'progress'` events maybe be sent after
+`'load'` events.
 
 ## 0.6.0
 
