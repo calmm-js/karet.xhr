@@ -137,7 +137,7 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : 
     var state = { xhr: xhr, up: initial, down: initial };
     var update = function update(dir, type) {
       return function (event) {
-        if (type !== PROGRESS && state[dir].type !== LOAD) emit(state = L.set(dir, { type: type, event: event }, state));
+        if (type !== PROGRESS || state[dir].type !== LOAD) emit(state = L.set(dir, { type: type, event: event }, state));
       };
     };
     eventTypes.forEach(function (type) {
