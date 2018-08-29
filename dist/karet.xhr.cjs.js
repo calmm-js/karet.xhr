@@ -63,7 +63,7 @@ var DOWN = 'down';
 var ERROR = 'error';
 var EVENT = 'event';
 var INITIAL = 'initial';
-var JSON = 'json';
+var JSON_ = 'json';
 var LOAD = 'load';
 var LOADED = 'loaded';
 var LOADEND = 'loadend';
@@ -137,7 +137,7 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : 
     var state = { xhr: xhr, up: initial, down: initial };
     var update = function update(dir, type) {
       return function (event) {
-        emit(state = L.set(dir, { type: type, event: event }, state));
+        if (type !== PROGRESS && state[dir].type !== LOAD) emit(state = L.set(dir, { type: type, event: event }, state));
       };
     };
     eventTypes.forEach(function (type) {
@@ -153,7 +153,7 @@ var performPlain = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : 
     xhr.open(isNil(method) ? 'GET' : method, url, true, isNil(user) ? null : user, isNil(password) ? null : password);
     if (responseType) {
       xhr[RESPONSE_TYPE] = responseType;
-      if (responseType === JSON && xhr[RESPONSE_TYPE] !== JSON) state = L.set(PARSE, true, state);
+      if (responseType === JSON_ && xhr[RESPONSE_TYPE] !== JSON_) state = L.set(PARSE, true, state);
     }
     if (timeout) xhr[TIMEOUT] = timeout;
     if (withCredentials) xhr[WITH_CREDENTIALS] = withCredentials;
@@ -291,7 +291,7 @@ var performWith = /*#__PURE__*/I.curry(function performWith(defaults, overrides)
 });
 
 var performJson = /*#__PURE__*/setName( /*#__PURE__*/performWith({
-  responseType: JSON,
+  responseType: JSON_,
   headers: { 'Content-Type': 'application/json' }
 }), 'performJson');
 
