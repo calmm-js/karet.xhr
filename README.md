@@ -55,7 +55,6 @@ Examples:
       * [`XHR.responseHeader(header, xhr) ~> string`](#XHR-responseHeader)
     * [Response data](#response-data)
       * [`XHR.response(xhr) ~> varies`](#XHR-response)
-      * [`XHR.responseFull(xhr) ~> varies`](#XHR-responseFull)
       * [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
       * [`XHR.responseXML(xhr) ~> document`](#XHR-responseXML)
     * [Response URL](#response-url)
@@ -91,6 +90,7 @@ Examples:
   * [Deprecated](#deprecated)
     * ~~[`XHR.downHasSucceeded(xhr) ~> boolean`](#XHR-downHasSucceeded)~~
     * ~~[`XHR.headersReceived(xhr) ~> boolean`](#XHR-headersReceived)~~
+    * ~~[`XHR.responseFull(xhr) ~> varies`](#XHR-responseFull)~~
     * ~~[`XHR.upHasSucceeded(xhr) ~> boolean`](#XHR-upHasSucceeded)~~
 
 ## <a id="reference"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#reference) [Reference](#reference)
@@ -114,8 +114,8 @@ and [upload](#upload-state) state.
 #### <a id="XHR-getJson"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-getJson) [`XHR.getJson(url | {url,[, ...]}) ~> varies`](#XHR-getJson)
 
 `XHR.getJson(arg)` returns an observable that emits the [full
-response](#XHR-responseFull) after the [XHR has succeeded](#XHR-hasSucceeded).
-In case the XHR fails or times out, the XHR is emitted as an error.
+response](#XHR-response) after the [XHR has succeeded](#XHR-hasSucceeded).  In
+case the XHR fails or times out, the XHR is emitted as an error.
 
 #### <a id="XHR-performJson"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-peformJson) [`XHR.performJson(url | {url[, ...]}) ~> xhr`](#XHR-performJson)
 
@@ -186,8 +186,7 @@ property.
 WARNING: Setting `responseType` to `'json'` is not supported by IE 11.  This
 library implements a workaround by calling `JSON.parse` on the returned data in
 case setting `responseType` to `'json'` fails.  In case the response does not
-parse, then [`XHR.response`](#XHR-response) and
-[`XHR.responseFull`](XHR-responseFull) return `null`.
+parse, then [`XHR.response`](#XHR-response) returns `null`.
 
 See this live [GitHub repository search](https://codesandbox.io/s/l5271q0r2l)
 CodeSandbox for an example.
@@ -208,12 +207,13 @@ obtained.  See also [`XHR.status`](#XHR-status),
 ##### <a id="XHR-isDone"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-isDone) [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
 
 `XHR.isDone` returns a possibly observable boolean property that tells whether
-the XHR operation is complete (whether success or failure).
+the XHR operation is complete (whether success or failure).  See also
+[`XHR.hasSucceeded`](#XHR-hasSucceeded).
 
 ##### <a id="XHR-isProgressing"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-isProgressing) [`XHR.isProgressing(xhr) ~> boolean`](#XHR-isProgressing)
 
 `XHR.isProgressing` returns a possibly observable boolean property that tells
-whether the XHR operation has started, but has not yet [completed](#XHR-isDone).
+whether the XHR operation has started, but has not yet [ended](#XHR-isDone).
 
 #### <a id="end-state"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#end-state) [End state](#end-state)
 
@@ -296,30 +296,26 @@ an `Error` will be thrown.
 
 ##### <a id="XHR-response"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-response) [`XHR.response(xhr) ~> varies`](#XHR-response)
 
-`XHR.response` returns a possibly observable property of the
-[`response`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response)
-of an ongoing XHR.  See also [`XHR.responseFull`](#XHR-responseFull).
-
-##### <a id="XHR-responseFull"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-responseFull) [`XHR.responseFull(xhr) ~> varies`](#XHR-responseFull)
-
-`XHR.responseFull` returns a possibly observable property that emits the
+`XHR.response` returns a possibly observable property that emits the
 [`response`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response)
 after the [download operation of the XHR has completed](#XHR-downHasCompleted).
 When called on a non-observable XHR, the download operation must be completed or
-an `Error` will be thrown.  See also [`XHR.response`](#XHR-response).
+an `Error` will be thrown.  See also [`XHR.responseText`](#XHR-responseText).
 
 ##### <a id="XHR-responseText"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-responseText) [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
 
 `XHR.responseText` returns a possibly observable property of the
 [`responseText`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseText)
-property of an ongoing XHR.
+property of an ongoing XHR.  `XHR.responseText` is for observing the received
+response data before the data has been completely received.  See also
+[`XHR.response`](#XHR-response).
 
 ##### <a id="XHR-responseXML"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-responseXML) [`XHR.responseXML(xhr) ~> document`](#XHR-responseXML)
 
 `XHR.responseXML` returns a possibly observable property of the
 [`responseXML`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseXML)
-property after the XHR has completed.  When called on a non-observable XHR, its
-[`readyState` must be 4](#XHR-isDone) or an `Error` will be thrown.  See also
+property after the XHR has completed.  When called on a non-observable XHR, the
+download operation must be completed or an `Error` will be thrown.  See also
 [`XHR.response`](#XHR-response).
 
 #### <a id="response-url"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#response-url) [Response URL](#response-url)
@@ -496,6 +492,10 @@ See also [`XHR.statusIsHttpSuccess`](#XHR-statusIsHttpSuccess).
 
 `XHR.headersReceived` has been renamed to
 [`XHR.isStatusAvailable`](#XHR-isStatusAvailable).
+
+#### <a id="XHR-responseFull"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-responseFull) ~~[`XHR.responseFull(xhr) ~> varies`](#XHR-responseFull)~~
+
+`XHR.responseFull` has been renamed to [`XHR.response`](#XHR-response).
 
 #### <a id="XHR-upHasSucceeded"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-upHasSucceeded) ~~[`XHR.upHasSucceeded(xhr) ~> boolean`](#XHR-upHasSucceeded)~~
 

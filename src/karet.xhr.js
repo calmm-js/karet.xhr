@@ -294,19 +294,19 @@ export const errors = setName(
   'errors'
 )
 export const response = setName(
-  I.pipe2U(
-    F.lift(({xhr, parse}) => {
-      const response = xhr[RESPONSE]
-      return parse ? tryParse(response) : response
-    }),
-    skipAcyclicEquals
+  getAfter(
+    downHasCompleted,
+    I.pipe2U(
+      F.lift(({xhr, parse}) => {
+        const response = xhr[RESPONSE]
+        return parse ? tryParse(response) : response
+      }),
+      skipAcyclicEquals
+    )
   ),
   RESPONSE
 )
-export const responseFull = setName(
-  getAfter(downHasCompleted, response),
-  'responseFull'
-)
+
 export const responseType = setName(L.get([XHR, RESPONSE_TYPE]), RESPONSE_TYPE)
 export const responseURL = setName(
   getAfter(isStatusAvailable, L.get([XHR, RESPONSE_URL])),
@@ -404,7 +404,7 @@ export const getJson = setName(
     performJson,
     flatMapLatestToProperty(xhr => {
       if (hasSucceeded(xhr)) {
-        return K.constant(responseFull(xhr))
+        return K.constant(response(xhr))
       } else if (isDone(xhr) && (hasFailed(xhr) || hasTimedOut(xhr))) {
         return K.constantError(xhr)
       } else {
@@ -433,4 +433,5 @@ const renamed =
 
 export const downHasSucceeded = renamed(downHasCompleted, 'downHasSucceeded')
 export const headersReceived = renamed(isStatusAvailable, 'headersReceived')
+export const responseFull = renamed(response, 'responseFull')
 export const upHasSucceeded = renamed(upHasCompleted, 'upHasSucceeded')
