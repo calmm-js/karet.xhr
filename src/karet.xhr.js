@@ -55,7 +55,7 @@ const DOWN = 'down'
 const ERROR = 'error'
 const EVENT = 'event'
 const INITIAL = 'initial'
-const JSON = 'json'
+const JSON_ = 'json'
 const LOAD = 'load'
 const LOADED = 'loaded'
 const LOADEND = 'loadend'
@@ -151,7 +151,7 @@ const performPlain = (process.env.NODE_ENV === 'production'
     )
     if (responseType) {
       xhr[RESPONSE_TYPE] = responseType
-      if (responseType === JSON && xhr[RESPONSE_TYPE] !== JSON)
+      if (responseType === JSON_ && xhr[RESPONSE_TYPE] !== JSON_)
         state = L.set(PARSE, true, state)
     }
     if (timeout) xhr[TIMEOUT] = timeout
@@ -379,7 +379,7 @@ export const performWith = I.curry(function performWith(defaults, overrides) {
 
 export const performJson = setName(
   performWith({
-    responseType: JSON,
+    responseType: JSON_,
     headers: {'Content-Type': 'application/json'}
   }),
   'performJson'

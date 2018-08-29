@@ -1,5 +1,9 @@
 # Karet XHR Changelog
 
+## 0.6.1
+
+Fixed bug in IE11 `responseType` workaround.
+
 ## 0.6.0
 
 Renamed
