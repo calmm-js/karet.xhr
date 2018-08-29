@@ -4,6 +4,9 @@
 
 Fixed bug in IE11 `responseType` workaround.
 
+Added work around for IE11 where `'progress'` events were sent after `'load'`
+events.
+
 ## 0.6.0
 
 Renamed

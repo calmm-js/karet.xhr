@@ -130,7 +130,8 @@ const performPlain = (process.env.NODE_ENV === 'production'
     const xhr = new XMLHttpRequest()
     let state = {xhr, up: initial, down: initial}
     const update = (dir, type) => event => {
-      emit((state = L.set(dir, {type, event}, state)))
+      if (type !== PROGRESS && state[dir].type !== LOAD)
+        emit((state = L.set(dir, {type, event}, state)))
     }
     eventTypes.forEach(type => {
       xhr[ADD_EVENT_LISTENER](type, update(DOWN, type))
