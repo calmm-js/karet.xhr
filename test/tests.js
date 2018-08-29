@@ -235,3 +235,57 @@ describe('XHR deprecated', () => {
     XHR.downHasSucceeded(XHR.perform('http://localhost:3000/json'))
   )
 })
+
+describe('IE11 workarounds', () => {
+  let progressEvent = null
+  let progressAction = null
+  const addEventListener = target => (type, action) => {
+    if (type === 'progress') {
+      progressAction = action
+      target.addEventListener(type, e => {
+        progressEvent = e
+        action(e)
+      })
+    } else if (type === 'load') {
+      target.addEventListener(type, e => {
+        action(e)
+        if (progressEvent && progressAction) {
+          progressAction(progressEvent)
+        }
+      })
+    } else {
+      target.addEventListener(type, action)
+    }
+  }
+  const uploadHandler = {
+    get: (target, prop) =>
+      prop === 'addEventListener' ? addEventListener(target) : target.prop
+  }
+  class XMLHttpRequestIE11 extends XMLHttpRequest {
+    set responseType(type) {
+      if (type !== 'json') super.responseType = type
+    }
+    get upload() {
+      return new Proxy(super.upload, uploadHandler)
+    }
+  }
+  testEq([{returnTo: 'sender'}], () => {
+    window.XMLHttpRequest = XMLHttpRequestIE11
+    return XHR.response(
+      XHR.performJson({
+        url: 'http://localhost:3000/echo',
+        method: 'POST',
+        body: JSON.stringify({returnTo: 'sender'})
+      })
+    )
+  })
+  testEq([null], () => {
+    window.XMLHttpRequest = XMLHttpRequestIE11
+    return XHR.response(
+      XHR.perform({
+        url: 'http://localhost:3000/text',
+        responseType: 'json'
+      })
+    )
+  })
+})
