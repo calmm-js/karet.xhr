@@ -102,7 +102,7 @@ describe('XHR', () => {
     XHR.statusIsHttpSuccess(XHR.perform({url: 'http://localhost:3000/text'}))
   )
   testEq(['Hello, mocha!'], () =>
-    XHR.responseFull(
+    XHR.response(
       XHR.perform({
         url: K.constant('http://localhost:3000/text'),
         timeout: 10000,
@@ -153,7 +153,7 @@ describe('XHR', () => {
     )
   )
   testEq([{user: '101'}], () =>
-    XHR.responseFull(
+    XHR.response(
       XHR.perform({
         url: 'http://localhost:3000/json',
         responseType: 'json',
@@ -173,14 +173,12 @@ describe('XHR', () => {
     ).map(xml => xml.firstChild.textContent)
   )
   testEq(['Still there?'], () =>
-    XHR.responseFull(
+    XHR.response(
       XHR.perform({url: 'http://localhost:3000/slow', timeout: 2000})
     )
   )
   testEq([], () =>
-    XHR.responseFull(
-      XHR.perform({url: 'http://localhost:3000/slow', timeout: 200})
-    )
+    XHR.response(XHR.perform({url: 'http://localhost:3000/slow', timeout: 200}))
   )
   testEq([false, true], () =>
     XHR.hasTimedOut(
@@ -198,7 +196,7 @@ describe('XHR', () => {
     ).takeUntilBy(K.later(200, 'anything'))
   )
   testEq([{returnTo: 'sender'}], () =>
-    XHR.responseFull(
+    XHR.response(
       XHR.perform({
         url: 'http://localhost:3000/echo',
         method: 'POST',
@@ -212,7 +210,7 @@ describe('XHR', () => {
     XHR.perform({url: 'http://localhost:3000/slow', timeout: 2000})
       .map(xhr => {
         try {
-          return XHR.responseFull(xhr)
+          return XHR.response(xhr)
         } catch (e) {
           return e.message === 'downHasCompleted'
         }
