@@ -247,14 +247,14 @@ var hasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOutOn(either), 'has
 var loaded = /*#__PURE__*/setName( /*#__PURE__*/loadedOn(either), 'loaded');
 var total = /*#__PURE__*/setName( /*#__PURE__*/totalOn(either), 'total');
 var errors = /*#__PURE__*/setName( /*#__PURE__*/pipe2U( /*#__PURE__*/errorsWithOn(collect, either), skipAcyclicEquals), 'errors');
-var response = /*#__PURE__*/setName( /*#__PURE__*/pipe2U( /*#__PURE__*/lift(function (_ref2) {
+var response = /*#__PURE__*/setName( /*#__PURE__*/getAfter(downHasCompleted, /*#__PURE__*/pipe2U( /*#__PURE__*/lift(function (_ref2) {
   var xhr = _ref2.xhr,
       parse = _ref2.parse;
 
   var response = xhr[RESPONSE];
   return parse ? tryParse(response) : response;
-}), skipAcyclicEquals), RESPONSE);
-var responseFull = /*#__PURE__*/setName( /*#__PURE__*/getAfter(downHasCompleted, response), 'responseFull');
+}), skipAcyclicEquals)), RESPONSE);
+
 var responseType = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, RESPONSE_TYPE]), RESPONSE_TYPE);
 var responseURL = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/get([XHR, RESPONSE_URL])), RESPONSE_URL);
 var responseText = /*#__PURE__*/setName( /*#__PURE__*/get([XHR, /*#__PURE__*/when( /*#__PURE__*/get([RESPONSE_TYPE, /*#__PURE__*/isOneOf(['', 'text'])])), RESPONSE_TEXT]), RESPONSE_TEXT);
@@ -302,7 +302,7 @@ var hasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/and( /*#__PURE__*/branch({
 
 var getJson = /*#__PURE__*/setName( /*#__PURE__*/pipe2U(performJson, /*#__PURE__*/flatMapLatestToProperty(function (xhr) {
   if (hasSucceeded(xhr)) {
-    return constant(responseFull(xhr));
+    return constant(response(xhr));
   } else if (isDone(xhr) && (hasFailed(xhr) || hasTimedOut(xhr))) {
     return constantError(xhr);
   } else {
@@ -325,6 +325,7 @@ var renamed = process.env.NODE_ENV === 'production' ? function (x) {
 
 var downHasSucceeded = /*#__PURE__*/renamed(downHasCompleted, 'downHasSucceeded');
 var headersReceived = /*#__PURE__*/renamed(isStatusAvailable, 'headersReceived');
+var responseFull = /*#__PURE__*/renamed(response, 'responseFull');
 var upHasSucceeded = /*#__PURE__*/renamed(upHasCompleted, 'upHasSucceeded');
 
-export { perform, upHasStarted, upIsProgressing, upHasCompleted, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasCompleted, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, isStatusAvailable, isDone, isProgressing, hasFailed, hasTimedOut, loaded, total, errors, response, responseFull, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess, performWith, performJson, hasSucceeded, getJson, downHasSucceeded, headersReceived, upHasSucceeded };
+export { perform, upHasStarted, upIsProgressing, upHasCompleted, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasCompleted, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, isStatusAvailable, isDone, isProgressing, hasFailed, hasTimedOut, loaded, total, errors, response, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess, performWith, performJson, hasSucceeded, getJson, downHasSucceeded, headersReceived, responseFull, upHasSucceeded };

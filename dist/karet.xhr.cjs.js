@@ -251,14 +251,14 @@ var hasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOutOn(either), 'has
 var loaded = /*#__PURE__*/setName( /*#__PURE__*/loadedOn(either), 'loaded');
 var total = /*#__PURE__*/setName( /*#__PURE__*/totalOn(either), 'total');
 var errors = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/errorsWithOn(L.collect, either), skipAcyclicEquals), 'errors');
-var response = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/F.lift(function (_ref2) {
+var response = /*#__PURE__*/setName( /*#__PURE__*/getAfter(downHasCompleted, /*#__PURE__*/I.pipe2U( /*#__PURE__*/F.lift(function (_ref2) {
   var xhr = _ref2.xhr,
       parse = _ref2.parse;
 
   var response = xhr[RESPONSE];
   return parse ? tryParse(response) : response;
-}), skipAcyclicEquals), RESPONSE);
-var responseFull = /*#__PURE__*/setName( /*#__PURE__*/getAfter(downHasCompleted, response), 'responseFull');
+}), skipAcyclicEquals)), RESPONSE);
+
 var responseType = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, RESPONSE_TYPE]), RESPONSE_TYPE);
 var responseURL = /*#__PURE__*/setName( /*#__PURE__*/getAfter(isStatusAvailable, /*#__PURE__*/L.get([XHR, RESPONSE_URL])), RESPONSE_URL);
 var responseText = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, /*#__PURE__*/L.when( /*#__PURE__*/L.get([RESPONSE_TYPE, /*#__PURE__*/isOneOf(['', 'text'])])), RESPONSE_TEXT]), RESPONSE_TEXT);
@@ -306,7 +306,7 @@ var hasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/L.and( /*#__PURE__*/L.bran
 
 var getJson = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(performJson, /*#__PURE__*/flatMapLatestToProperty(function (xhr) {
   if (hasSucceeded(xhr)) {
-    return K.constant(responseFull(xhr));
+    return K.constant(response(xhr));
   } else if (isDone(xhr) && (hasFailed(xhr) || hasTimedOut(xhr))) {
     return K.constantError(xhr);
   } else {
@@ -329,6 +329,7 @@ var renamed = process.env.NODE_ENV === 'production' ? function (x) {
 
 var downHasSucceeded = /*#__PURE__*/renamed(downHasCompleted, 'downHasSucceeded');
 var headersReceived = /*#__PURE__*/renamed(isStatusAvailable, 'headersReceived');
+var responseFull = /*#__PURE__*/renamed(response, 'responseFull');
 var upHasSucceeded = /*#__PURE__*/renamed(upHasCompleted, 'upHasSucceeded');
 
 exports.perform = perform;
@@ -360,7 +361,6 @@ exports.loaded = loaded;
 exports.total = total;
 exports.errors = errors;
 exports.response = response;
-exports.responseFull = responseFull;
 exports.responseType = responseType;
 exports.responseURL = responseURL;
 exports.responseText = responseText;
@@ -379,4 +379,5 @@ exports.hasSucceeded = hasSucceeded;
 exports.getJson = getJson;
 exports.downHasSucceeded = downHasSucceeded;
 exports.headersReceived = headersReceived;
+exports.responseFull = responseFull;
 exports.upHasSucceeded = upHasSucceeded;
