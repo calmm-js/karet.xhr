@@ -249,8 +249,10 @@ after the HTTP status has been received.  When called on a non-observable XHR,
 ##### <a id="XHR-statusIsHttpSuccess"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-statusIsHttpSuccess) [`XHR.statusIsHttpSuccess(xhr) ~> boolean`](#XHR-statusIsHttpSuccess)
 
 `XHR.statusIsHttpSuccess(xhr)` is shorthand for
-`XHR.isHttpSuccess(XHR.status(xhr))`.  See also [`XHR.status`](#XHR-status) and
-[`XHR.isHttpSuccess`](#XHR-isHttpSuccess).
+`XHR.isHttpSuccess(XHR.status(xhr))`.  Note that HTTP status is usually received
+before the [download](#XHR-downHasCompleted) and [upload](#XHR-upHasCompleted)
+phases have completed.  See also [`XHR.hasSucceeded`](#XHR-hasSucceeded),
+[`XHR.status`](#XHR-status) and [`XHR.isHttpSuccess`](#XHR-isHttpSuccess).
 
 ##### <a id="XHR-statusText"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-statusText) [`XHR.statusText(xhr) ~> string`](#XHR-statusText)
 

@@ -311,8 +311,10 @@ after the HTTP status has been received.  When called on a non-observable XHR,
 <a href="#XHR-isStatusAvailable"><code>readyState</code> must be 2</a> or an <code>Error</code> will be thrown.</p>
 <h5><a id="XHR-statusIsHttpSuccess"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-statusIsHttpSuccess">■</a> <a href="#XHR-statusIsHttpSuccess"><code>XHR.statusIsHttpSuccess(xhr) ~&gt; boolean</code></a></h5>
 <p><code>XHR.statusIsHttpSuccess(xhr)</code> is shorthand for
-<code>XHR.isHttpSuccess(XHR.status(xhr))</code>.  See also <a href="#XHR-status"><code>XHR.status</code></a> and
-<a href="#XHR-isHttpSuccess"><code>XHR.isHttpSuccess</code></a>.</p>
+<code>XHR.isHttpSuccess(XHR.status(xhr))</code>.  Note that HTTP status is usually received
+before the <a href="#XHR-downHasCompleted">download</a> and <a href="#XHR-upHasCompleted">upload</a>
+phases have completed.  See also <a href="#XHR-hasSucceeded"><code>XHR.hasSucceeded</code></a>,
+<a href="#XHR-status"><code>XHR.status</code></a> and <a href="#XHR-isHttpSuccess"><code>XHR.isHttpSuccess</code></a>.</p>
 <h5><a id="XHR-statusText"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-statusText">■</a> <a href="#XHR-statusText"><code>XHR.statusText(xhr) ~&gt; string</code></a></h5>
 <p><code>XHR.statusText</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/statusText"><code>statusText</code></a>
