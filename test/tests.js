@@ -185,6 +185,14 @@ describe('XHR', () => {
       XHR.perform({url: 'http://localhost:3000/slow', timeout: 200})
     )
   )
+  testEq(['failed'], () =>
+    XHR.getJson({
+      url: 'http://localhost:3000/slow',
+      timeout: 200
+    })
+      .flatMapErrors(_ => K.constant('failed'))
+      .toProperty()
+  )
   testEq([false], () =>
     XHR.hasSucceeded(
       XHR.perform({url: 'http://localhost:3000/slow', timeout: 200})
