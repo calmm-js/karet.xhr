@@ -228,6 +228,7 @@ describe('XHR', () => {
       .map(XHR.isDone)
       .filter(R.identity)
   )
+  testEq([null], () => XHR.getJson('http://localhost:3000/text'))
 })
 
 describe('XHR deprecated', () => {
@@ -281,11 +282,6 @@ describe('IE11 workarounds', () => {
   })
   testEq([null], () => {
     window.XMLHttpRequest = XMLHttpRequestIE11
-    return XHR.response(
-      XHR.perform({
-        url: 'http://localhost:3000/text',
-        responseType: 'json'
-      })
-    )
+    return XHR.getJson('http://localhost:3000/text')
   })
 })
