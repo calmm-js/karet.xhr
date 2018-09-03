@@ -28,7 +28,6 @@ app.get('/slow', (req, res) => {
 })
 
 app.post('/echo', (req, res) => {
-  console.log(req.body)
   res.json(req.body)
 })
 
