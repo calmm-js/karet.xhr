@@ -1,3 +1,4 @@
+import * as I from 'infestines'
 import * as K from 'kefir'
 import * as R from 'ramda'
 
@@ -229,6 +230,19 @@ describe('XHR', () => {
       .filter(R.identity)
   )
   testEq([null], () => XHR.getJson('http://localhost:3000/text'))
+  testEq([{user: 'WORLD'}], () =>
+    I.seq(
+      XHR.performJson({
+        url: 'http://localhost:3000/echo',
+        method: 'POST',
+        body: JSON.stringify({url: 'HTTP://LOCALHOST:3000/JSON'})
+      }),
+      XHR.ap(XHR.of(R.map(R.toLower))),
+      XHR.chain(({url}) => XHR.performJson(url)),
+      XHR.map(R.map(R.toUpper)),
+      XHR.result
+    )
+  )
 })
 
 describe('XHR deprecated', () => {
@@ -270,14 +284,18 @@ describe('IE11 workarounds', () => {
       return new Proxy(super.upload, uploadHandler)
     }
   }
-  testEq([{returnTo: 'sender'}], () => {
+  testEq([{user: 'WORLD'}], () => {
     window.XMLHttpRequest = XMLHttpRequestIE11
-    return XHR.response(
+    return I.seq(
       XHR.performJson({
         url: 'http://localhost:3000/echo',
         method: 'POST',
-        body: JSON.stringify({returnTo: 'sender'})
-      })
+        body: JSON.stringify({url: 'HTTP://LOCALHOST:3000/JSON'})
+      }),
+      XHR.ap(XHR.of(R.map(R.toLower))),
+      XHR.chain(({url}) => XHR.performJson(url)),
+      XHR.map(R.map(R.toUpper)),
+      XHR.result
     )
   })
   testEq([null], () => {
