@@ -35,7 +35,12 @@ app.post('/echo', (req, res) => {
 app.listen(3000)
 
 async function run() {
-  const {coverage, result: {stats: {failures}}} = await runner({
+  const {
+    coverage,
+    result: {
+      stats: {failures}
+    }
+  } = await runner({
     file: 'http://localhost:3000/test/index.html',
     args: ['no-sandbox', 'disable-setuid-sandbox']
   })
