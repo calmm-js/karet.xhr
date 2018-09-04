@@ -318,12 +318,22 @@
 
   var result = /*#__PURE__*/setName( /*#__PURE__*/getAfter(hasSucceeded, response), 'result');
 
+  var getAllResponseHeaders = /*#__PURE__*/I.always('');
+  var getResponseHeader = /*#__PURE__*/I.always(null);
+
   var of = function of(response) {
     return {
       event: typeLoadend,
       up: typeInitial,
       down: typeLoad,
-      xhr: { status: 200, response: response },
+      xhr: {
+        getAllResponseHeaders: getAllResponseHeaders,
+        getResponseHeader: getResponseHeader,
+        readyState: 4,
+        response: response,
+        status: 200,
+        statusText: 'OK'
+      },
       map: I.id
     };
   };

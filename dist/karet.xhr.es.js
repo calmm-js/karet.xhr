@@ -1,5 +1,5 @@
 import { lift } from 'karet.lift';
-import { curry, acyclicEqualsU, pipe2U, isString, isNumber, defineNameU, freeze, isFunction, id, object0, isArray, curryN, assign } from 'infestines';
+import { curry, acyclicEqualsU, pipe2U, isString, isNumber, defineNameU, freeze, isFunction, id, object0, isArray, curryN, assign, always } from 'infestines';
 import { Observable, constant, Stream, never, stream, constantError } from 'kefir';
 import { set, get, array, cross, reread, identity, inverse, keyed, transform, ifElse, modifyOp, branch, cond, setOp, keys, sum, branches, collect, when, and, is } from 'kefir.partial.lenses';
 import { accept, arrayId, tuple, and as and$1, acceptWith, validate, freeFn, props, optional, propsOr, modifyAfter, or, cases } from 'partial.lenses.validation';
@@ -320,12 +320,22 @@ var getJson = /*#__PURE__*/setName( /*#__PURE__*/pipe2U(performJson, /*#__PURE__
 
 var result = /*#__PURE__*/setName( /*#__PURE__*/getAfter(hasSucceeded, response), 'result');
 
+var getAllResponseHeaders = /*#__PURE__*/always('');
+var getResponseHeader = /*#__PURE__*/always(null);
+
 var of = function of(response) {
   return {
     event: typeLoadend,
     up: typeInitial,
     down: typeLoad,
-    xhr: { status: 200, response: response },
+    xhr: {
+      getAllResponseHeaders: getAllResponseHeaders,
+      getResponseHeader: getResponseHeader,
+      readyState: 4,
+      response: response,
+      status: 200,
+      statusText: 'OK'
+    },
     map: id
   };
 };
