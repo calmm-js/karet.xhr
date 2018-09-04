@@ -243,6 +243,39 @@ describe('XHR', () => {
       XHR.result
     )
   )
+  testEq(
+    {
+      allResponseHeaders: '',
+      errors: [],
+      hasFailed: false,
+      hasTimedOut: false,
+      isDone: true,
+      isProgressing: false,
+      isStatusAvailable: true,
+      loaded: 0,
+      responseHeader: null,
+      status: 200,
+      statusIsHttpSuccess: true,
+      statusText: 'OK',
+      total: 0
+    },
+    () =>
+      R.map(fn => fn(XHR.of(101)), {
+        allResponseHeaders: XHR.allResponseHeaders,
+        errors: XHR.errors,
+        hasFailed: XHR.hasFailed,
+        hasTimedOut: XHR.hasTimedOut,
+        isDone: XHR.isDone,
+        isProgressing: XHR.isProgressing,
+        isStatusAvailable: XHR.isStatusAvailable,
+        loaded: XHR.loaded,
+        responseHeader: XHR.responseHeader('foo'),
+        status: XHR.status,
+        statusIsHttpSuccess: XHR.statusIsHttpSuccess,
+        statusText: XHR.statusText,
+        total: XHR.total
+      })
+  )
 })
 
 describe('XHR deprecated', () => {
