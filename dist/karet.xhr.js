@@ -354,6 +354,8 @@
     }, f);
   });
 
+  var Succeeded = /*#__PURE__*/I.freeze({ map: map, ap: ap, of: of, chain: chain });
+
   var renamed = function renamed(fn, name) {
     var warned = false;
     return setName(function deprecated(x) {
@@ -420,6 +422,7 @@
   exports.chain = chain;
   exports.map = map;
   exports.ap = ap;
+  exports.Succeeded = Succeeded;
   exports.downHasSucceeded = downHasSucceeded;
   exports.headersReceived = headersReceived;
   exports.responseFull = responseFull;

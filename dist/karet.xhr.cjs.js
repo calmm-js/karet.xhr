@@ -360,6 +360,8 @@ var ap = /*#__PURE__*/I.curry(function ap(f, x) {
   }, f);
 });
 
+var Succeeded = /*#__PURE__*/I.freeze({ map: map, ap: ap, of: of, chain: chain });
+
 var renamed = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
 } : function renamed(fn, name) {
@@ -428,6 +430,7 @@ exports.of = of;
 exports.chain = chain;
 exports.map = map;
 exports.ap = ap;
+exports.Succeeded = Succeeded;
 exports.downHasSucceeded = downHasSucceeded;
 exports.headersReceived = headersReceived;
 exports.responseFull = responseFull;
