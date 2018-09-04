@@ -85,6 +85,12 @@ Examples:
     * [`XHR.upIsProgressing(xhr) ~> boolean`](#XHR-upIsProgressing)
     * [`XHR.upLoaded(xhr) ~> number`](#XHR-upLoaded)
     * [`XHR.upTotal(xhr) ~> number`](#XHR-upTotal)
+  * [Happy path](#happy-path)
+    * [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)
+    * [`XHR.chain(responseA => xhrB, xhrA) ~> xhrB`](#XHR-chain)
+    * [`XHR.map(responseA => responseB, xhrA) ~> xhrB`](#XHR-map)
+    * [`XHR.of(response) ~> xhr`](#XHR-of)
+    * [`XHR.result(xhr) ~> varies`](#XHR-result)
   * [Auxiliary](#auxiliary)
     * [`XHR.isHttpSuccess(number) ~> boolean`](#XHR-isHttpSuccess)
   * [Deprecated](#deprecated)
@@ -471,6 +477,43 @@ property of an ongoing XHR.
 `XHR.upTotal` returns a possibly observable property of the
 [`total`](https://developer.mozilla.org/en-US/docs/Web/Events/progress) property
 of an ongoing XHR.
+
+### <a id="happy-path"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#happy-path) [Happy path](#happy-path)
+
+The combinators [`XHR.ap`](#XHR-ap), [`XHR.chain`](#XHR-chain),
+[`XHR.map`](#XHR-map), and [`XHR.of`](#XHR-of) allow one to compose sequences of
+XHR requests that stop as soon as the first XHR does not
+[succeed](#XHR-hasSucceeded).
+
+#### <a id="XHR-ap"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-ap) [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)
+
+`XHR.ap` implements a static land compatible
+[`ap`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#apply)
+function for composing succeeding XHRs.
+
+#### <a id="XHR-chain"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-chain) [`XHR.chain(responseA => xhrB, xhrA) ~> xhrB`](#XHR-chain)
+
+`XHR.chain` implements a static land compatible
+[`chain`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#chain)
+function for composing succeeding XHRs.
+
+#### <a id="XHR-map"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-map) [`XHR.map(responseA => responseB, xhrA) ~> xhrB`](#XHR-map)
+
+`XHR.map` implements a static land compatible
+[`map`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor)
+function for composing succeeding XHRs.
+
+#### <a id="XHR-of"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-of) [`XHR.of(response) ~> xhr`](#XHR-of)
+
+`XHR.of` implements a static land compatible
+[`of`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative)
+function for composing succeeding XHRs.
+
+#### <a id="XHR-result"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-result) [`XHR.result(xhr) ~> varies`](#XHR-result)
+
+`XHR.result` returns the response of a [succeeded](#XHR-hasSucceeded) XHR.  Note
+that [`XHR.response`](#XHR-response) allows one to obtain the response before
+the XHR [is done](#XHR-isDone) and even when the XHR has (partially) failed.
 
 ### <a id="auxiliary"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#auxiliary) [Auxiliary](#auxiliary)
 

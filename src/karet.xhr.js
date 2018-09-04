@@ -8,6 +8,10 @@ import * as V from 'partial.lenses.validation'
 
 const isObservable = x => x instanceof K.Observable
 
+const toObservable = x => (isObservable(x) ? x : K.constant(x))
+
+const toProperty = x => (x instanceof K.Stream ? x.toProperty() : x)
+
 const never = K.never()
 
 const skipDuplicates = I.curry(function skipDuplicates(eq, xs) {
@@ -30,7 +34,9 @@ const flatMapLatestToProperty = I.curry(function flatMapLatestToProperty(
   fn,
   x
 ) {
-  return (isObservable(x) ? x.flatMapLatest(fn) : fn(x)).toProperty()
+  return isObservable(x)
+    ? toProperty(x.flatMapLatest(I.pipe2U(fn, toObservable)))
+    : toProperty(fn(x))
 })
 
 //
@@ -60,8 +66,8 @@ const LOAD = 'load'
 const LOADED = 'loaded'
 const LOADEND = 'loadend'
 const LOADSTART = 'loadstart'
+const MAP = 'map'
 const OVERRIDE_MIME_TYPE = 'overrideMimeType'
-const PARSE = 'parse'
 const PROGRESS = 'progress'
 const READYSTATECHANGE = 'readystatechange'
 const READY_STATE = 'readyState'
@@ -79,7 +85,9 @@ const UP = 'up'
 const WITH_CREDENTIALS = 'withCredentials'
 const XHR = 'xhr'
 
-const initial = {type: INITIAL}
+const typeInitial = I.freeze({type: INITIAL})
+const typeLoadend = I.freeze({type: LOADEND})
+const typeLoad = I.freeze({type: LOAD})
 
 const eventTypes = [LOADSTART, PROGRESS, TIMEOUT, LOAD, ERROR]
 
@@ -128,7 +136,7 @@ const performPlain = (process.env.NODE_ENV === 'production'
     const withCredentials = args[WITH_CREDENTIALS]
 
     const xhr = new XMLHttpRequest()
-    let state = {xhr, up: initial, down: initial}
+    let state = {xhr, up: typeInitial, down: typeInitial, map: I.id}
     const update = (dir, type) => event => {
       if (type !== PROGRESS || state[dir].type !== LOAD)
         emit((state = L.set(dir, {type, event}, state)))
@@ -153,7 +161,7 @@ const performPlain = (process.env.NODE_ENV === 'production'
     if (responseType) {
       xhr[RESPONSE_TYPE] = responseType
       if (responseType === JSON_ && xhr[RESPONSE_TYPE] !== JSON_)
-        state = L.set(PARSE, true, state)
+        state = L.set(MAP, tryParse, state)
     }
     if (timeout) xhr[TIMEOUT] = timeout
     if (withCredentials) xhr[WITH_CREDENTIALS] = withCredentials
@@ -297,13 +305,7 @@ export const errors = setName(
 export const response = setName(
   getAfter(
     downHasCompleted,
-    I.pipe2U(
-      F.lift(({xhr, parse}) => {
-        const response = xhr[RESPONSE]
-        return parse ? tryParse(response) : response
-      }),
-      skipAcyclicEquals
-    )
+    I.pipe2U(F.lift(({xhr, map}) => map(xhr[RESPONSE])), skipAcyclicEquals)
   ),
   RESPONSE
 )
@@ -405,7 +407,7 @@ export const getJson = setName(
     performJson,
     flatMapLatestToProperty(xhr => {
       if (hasSucceeded(xhr)) {
-        return K.constant(response(xhr))
+        return response(xhr)
       } else if (isDone(xhr) && (hasFailed(xhr) || hasTimedOut(xhr))) {
         return K.constantError(xhr)
       } else {
@@ -415,6 +417,31 @@ export const getJson = setName(
   ),
   'getJson'
 )
+
+export const result = setName(getAfter(hasSucceeded, response), 'result')
+
+export const of = response => ({
+  event: typeLoadend,
+  up: typeInitial,
+  down: typeLoad,
+  xhr: {status: 200, response},
+  map: I.id
+})
+
+export const chain = I.curry(function chain(fn, xhr) {
+  return flatMapLatestToProperty(
+    x => (hasSucceeded(x) ? fn(response(x)) : x),
+    xhr
+  )
+})
+
+export const map = I.curry(function map(fn, xhr) {
+  return chain(I.pipe2U(fn, of), xhr)
+})
+
+export const ap = I.curry(function ap(f, x) {
+  return chain(f => map(f, x), f)
+})
 
 const renamed =
   process.env.NODE_ENV === 'production'
