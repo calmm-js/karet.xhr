@@ -86,6 +86,7 @@ Examples:
     * [`XHR.upLoaded(xhr) ~> number`](#XHR-upLoaded)
     * [`XHR.upTotal(xhr) ~> number`](#XHR-upTotal)
   * [Happy path](#happy-path)
+    * [`XHR.Succeeded ~> Monad`](#XHR-Succeeded)
     * [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)
     * [`XHR.chain(responseA => xhrB, xhrA) ~> xhrB`](#XHR-chain)
     * [`XHR.map(responseA => responseB, xhrA) ~> xhrB`](#XHR-map)
@@ -480,9 +481,13 @@ of an ongoing XHR.
 
 ### <a id="happy-path"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#happy-path) [Happy path](#happy-path)
 
-The combinators [`XHR.ap`](#XHR-ap), [`XHR.chain`](#XHR-chain),
-[`XHR.map`](#XHR-map), and [`XHR.of`](#XHR-of) allow one to compose sequences of
-XHR requests that stop as soon as the first XHR does not
+#### <a id="XHR-Succeeded"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-Succeeded) [`XHR.Succeeded ~> Monad`](#XHR-Succeeded)
+
+`XHR.Succeeded` is a static land compatible
+[monad](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad)
+compromised of the [`XHR.ap`](#XHR-ap), [`XHR.chain`](#XHR-chain),
+[`XHR.map`](#XHR-map), and [`XHR.of`](#XHR-of) combinators that allows one to
+compose sequences of XHR requests that stop as soon as the first XHR does not
 [succeed](#XHR-hasSucceeded).
 
 #### <a id="XHR-ap"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-ap) [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)

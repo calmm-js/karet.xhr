@@ -453,6 +453,8 @@ export const ap = I.curry(function ap(f, x) {
   return chain(f => map(f, x), f)
 })
 
+export const Succeeded = I.freeze({map, ap, of, chain})
+
 const renamed =
   process.env.NODE_ENV === 'production'
     ? x => x
