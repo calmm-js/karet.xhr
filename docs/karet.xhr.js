@@ -10,6 +10,14 @@
     return x instanceof K.Observable;
   };
 
+  var toObservable = function toObservable(x) {
+    return isObservable(x) ? x : K.constant(x);
+  };
+
+  var toProperty = function toProperty(x) {
+    return x instanceof K.Stream ? x.toProperty() : x;
+  };
+
   var never = /*#__PURE__*/K.never();
 
   var skipDuplicates = /*#__PURE__*/I.curry(function skipDuplicates(eq, xs) {
@@ -29,7 +37,7 @@
   });
 
   var flatMapLatestToProperty = /*#__PURE__*/I.curry(function flatMapLatestToProperty(fn, x) {
-    return (isObservable(x) ? x.flatMapLatest(fn) : fn(x)).toProperty();
+    return isObservable(x) ? toProperty(x.flatMapLatest(I.pipe2U(fn, toObservable))) : toProperty(fn(x));
   });
 
   //
@@ -62,8 +70,8 @@
   var LOADED = 'loaded';
   var LOADEND = 'loadend';
   var LOADSTART = 'loadstart';
+  var MAP = 'map';
   var OVERRIDE_MIME_TYPE = 'overrideMimeType';
-  var PARSE = 'parse';
   var PROGRESS = 'progress';
   var READYSTATECHANGE = 'readystatechange';
   var READY_STATE = 'readyState';
@@ -81,7 +89,9 @@
   var WITH_CREDENTIALS = 'withCredentials';
   var XHR = 'xhr';
 
-  var initial = { type: INITIAL };
+  var typeInitial = /*#__PURE__*/I.freeze({ type: INITIAL });
+  var typeLoadend = /*#__PURE__*/I.freeze({ type: LOADEND });
+  var typeLoad = /*#__PURE__*/I.freeze({ type: LOAD });
 
   var eventTypes = [LOADSTART, PROGRESS, TIMEOUT, LOAD, ERROR];
 
@@ -128,7 +138,7 @@
       var withCredentials = args[WITH_CREDENTIALS];
 
       var xhr = new XMLHttpRequest();
-      var state = { xhr: xhr, up: initial, down: initial };
+      var state = { xhr: xhr, up: typeInitial, down: typeInitial, map: I.id };
       var update = function update(dir, type) {
         return function (event) {
           if (type !== PROGRESS || state[dir].type !== LOAD) emit(state = L.set(dir, { type: type, event: event }, state));
@@ -147,7 +157,7 @@
       xhr.open(isNil(method) ? 'GET' : method, url, true, isNil(user) ? null : user, isNil(password) ? null : password);
       if (responseType) {
         xhr[RESPONSE_TYPE] = responseType;
-        if (responseType === JSON_ && xhr[RESPONSE_TYPE] !== JSON_) state = L.set(PARSE, true, state);
+        if (responseType === JSON_ && xhr[RESPONSE_TYPE] !== JSON_) state = L.set(MAP, tryParse, state);
       }
       if (timeout) xhr[TIMEOUT] = timeout;
       if (withCredentials) xhr[WITH_CREDENTIALS] = withCredentials;
@@ -247,10 +257,8 @@
   var errors = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U( /*#__PURE__*/errorsWithOn(L.collect, either), skipAcyclicEquals), 'errors');
   var response = /*#__PURE__*/setName( /*#__PURE__*/getAfter(downHasCompleted, /*#__PURE__*/I.pipe2U( /*#__PURE__*/F.lift(function (_ref2) {
     var xhr = _ref2.xhr,
-        parse = _ref2.parse;
-
-    var response = xhr[RESPONSE];
-    return parse ? tryParse(response) : response;
+        map = _ref2.map;
+    return map(xhr[RESPONSE]);
   }), skipAcyclicEquals)), RESPONSE);
 
   var responseType = /*#__PURE__*/setName( /*#__PURE__*/L.get([XHR, RESPONSE_TYPE]), RESPONSE_TYPE);
@@ -300,13 +308,41 @@
 
   var getJson = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(performJson, /*#__PURE__*/flatMapLatestToProperty(function (xhr) {
     if (hasSucceeded(xhr)) {
-      return K.constant(response(xhr));
+      return response(xhr);
     } else if (isDone(xhr) && (hasFailed(xhr) || hasTimedOut(xhr))) {
       return K.constantError(xhr);
     } else {
       return never;
     }
   })), 'getJson');
+
+  var result = /*#__PURE__*/setName( /*#__PURE__*/getAfter(hasSucceeded, response), 'result');
+
+  var of = function of(response) {
+    return {
+      event: typeLoadend,
+      up: typeInitial,
+      down: typeLoad,
+      xhr: { status: 200, response: response },
+      map: I.id
+    };
+  };
+
+  var chain = /*#__PURE__*/I.curry(function chain(fn, xhr) {
+    return flatMapLatestToProperty(function (x) {
+      return hasSucceeded(x) ? fn(response(x)) : x;
+    }, xhr);
+  });
+
+  var map = /*#__PURE__*/I.curry(function map(fn, xhr) {
+    return chain(I.pipe2U(fn, of), xhr);
+  });
+
+  var ap = /*#__PURE__*/I.curry(function ap(f, x) {
+    return chain(function (f) {
+      return map(f, x);
+    }, f);
+  });
 
   var renamed = function renamed(fn, name) {
     var warned = false;
@@ -369,6 +405,11 @@
   exports.performJson = performJson;
   exports.hasSucceeded = hasSucceeded;
   exports.getJson = getJson;
+  exports.result = result;
+  exports.of = of;
+  exports.chain = chain;
+  exports.map = map;
+  exports.ap = ap;
   exports.downHasSucceeded = downHasSucceeded;
   exports.headersReceived = headersReceived;
   exports.responseFull = responseFull;
