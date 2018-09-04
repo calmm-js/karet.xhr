@@ -420,11 +420,21 @@ export const getJson = setName(
 
 export const result = setName(getAfter(hasSucceeded, response), 'result')
 
+const getAllResponseHeaders = I.always('')
+const getResponseHeader = I.always(null)
+
 export const of = response => ({
   event: typeLoadend,
   up: typeInitial,
   down: typeLoad,
-  xhr: {status: 200, response},
+  xhr: {
+    getAllResponseHeaders,
+    getResponseHeader,
+    readyState: 4,
+    response,
+    status: 200,
+    statusText: 'OK'
+  },
   map: I.id
 })
 
