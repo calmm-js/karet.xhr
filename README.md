@@ -485,7 +485,7 @@ of an ongoing XHR.
 
 `XHR.Succeeded` is a static land compatible
 [monad](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad)
-compromised of the [`XHR.ap`](#XHR-ap), [`XHR.chain`](#XHR-chain),
+comprised of the [`XHR.ap`](#XHR-ap), [`XHR.chain`](#XHR-chain),
 [`XHR.map`](#XHR-map), and [`XHR.of`](#XHR-of) combinators that allows one to
 compose sequences of XHR requests that stop as soon as the first XHR does not
 [succeed](#XHR-hasSucceeded).
