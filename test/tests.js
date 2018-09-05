@@ -243,6 +243,14 @@ describe('XHR', () => {
       XHR.result
     )
   )
+  testEq([['Hello, world!', {user: 'world'}]], () =>
+    XHR.result(
+      XHR.apply(R.pair, [
+        XHR.perform('http://localhost:3000/text'),
+        XHR.performJson('http://localhost:3000/json')
+      ])
+    )
+  )
   testEq(
     {
       allResponseHeaders: '',

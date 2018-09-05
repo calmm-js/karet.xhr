@@ -88,6 +88,7 @@ Examples:
   * [Happy path](#happy-path)
     * [`XHR.Succeeded ~> Monad`](#XHR-Succeeded)
     * [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)
+    * [`XHR.apply((...responseAs) => responseB, [...xhrAs]) ~> xhrB`](#XHR-apply)
     * [`XHR.chain(responseA => xhrB, xhrA) ~> xhrB`](#XHR-chain)
     * [`XHR.map(responseA => responseB, xhrA) ~> xhrB`](#XHR-map)
     * [`XHR.of(response) ~> xhr`](#XHR-of)
@@ -495,6 +496,10 @@ compose sequences of XHR requests that stop as soon as the first XHR does not
 `XHR.ap` implements a static land compatible
 [`ap`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#apply)
 function for composing succeeding XHRs.
+
+#### <a id="XHR-apply"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-apply) [`XHR.apply((...responseAs) => responseB, [...xhrAs]) ~> xhrB`](#XHR-apply)
+
+`XHR.apply` maps the given XHRs through the given function.
 
 #### <a id="XHR-chain"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-chain) [`XHR.chain(responseA => xhrB, xhrA) ~> xhrB`](#XHR-chain)
 

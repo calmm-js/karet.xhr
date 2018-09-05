@@ -455,6 +455,13 @@ export const ap = I.curry(function ap(f, x) {
 
 export const Succeeded = I.freeze({map, ap, of, chain})
 
+export const apply = I.curry(function apply(f, xs) {
+  return map(
+    xs => f.apply(null, xs),
+    L.traverse(Succeeded, I.id, L.elemsTotal, xs)
+  )
+})
+
 const renamed =
   process.env.NODE_ENV === 'production'
     ? x => x
