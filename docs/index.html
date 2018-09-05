@@ -149,6 +149,7 @@ the API of this library as an example.</li>
 <li><a href="#happy-path">Happy path</a><ul>
 <li><a href="#XHR-Succeeded"><code>XHR.Succeeded ~&gt; Monad</code></a></li>
 <li><a href="#XHR-ap"><code>XHR.ap(xhrAtoB, xhrA) ~&gt; xhrB</code></a></li>
+<li><a href="#XHR-apply"><code>XHR.apply((...responseAs) =&gt; responseB, [...xhrAs]) ~&gt; xhrB</code></a></li>
 <li><a href="#XHR-chain"><code>XHR.chain(responseA =&gt; xhrB, xhrA) ~&gt; xhrB</code></a></li>
 <li><a href="#XHR-map"><code>XHR.map(responseA =&gt; responseB, xhrA) ~&gt; xhrB</code></a></li>
 <li><a href="#XHR-of"><code>XHR.of(response) ~&gt; xhr</code></a></li>
@@ -484,6 +485,8 @@ compose sequences of XHR requests that stop as soon as the first XHR does not
 <p><code>XHR.ap</code> implements a static land compatible
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#apply"><code>ap</code></a>
 function for composing succeeding XHRs.</p>
+<h4><a id="XHR-apply"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-apply">■</a> <a href="#XHR-apply"><code>XHR.apply((...responseAs) =&gt; responseB, [...xhrAs]) ~&gt; xhrB</code></a></h4>
+<p><code>XHR.apply</code> maps the given XHRs through the given function.</p>
 <h4><a id="XHR-chain"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-chain">■</a> <a href="#XHR-chain"><code>XHR.chain(responseA =&gt; xhrB, xhrA) ~&gt; xhrB</code></a></h4>
 <p><code>XHR.chain</code> implements a static land compatible
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#chain"><code>chain</code></a>

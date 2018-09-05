@@ -356,6 +356,12 @@
 
   var Succeeded = /*#__PURE__*/I.freeze({ map: map, ap: ap, of: of, chain: chain });
 
+  var apply = /*#__PURE__*/I.curry(function apply(f, xs) {
+    return map(function (xs) {
+      return f.apply(null, xs);
+    }, L.traverse(Succeeded, I.id, L.elemsTotal, xs));
+  });
+
   var renamed = function renamed(fn, name) {
     var warned = false;
     return setName(function deprecated(x) {
@@ -423,6 +429,7 @@
   exports.map = map;
   exports.ap = ap;
   exports.Succeeded = Succeeded;
+  exports.apply = apply;
   exports.downHasSucceeded = downHasSucceeded;
   exports.headersReceived = headersReceived;
   exports.responseFull = responseFull;

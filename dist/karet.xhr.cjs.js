@@ -362,6 +362,12 @@ var ap = /*#__PURE__*/I.curry(function ap(f, x) {
 
 var Succeeded = /*#__PURE__*/I.freeze({ map: map, ap: ap, of: of, chain: chain });
 
+var apply = /*#__PURE__*/I.curry(function apply(f, xs) {
+  return map(function (xs) {
+    return f.apply(null, xs);
+  }, L.traverse(Succeeded, I.id, L.elemsTotal, xs));
+});
+
 var renamed = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
 } : function renamed(fn, name) {
@@ -431,6 +437,7 @@ exports.chain = chain;
 exports.map = map;
 exports.ap = ap;
 exports.Succeeded = Succeeded;
+exports.apply = apply;
 exports.downHasSucceeded = downHasSucceeded;
 exports.headersReceived = headersReceived;
 exports.responseFull = responseFull;

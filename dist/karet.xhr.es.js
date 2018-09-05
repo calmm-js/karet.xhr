@@ -1,7 +1,7 @@
 import { lift } from 'karet.lift';
 import { curry, acyclicEqualsU, pipe2U, isString, isNumber, defineNameU, freeze, isFunction, id, object0, isArray, curryN, assign, always } from 'infestines';
 import { Observable, constant, Stream, never, stream, constantError } from 'kefir';
-import { set, get, array, cross, reread, identity, inverse, keyed, transform, ifElse, modifyOp, branch, cond, setOp, keys, sum, branches, collect, when, and, is } from 'kefir.partial.lenses';
+import { set, get, array, cross, reread, identity, inverse, keyed, transform, ifElse, modifyOp, branch, cond, setOp, keys, sum, branches, collect, when, and, is, traverse, elemsTotal } from 'kefir.partial.lenses';
 import { accept, arrayId, tuple, and as and$1, acceptWith, validate, freeFn, props, optional, propsOr, modifyAfter, or, cases } from 'partial.lenses.validation';
 
 //
@@ -358,6 +358,12 @@ var ap = /*#__PURE__*/curry(function ap(f, x) {
 
 var Succeeded = /*#__PURE__*/freeze({ map: map, ap: ap, of: of, chain: chain });
 
+var apply = /*#__PURE__*/curry(function apply(f, xs) {
+  return map(function (xs) {
+    return f.apply(null, xs);
+  }, traverse(Succeeded, id, elemsTotal, xs));
+});
+
 var renamed = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
 } : function renamed(fn, name) {
@@ -376,4 +382,4 @@ var headersReceived = /*#__PURE__*/renamed(isStatusAvailable, 'headersReceived')
 var responseFull = /*#__PURE__*/renamed(response, 'responseFull');
 var upHasSucceeded = /*#__PURE__*/renamed(upHasCompleted, 'upHasSucceeded');
 
-export { perform, upHasStarted, upIsProgressing, upHasCompleted, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasCompleted, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, isStatusAvailable, isDone, isProgressing, hasFailed, hasTimedOut, loaded, total, errors, response, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess, performWith, performJson, hasSucceeded, getJson, result, of, chain, map, ap, Succeeded, downHasSucceeded, headersReceived, responseFull, upHasSucceeded };
+export { perform, upHasStarted, upIsProgressing, upHasCompleted, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasCompleted, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, isStatusAvailable, isDone, isProgressing, hasFailed, hasTimedOut, loaded, total, errors, response, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess, performWith, performJson, hasSucceeded, getJson, result, of, chain, map, ap, Succeeded, apply, downHasSucceeded, headersReceived, responseFull, upHasSucceeded };
