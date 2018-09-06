@@ -18,16 +18,15 @@ const toExpr = f =>
   f
     .toString()
     .replace(/\s+/g, ' ')
-    .replace(/^\s*function\s*\(\s*\)\s*{\s*(return\s*)?/, '')
-    .replace(/\s*;?\s*}\s*$/, '')
-    .replace(/function\s*(\([a-zA-Z0-9, ]*\))\s*/g, '$1 => ')
-    .replace(/\(([^),]+)\) =>/, '$1 =>')
-    .replace(/{\s*return\s*([^{;]+)\s*;\s*}/g, '$1')
-    .replace(/\(0, [^.]*[.]([^)]*)\)/g, '$1')
-    .replace(/\$\d+/g, '')
+    .replace(/\)\s*\./g, ').')
+    .replace(/^\s*\(\s*\)\s*=>\s*/, '')
+    .replace(/^{\s*(.*)\s*}$/, '$1')
+    .replace(/;\s*}/g, '}')
+    .replace(/([([{])\s+/g, '$1')
+    .replace(/\s+([)\]}])/g, '$1')
 
 const testEq = (expect, thunk) =>
-  it(`${toExpr(thunk)} => ${show(expect)}`, done => {
+  it(`${toExpr(thunk)} ~> ${show(expect)}`, done => {
     const actual = thunk()
     function check(actual) {
       if (!R.equals(actual, expect)) {
@@ -44,7 +43,7 @@ const testEq = (expect, thunk) =>
   })
 
 const testThrows = thunk =>
-  it(`${toExpr(thunk)} => throws`, () => {
+  it(`${toExpr(thunk)} ~> throws`, () => {
     try {
       thunk()
     } catch (_) {
@@ -78,8 +77,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 describe('XHR', () => {
-  const startingWithNonXHRs = xhr =>
-    K.concat([K.sequentially(0, [false, {}, undefined]), xhr]).toProperty()
+  const nonXHRs = () => K.sequentially(0, [false, {}, undefined])
+  const startingWithNonXHRs = xhr => K.concat([nonXHRs(), xhr]).toProperty()
 
   testEq(['', 'Hello, world!'], () =>
     XHR.responseText(
@@ -126,6 +125,18 @@ describe('XHR', () => {
   testEq([false, true, false], () =>
     XHR.isProgressing(
       startingWithNonXHRs(XHR.performJson({url: 'http://localhost:3000/json'}))
+    )
+  )
+  testEq([false, true, false], () =>
+    XHR.isXHR(
+      K.concat([
+        nonXHRs(),
+        XHR.map(
+          R.map(R.toUpper),
+          XHR.performJson({url: 'http://localhost:3000/json'})
+        ),
+        nonXHRs()
+      ]).toProperty()
     )
   )
   testEq([0, 16], () =>
@@ -243,14 +254,24 @@ describe('XHR', () => {
       XHR.result
     )
   )
-  testEq([['Hello, world!', {user: 'world'}]], () =>
-    XHR.result(
-      XHR.apply(R.pair, [
-        XHR.perform('http://localhost:3000/text'),
-        XHR.performJson('http://localhost:3000/json')
-      ])
-    )
+  testEq(
+    [
+      [
+        {simonSays: 'Hello, world!'},
+        ['constant'],
+        ['message from', {user: 'world'}]
+      ]
+    ],
+    () =>
+      XHR.result(
+        XHR.apply((x, y, z) => [x, y, z], [
+          {simonSays: XHR.perform('http://localhost:3000/text')},
+          [K.constant('constant')],
+          ['message from', XHR.performJson('http://localhost:3000/json')]
+        ])
+      )
   )
+  testEq(true, () => XHR.isXHR(XHR.template([1, 2, {x: 3}])))
   testEq(
     {
       allResponseHeaders: '',

@@ -34,6 +34,7 @@ Examples:
   * [Starting](#starting)
     * [`XHR.perform(url | {url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~> xhr`](#XHR-perform)
   * [Overall state](#overall-state)
+    * [`XHR.isXHR(any) ~> boolean`](#XHR-isXHR)
     * [Progression](#progression)
       * [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
       * [`XHR.isProgressing(xhr) ~> boolean`](#XHR-isProgressing)
@@ -42,7 +43,7 @@ Examples:
       * [`XHR.hasFailed(xhr) ~> boolean`](#XHR-hasFailed)
       * [`XHR.hasTimedOut(xhr) ~> boolean`](#XHR-hasTimedOut)
     * [Errors on failure](#errors-on-failure)
-      * [`XHR.errors(xhr) ~> [exception]`](#XHR-errors)
+      * [`XHR.errors(xhr) ~> [...exceptions]`](#XHR-errors)
     * [Request status](#request-status)
       * [`XHR.status(xhr) ~> number`](#XHR-status)
       * [`XHR.statusIsHttpSuccess(xhr) ~> boolean`](#XHR-statusIsHttpSuccess)
@@ -86,13 +87,18 @@ Examples:
     * [`XHR.upLoaded(xhr) ~> number`](#XHR-upLoaded)
     * [`XHR.upTotal(xhr) ~> number`](#XHR-upTotal)
   * [Happy path](#happy-path)
-    * [`XHR.Succeeded ~> Monad`](#XHR-Succeeded)
-    * [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)
-    * [`XHR.apply((...responseAs) => responseB, [...xhrAs]) ~> xhrB`](#XHR-apply)
-    * [`XHR.chain(responseA => xhrB, xhrA) ~> xhrB`](#XHR-chain)
-    * [`XHR.map(responseA => responseB, xhrA) ~> xhrB`](#XHR-map)
-    * [`XHR.of(response) ~> xhr`](#XHR-of)
     * [`XHR.result(xhr) ~> varies`](#XHR-result)
+    * [Happy path algebras](#happy-path-algebras)
+      * [`XHR.IdentitySucceeded ~> Monad`](#XHR-IdentitySucceeded)
+      * [`XHR.Succeeded ~> Monad`](#XHR-Succeeded)
+    * [Monadic happy path combinators](#monadic-happy-path-combinators)
+      * [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)
+      * [`XHR.chain(responseA => xhrB, xhrA) ~> xhrB`](#XHR-chain)
+      * [`XHR.map(responseA => responseB, xhrA) ~> xhrB`](#XHR-map)
+      * [`XHR.of(response) ~> xhr`](#XHR-of)
+    * [Additional happy path combinators](#additional-happy-path-combinators)
+      * [`XHR.apply((...responseAs) => responseB, [...xhrAs]) ~> xhrB`](#XHR-apply)
+      * [`XHR.template([ ... xhr ... ] | { ... xhr ... }) ~> xhr`](#XHR-template)
   * [Auxiliary](#auxiliary)
     * [`XHR.isHttpSuccess(number) ~> boolean`](#XHR-isHttpSuccess)
   * [Deprecated](#deprecated)
@@ -122,7 +128,7 @@ and [upload](#upload-state) state.
 #### <a id="XHR-getJson"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-getJson) [`XHR.getJson(url | {url,[, ...]}) ~> varies`](#XHR-getJson)
 
 `XHR.getJson(arg)` returns an observable that emits the [full
-response](#XHR-response) after the [XHR has succeeded](#XHR-hasSucceeded).  In
+response](#XHR-result) after the [XHR has succeeded](#XHR-hasSucceeded).  In
 case the XHR fails or times out, the XHR is emitted as an error.
 
 #### <a id="XHR-performJson"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-peformJson) [`XHR.performJson(url | {url[, ...]}) ~> xhr`](#XHR-performJson)
@@ -201,6 +207,11 @@ CodeSandbox for an example.
 
 ### <a id="overall-state"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#overall-state) [Overall state](#overall-state)
 
+#### <a id="XHR-isXHR"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-isXHR) [`XHR.isXHR(any) ~> boolean`](#XHR-isXHR)
+
+`XHR.isXHR` returns a possibly observable boolean property that tells whether
+the given value is a XHR.
+
 #### <a id="progression"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#progression) [Progression](#progression)
 
 ##### <a id="XHR-isStatusAvailable"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-isStatusAvailable) [`XHR.isStatusAvailable(xhr) ~> boolean`](#XHR-isStatusAvailable)
@@ -239,7 +250,7 @@ XHR that is true when either [download](#XHR-downHasTimedOut) or
 
 #### <a id="errors-on-failure"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#errors-on-failure) [Errors on failure](#errors-on-failure)
 
-##### <a id="XHR-errors"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-errors) [`XHR.errors(xhr) ~> [exception]`](#XHR-errors)
+##### <a id="XHR-errors"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-errors) [`XHR.errors(xhr) ~> [...exceptions]`](#XHR-errors)
 
 `XHR.errors` returns a possibly observable array of errors from
 [download](#XHR-downError) and [upload](#XHR-upError).  The array will contain 0
@@ -308,7 +319,8 @@ an `Error` will be thrown.
 [`response`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response)
 after the [download operation of the XHR has completed](#XHR-downHasCompleted).
 When called on a non-observable XHR, the download operation must be completed or
-an `Error` will be thrown.  See also [`XHR.responseText`](#XHR-responseText).
+an `Error` will be thrown.  See also [`XHR.result`](#XHR-result), and
+[`XHR.responseText`](#XHR-responseText).
 
 ##### <a id="XHR-responseText"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-responseText) [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
 
@@ -482,7 +494,15 @@ of an ongoing XHR.
 
 ### <a id="happy-path"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#happy-path) [Happy path](#happy-path)
 
-#### <a id="XHR-Succeeded"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-Succeeded) [`XHR.Succeeded ~> Monad`](#XHR-Succeeded)
+#### <a id="XHR-result"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-result) [`XHR.result(xhr) ~> varies`](#XHR-result)
+
+`XHR.result` returns the response of a [succeeded](#XHR-hasSucceeded) XHR.  Note
+that [`XHR.response`](#XHR-response) allows one to obtain the response before
+the XHR [is done](#XHR-isDone) and even when the XHR has (partially) failed.
+
+#### <a id="happy-path-algebras"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#happy-path-algebras) [Happy path algebras](#happy-path-algebras)
+
+##### <a id="XHR-Succeeded"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-Succeeded) [`XHR.Succeeded ~> Monad`](#XHR-Succeeded)
 
 `XHR.Succeeded` is a static land compatible
 [monad](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad)
@@ -491,39 +511,48 @@ comprised of the [`XHR.ap`](#XHR-ap), [`XHR.chain`](#XHR-chain),
 compose sequences of XHR requests that stop as soon as the first XHR does not
 [succeed](#XHR-hasSucceeded).
 
-#### <a id="XHR-ap"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-ap) [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)
+##### <a id="XHR-IdentitySucceeded"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-IdentitySucceeded) [`XHR.IdentitySucceeded ~> Monad`](#XHR-IdentitySucceeded)
+
+`XHR.IdentitySucceeded` is a static land compatible
+[monad](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad)
+that manipulates XHRs like [`XHR.Succeeded`](#XHR-Succeeded) or plain data.
+
+#### <a id="monadic-happy-path-combinators"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#monadic-happy-path-combinators) [Monadic happy path combinators](#monadic-happy-path-combinators)
+
+##### <a id="XHR-ap"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-ap) [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)
 
 `XHR.ap` implements a static land compatible
 [`ap`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#apply)
 function for composing succeeding XHRs.
 
-#### <a id="XHR-apply"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-apply) [`XHR.apply((...responseAs) => responseB, [...xhrAs]) ~> xhrB`](#XHR-apply)
-
-`XHR.apply` maps the given XHRs through the given function.
-
-#### <a id="XHR-chain"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-chain) [`XHR.chain(responseA => xhrB, xhrA) ~> xhrB`](#XHR-chain)
+##### <a id="XHR-chain"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-chain) [`XHR.chain(responseA => xhrB, xhrA) ~> xhrB`](#XHR-chain)
 
 `XHR.chain` implements a static land compatible
 [`chain`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#chain)
 function for composing succeeding XHRs.
 
-#### <a id="XHR-map"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-map) [`XHR.map(responseA => responseB, xhrA) ~> xhrB`](#XHR-map)
+##### <a id="XHR-map"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-map) [`XHR.map(responseA => responseB, xhrA) ~> xhrB`](#XHR-map)
 
 `XHR.map` implements a static land compatible
 [`map`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor)
 function for composing succeeding XHRs.
 
-#### <a id="XHR-of"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-of) [`XHR.of(response) ~> xhr`](#XHR-of)
+##### <a id="XHR-of"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-of) [`XHR.of(response) ~> xhr`](#XHR-of)
 
 `XHR.of` implements a static land compatible
 [`of`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative)
 function for composing succeeding XHRs.
 
-#### <a id="XHR-result"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-result) [`XHR.result(xhr) ~> varies`](#XHR-result)
+#### <a id="additional-happy-path-combinators"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#additional-happy-path-combinators) [Additional happy path combinators](#additional-happy-path-combinators)
 
-`XHR.result` returns the response of a [succeeded](#XHR-hasSucceeded) XHR.  Note
-that [`XHR.response`](#XHR-response) allows one to obtain the response before
-the XHR [is done](#XHR-isDone) and even when the XHR has (partially) failed.
+##### <a id="XHR-apply"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-apply) [`XHR.apply((...responseAs) => responseB, [...xhrAs]) ~> xhrB`](#XHR-apply)
+
+`XHR.apply` maps the given XHRs through the given function.
+
+##### <a id="XHR-template"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-template) [`XHR.template([ ... xhr ... ] | { ... xhr ... }) ~> xhr`](#XHR-template)
+
+`XHR.template` transforms a nested template of plain arrays and objects possibly
+containing XHRs into a XHR.
 
 ### <a id="auxiliary"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#auxiliary) [Auxiliary](#auxiliary)
 
