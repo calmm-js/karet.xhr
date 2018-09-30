@@ -51,10 +51,7 @@ const number = I.isNumber
 
 //
 
-const setName =
-  process.env.NODE_ENV === 'production'
-    ? x => x
-    : (to, name) => I.defineNameU(to, name)
+const setName = process.env.NODE_ENV === 'production' ? x => x : I.defineNameU
 
 const ADD_EVENT_LISTENER = 'addEventListener'
 const DOWN = 'down'
@@ -453,13 +450,34 @@ export const ap = I.curry(function ap(f, x) {
   return chain(f => map(f, x), f)
 })
 
-export const Succeeded = I.freeze({map, ap, of, chain})
+export const Succeeded = I.Monad(map, of, ap, chain)
+
+const typeIsString = [TYPE, I.isString]
+
+export const isXHR = setName(
+  L.and(
+    L.branch({
+      xhr: [READY_STATE, I.isNumber],
+      up: typeIsString,
+      down: typeIsString,
+      map: I.isFunction
+    })
+  ),
+  'isXHR'
+)
+
+export const IdentitySucceeded = I.IdentityOrU(isXHR, Succeeded)
+
+export const template = setName(
+  L.get([
+    L.traverse(IdentitySucceeded, I.id, F.inTemplate(isXHR)),
+    L.ifElse(isXHR, [], of)
+  ]),
+  'template'
+)
 
 export const apply = I.curry(function apply(f, xs) {
-  return map(
-    xs => f.apply(null, xs),
-    L.traverse(Succeeded, I.id, L.elemsTotal, xs)
-  )
+  return map(xs => f.apply(null, xs), template(xs))
 })
 
 const renamed =

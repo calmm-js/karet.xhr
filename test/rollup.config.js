@@ -5,7 +5,7 @@ import commonjs from 'rollup-plugin-commonjs'
 const globals = {
   'karet.lift': 'karet.lift',
   'karet.util': 'karet.util',
-  'kefir.partial.lenses': 'kefir.partial.lenses',
+  'kefir.partial.lenses': 'Kefir.partial.lenses',
   'partial.lenses': 'L',
   'partial.lenses.validation': 'V',
   infestines: 'I',
