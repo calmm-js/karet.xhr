@@ -1,7 +1,7 @@
-import { lift } from 'karet.lift';
-import { curry, acyclicEqualsU, pipe2U, isString, isNumber, defineNameU, freeze, isFunction, id, object0, isArray, curryN, assign, always } from 'infestines';
+import { lift, inTemplate } from 'karet.lift';
+import { curry, acyclicEqualsU, pipe2U, isString, isNumber, defineNameU, freeze, isFunction, id, object0, isArray, curryN, assign, always, Monad, IdentityOrU } from 'infestines';
 import { Observable, constant, Stream, never, stream, constantError } from 'kefir';
-import { set, get, array, cross, reread, identity, inverse, keyed, transform, ifElse, modifyOp, branch, cond, setOp, keys, sum, branches, collect, when, and, is, traverse, elemsTotal } from 'kefir.partial.lenses';
+import { set, get, array, cross, reread, identity, inverse, keyed, transform, ifElse, modifyOp, branch, cond, setOp, keys, sum, branches, collect, when, and, is, traverse } from 'kefir.partial.lenses';
 import { accept, arrayId, tuple, and as and$1, acceptWith, validate, freeFn, props, optional, propsOr, modifyAfter, or, cases } from 'partial.lenses.validation';
 
 //
@@ -58,9 +58,7 @@ var number = isNumber;
 
 var setName = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
-} : function (to, name) {
-  return defineNameU(to, name);
-};
+} : defineNameU;
 
 var ADD_EVENT_LISTENER = 'addEventListener';
 var DOWN = 'down';
@@ -356,12 +354,25 @@ var ap = /*#__PURE__*/curry(function ap(f, x) {
   }, f);
 });
 
-var Succeeded = /*#__PURE__*/freeze({ map: map, ap: ap, of: of, chain: chain });
+var Succeeded = /*#__PURE__*/Monad(map, of, ap, chain);
+
+var typeIsString = [TYPE, isString];
+
+var isXHR = /*#__PURE__*/setName( /*#__PURE__*/and( /*#__PURE__*/branch({
+  xhr: [READY_STATE, isNumber],
+  up: typeIsString,
+  down: typeIsString,
+  map: isFunction
+})), 'isXHR');
+
+var IdentitySucceeded = /*#__PURE__*/IdentityOrU(isXHR, Succeeded);
+
+var template = /*#__PURE__*/setName( /*#__PURE__*/get([/*#__PURE__*/traverse(IdentitySucceeded, id, /*#__PURE__*/inTemplate(isXHR)), /*#__PURE__*/ifElse(isXHR, [], of)]), 'template');
 
 var apply = /*#__PURE__*/curry(function apply(f, xs) {
   return map(function (xs) {
     return f.apply(null, xs);
-  }, traverse(Succeeded, id, elemsTotal, xs));
+  }, template(xs));
 });
 
 var renamed = process.env.NODE_ENV === 'production' ? function (x) {
@@ -382,4 +393,4 @@ var headersReceived = /*#__PURE__*/renamed(isStatusAvailable, 'headersReceived')
 var responseFull = /*#__PURE__*/renamed(response, 'responseFull');
 var upHasSucceeded = /*#__PURE__*/renamed(upHasCompleted, 'upHasSucceeded');
 
-export { perform, upHasStarted, upIsProgressing, upHasCompleted, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasCompleted, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, isStatusAvailable, isDone, isProgressing, hasFailed, hasTimedOut, loaded, total, errors, response, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess, performWith, performJson, hasSucceeded, getJson, result, of, chain, map, ap, Succeeded, apply, downHasSucceeded, headersReceived, responseFull, upHasSucceeded };
+export { perform, upHasStarted, upIsProgressing, upHasCompleted, upHasFailed, upHasTimedOut, upHasEnded, upLoaded, upTotal, upError, downHasStarted, downIsProgressing, downHasCompleted, downHasFailed, downHasTimedOut, downHasEnded, downLoaded, downTotal, downError, readyState, isStatusAvailable, isDone, isProgressing, hasFailed, hasTimedOut, loaded, total, errors, response, responseType, responseURL, responseText, responseXML, status, statusIsHttpSuccess, statusText, responseHeader, allResponseHeaders, timeout, withCredentials, isHttpSuccess, performWith, performJson, hasSucceeded, getJson, result, of, chain, map, ap, Succeeded, isXHR, IdentitySucceeded, template, apply, downHasSucceeded, headersReceived, responseFull, upHasSucceeded };

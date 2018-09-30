@@ -62,9 +62,7 @@ var number = I.isNumber;
 
 var setName = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
-} : function (to, name) {
-  return I.defineNameU(to, name);
-};
+} : I.defineNameU;
 
 var ADD_EVENT_LISTENER = 'addEventListener';
 var DOWN = 'down';
@@ -360,12 +358,25 @@ var ap = /*#__PURE__*/I.curry(function ap(f, x) {
   }, f);
 });
 
-var Succeeded = /*#__PURE__*/I.freeze({ map: map, ap: ap, of: of, chain: chain });
+var Succeeded = /*#__PURE__*/I.Monad(map, of, ap, chain);
+
+var typeIsString = [TYPE, I.isString];
+
+var isXHR = /*#__PURE__*/setName( /*#__PURE__*/L.and( /*#__PURE__*/L.branch({
+  xhr: [READY_STATE, I.isNumber],
+  up: typeIsString,
+  down: typeIsString,
+  map: I.isFunction
+})), 'isXHR');
+
+var IdentitySucceeded = /*#__PURE__*/I.IdentityOrU(isXHR, Succeeded);
+
+var template = /*#__PURE__*/setName( /*#__PURE__*/L.get([/*#__PURE__*/L.traverse(IdentitySucceeded, I.id, /*#__PURE__*/F.inTemplate(isXHR)), /*#__PURE__*/L.ifElse(isXHR, [], of)]), 'template');
 
 var apply = /*#__PURE__*/I.curry(function apply(f, xs) {
   return map(function (xs) {
     return f.apply(null, xs);
-  }, L.traverse(Succeeded, I.id, L.elemsTotal, xs));
+  }, template(xs));
 });
 
 var renamed = process.env.NODE_ENV === 'production' ? function (x) {
@@ -437,6 +448,9 @@ exports.chain = chain;
 exports.map = map;
 exports.ap = ap;
 exports.Succeeded = Succeeded;
+exports.isXHR = isXHR;
+exports.IdentitySucceeded = IdentitySucceeded;
+exports.template = template;
 exports.apply = apply;
 exports.downHasSucceeded = downHasSucceeded;
 exports.headersReceived = headersReceived;
