@@ -24,7 +24,7 @@ app.get('/xml', ({headers: {user = 'world'}}, res) => {
 })
 
 app.get('/slow', (req, res) => {
-  setTimeout(() => res.send('Still there?'), 1000)
+  setTimeout(() => res.send('Still there?'), Number(req.query.ms) || 1000)
 })
 
 app.post('/echo', (req, res) => {

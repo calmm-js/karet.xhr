@@ -6,6 +6,10 @@ import * as V from 'partial.lenses.validation'
 
 //
 
+import {delayUnsub} from './delay-unsub'
+
+//
+
 const isObservable = x => x instanceof K.Observable
 
 const toObservable = x => (isObservable(x) ? x : K.constant(x))
@@ -30,13 +34,14 @@ const filter = I.curry(function filter(pr, xs) {
   }
 })
 
-const flatMapLatestToProperty = I.curry(function flatMapLatestToProperty(
-  fn,
-  x
-) {
+const flatMapProperty = I.curry(function flatMapProperty(xyO, x) {
   return isObservable(x)
-    ? toProperty(x.flatMapLatest(I.pipe2U(fn, toObservable)))
-    : toProperty(fn(x))
+    ? toProperty(x.flatMapLatest(I.pipe2U(xyO, toObservable)))
+    : toProperty(xyO(x))
+})
+
+const mapProperty = I.curry(function map(xy, x) {
+  return isObservable(x) ? toProperty(x.map(xy)) : xy(x)
 })
 
 //
@@ -86,7 +91,7 @@ const typeInitial = I.freeze({type: INITIAL})
 const typeLoadend = I.freeze({type: LOADEND})
 const typeLoad = I.freeze({type: LOAD})
 
-const eventTypes = [LOADSTART, PROGRESS, TIMEOUT, LOAD, ERROR]
+const eventTypes = [LOADSTART, PROGRESS, LOAD, TIMEOUT, ERROR]
 
 const hasKeys = x => I.isFunction(x.keys)
 
@@ -120,57 +125,59 @@ const performPlain = (process.env.NODE_ENV === 'production'
         V.accept
       )
     ))(function perform(args) {
-  return K.stream(({emit, end}) => {
-    const url = args.url
-    const method = args.method
-    const user = args.user
-    const password = args.password
-    const headers = args.headers
-    const overrideMimeType = args[OVERRIDE_MIME_TYPE]
-    const body = args.body
-    const responseType = args[RESPONSE_TYPE]
-    const timeout = args[TIMEOUT]
-    const withCredentials = args[WITH_CREDENTIALS]
+  return delayUnsub(
+    K.stream(({emit, end}) => {
+      const url = args.url
+      const method = args.method
+      const user = args.user
+      const password = args.password
+      const headers = args.headers
+      const overrideMimeType = args[OVERRIDE_MIME_TYPE]
+      const body = args.body
+      const responseType = args[RESPONSE_TYPE]
+      const timeout = args[TIMEOUT]
+      const withCredentials = args[WITH_CREDENTIALS]
 
-    const xhr = new XMLHttpRequest()
-    let state = {xhr, up: typeInitial, down: typeInitial, map: I.id}
-    const update = (dir, type) => event => {
-      if (type !== PROGRESS || state[dir].type !== LOAD)
-        emit((state = L.set(dir, {type, event}, state)))
-    }
-    eventTypes.forEach(type => {
-      xhr[ADD_EVENT_LISTENER](type, update(DOWN, type))
-      xhr.upload[ADD_EVENT_LISTENER](type, update(UP, type))
+      const xhr = new XMLHttpRequest()
+      let state = {xhr, up: typeInitial, down: typeInitial, map: I.id}
+      const update = (dir, type) => event => {
+        if (type !== PROGRESS || state[dir].type !== LOAD)
+          emit((state = L.set(dir, {type, event}, state)))
+      }
+      eventTypes.forEach(type => {
+        xhr[ADD_EVENT_LISTENER](type, update(DOWN, type))
+        xhr.upload[ADD_EVENT_LISTENER](type, update(UP, type))
+      })
+      xhr[ADD_EVENT_LISTENER](READYSTATECHANGE, event => {
+        emit((state = L.set(EVENT, event, state)))
+      })
+      xhr[ADD_EVENT_LISTENER](LOADEND, event => {
+        end(emit((state = L.set(EVENT, event, state))))
+      })
+      xhr.open(
+        isNil(method) ? 'GET' : method,
+        url,
+        true,
+        isNil(user) ? null : user,
+        isNil(password) ? null : password
+      )
+      if (responseType) {
+        xhr[RESPONSE_TYPE] = responseType
+        if (responseType === JSON_ && xhr[RESPONSE_TYPE] !== JSON_)
+          state = L.set(MAP, tryParse, state)
+      }
+      if (timeout) xhr[TIMEOUT] = timeout
+      if (withCredentials) xhr[WITH_CREDENTIALS] = withCredentials
+      for (const header in headers) {
+        xhr.setRequestHeader(header, headers[header])
+      }
+      if (overrideMimeType) xhr[OVERRIDE_MIME_TYPE](overrideMimeType)
+      xhr.send(isNil(body) ? null : body)
+      return () => {
+        if (!xhr[STATUS]) xhr.abort()
+      }
     })
-    xhr[ADD_EVENT_LISTENER](READYSTATECHANGE, event => {
-      emit((state = L.set(EVENT, event, state)))
-    })
-    xhr[ADD_EVENT_LISTENER](LOADEND, event => {
-      end(emit((state = L.set(EVENT, event, state))))
-    })
-    xhr.open(
-      isNil(method) ? 'GET' : method,
-      url,
-      true,
-      isNil(user) ? null : user,
-      isNil(password) ? null : password
-    )
-    if (responseType) {
-      xhr[RESPONSE_TYPE] = responseType
-      if (responseType === JSON_ && xhr[RESPONSE_TYPE] !== JSON_)
-        state = L.set(MAP, tryParse, state)
-    }
-    if (timeout) xhr[TIMEOUT] = timeout
-    if (withCredentials) xhr[WITH_CREDENTIALS] = withCredentials
-    for (const header in headers) {
-      xhr.setRequestHeader(header, headers[header])
-    }
-    if (overrideMimeType) xhr[OVERRIDE_MIME_TYPE](overrideMimeType)
-    xhr.send(isNil(body) ? null : body)
-    return () => {
-      if (!xhr[STATUS]) xhr.abort()
-    }
-  })
+  )
 })
 
 const toLowerKeyedObject = L.get([
@@ -220,7 +227,7 @@ const normalizeOptions = (process.env.NODE_ENV === 'production'
 )
 
 export const perform = setName(
-  I.pipe2U(normalizeOptions, flatMapLatestToProperty(performPlain)),
+  I.pipe2U(normalizeOptions, flatMapProperty(performPlain)),
   'perform'
 )
 
@@ -238,10 +245,12 @@ const hasStartedOn = is(eventTypes)
 const isProgressingOn = is([PROGRESS, LOADSTART])
 const load = [LOAD]
 const hasCompletedOn = is(load)
-const hasFailedOn = is([ERROR])
+const hasErroredOn = is([ERROR])
 const hasTimedOutOn = is([TIMEOUT])
-const ended = [LOAD, ERROR, TIMEOUT]
+const ended = [LOAD, TIMEOUT, ERROR]
 const hasEndedOn = is(ended)
+const failed = [ERROR, TIMEOUT]
+const hasFailedOn = is(failed)
 
 const event = I.curry((prop, op, dir) => op([dir, EVENT, prop]))
 const loadedOn = event(LOADED, L.sum)
@@ -261,7 +270,8 @@ const either = L.branches(DOWN, UP)
 export const upHasStarted = setName(hasStartedOn(UP), 'upHasStarted')
 export const upIsProgressing = setName(isProgressingOn(UP), 'upIsProgressing')
 export const upHasCompleted = setName(hasCompletedOn(UP), 'upHasCompleted')
-export const upHasFailed = setName(hasFailedOn(UP), 'upHasFailed')
+export const upHasFailed = setName(hasErroredOn(UP), 'upHasFailed')
+export const upHasErrored = setName(hasErroredOn(UP), 'upHasErrored')
 export const upHasTimedOut = setName(hasTimedOutOn(UP), 'upHasTimedOut')
 export const upHasEnded = setName(hasEndedOn(UP), 'upHasEnded')
 export const upLoaded = setName(loadedOn(UP), 'upLoaded')
@@ -278,6 +288,7 @@ export const downHasCompleted = setName(
   'downHasCompleted'
 )
 export const downHasFailed = setName(hasFailedOn(DOWN), 'downHasFailed')
+export const downHasErrored = setName(hasErroredOn(DOWN), 'downHasErrored')
 export const downHasTimedOut = setName(hasTimedOutOn(DOWN), 'downHasTimedOut')
 export const downHasEnded = setName(hasEndedOn(DOWN), 'downHasEnded')
 export const downLoaded = setName(loadedOn(DOWN), 'downLoaded')
@@ -291,7 +302,7 @@ export const isStatusAvailable = setName(
 )
 export const isDone = setName(is([LOADEND], EVENT), 'isDone')
 export const isProgressing = setName(isProgressingOn(either), 'isProgressing')
-export const hasFailed = setName(hasFailedOn(either), 'hasFailed')
+export const hasErrored = setName(hasErroredOn(either), 'hasErrored')
 export const hasTimedOut = setName(hasTimedOutOn(either), 'hasTimedOut')
 export const loaded = setName(loadedOn(either), 'loaded')
 export const total = setName(totalOn(either), 'total')
@@ -399,13 +410,21 @@ export const hasSucceeded = setName(
   'hasSucceeded'
 )
 
+export const hasFailed = F.lift(function hasFailed(xhr) {
+  return (
+    (isStatusAvailable(xhr) && !statusIsHttpSuccess(xhr)) ||
+    downHasFailed(xhr) ||
+    upHasFailed(xhr)
+  )
+})
+
 export const getJson = setName(
   I.pipe2U(
     performJson,
-    flatMapLatestToProperty(xhr => {
+    flatMapProperty(xhr => {
       if (hasSucceeded(xhr)) {
         return response(xhr)
-      } else if (isDone(xhr) && (hasFailed(xhr) || hasTimedOut(xhr))) {
+      } else if (isDone(xhr) && (hasErrored(xhr) || hasTimedOut(xhr))) {
         return K.constantError(xhr)
       } else {
         return never
@@ -416,6 +435,32 @@ export const getJson = setName(
 )
 
 export const result = setName(getAfter(hasSucceeded, response), 'result')
+
+//
+
+const mergeTypes = (x, y) => {
+  const xIndex = eventTypes.indexOf(x)
+  const yIndex = eventTypes.indexOf(y)
+  return xIndex < yIndex ? x : y
+}
+
+const mergeEvents = (x, y) => ({
+  type: mergeTypes(x[TYPE], y[TYPE]),
+  event: {
+    total: (L.get(TOTAL, x[EVENT]) || 0) + (L.get(TOTAL, y[EVENT]) || 0),
+    loaded: (L.get(LOADED, x[EVENT]) || 0) + (L.get(LOADED, y[EVENT]) || 0)
+  }
+})
+
+const mergeXHRs = (x, y) => ({
+  event: y[EVENT][TYPE] === LOADEND ? x[EVENT] : y[EVENT],
+  xhr: y[XHR],
+  up: mergeEvents(x[UP], y[UP]),
+  down: mergeEvents(x[DOWN], y[DOWN]),
+  map: y[MAP]
+})
+
+//
 
 const getAllResponseHeaders = I.always('')
 const getResponseHeader = I.always(null)
@@ -435,22 +480,47 @@ export const of = response => ({
   map: I.id
 })
 
-export const chain = I.curry(function chain(fn, xhr) {
-  return flatMapLatestToProperty(
-    x => (hasSucceeded(x) ? fn(response(x)) : x),
-    xhr
+export const chain = I.curryN(2, function chain(xy) {
+  return flatMapProperty(x =>
+    hasSucceeded(x)
+      ? mapProperty(y => (hasFailed(y) ? y : mergeXHRs(x, y)), xy(response(x)))
+      : x
   )
 })
 
-export const map = I.curry(function map(fn, xhr) {
-  return chain(I.pipe2U(fn, of), xhr)
+export const map = I.curryN(2, function map(xy) {
+  return chain(x => of(xy(x)))
 })
 
-export const ap = I.curry(function ap(f, x) {
-  return chain(f => map(f, x), f)
+export const ap = I.curry(function ap(xy, x) {
+  return chain(xy => map(xy, x), xy)
 })
 
 export const Succeeded = I.Monad(map, of, ap, chain)
+
+//
+
+export const apParallel = I.curry(function apParallel(xy, x) {
+  return flatMapProperty(
+    xy =>
+      hasFailed(xy)
+        ? xy
+        : mapProperty(
+            x =>
+              hasSucceeded(xy)
+                ? hasSucceeded(x)
+                  ? mergeXHRs(mergeXHRs(xy, x), of(response(xy)(response(x))))
+                  : hasFailed(x)
+                  ? x
+                  : mergeXHRs(xy, x)
+                : mergeXHRs(xy, x),
+            x
+          ),
+    xy
+  )
+})
+
+export const Parallel = I.Applicative(map, of, apParallel)
 
 const typeIsString = [TYPE, I.isString]
 
@@ -467,40 +537,20 @@ export const isXHR = setName(
 )
 
 export const IdentitySucceeded = I.IdentityOrU(isXHR, Succeeded)
+export const IdentityParallel = I.IdentityOrU(isXHR, Parallel)
 
 export const template = setName(
   L.get([
-    L.traverse(IdentitySucceeded, I.id, F.inTemplate(isXHR)),
+    L.traverse(IdentityParallel, I.id, F.inTemplate(isXHR)),
     L.ifElse(isXHR, [], of)
   ]),
   'template'
 )
 
-export const apply = I.curry(function apply(f, xs) {
-  return map(xs => f.apply(null, xs), template(xs))
+export const apply = I.curry(function apply(xsy, xs) {
+  return map(xs => xsy.apply(null, xs), template(xs))
 })
 
 export const tap = I.curryN(2, function tap(action) {
   return map(result => (action(result), result))
 })
-
-const renamed =
-  process.env.NODE_ENV === 'production'
-    ? x => x
-    : function renamed(fn, name) {
-        let warned = false
-        return setName(function deprecated(x) {
-          if (!warned) {
-            warned = true
-            console.warn(
-              'karet.xhr: `' + name + '` has been renamed to `' + fn.name + '`'
-            )
-          }
-          return fn(x)
-        }, name)
-      }
-
-export const downHasSucceeded = renamed(downHasCompleted, 'downHasSucceeded')
-export const headersReceived = renamed(isStatusAvailable, 'headersReceived')
-export const responseFull = renamed(response, 'responseFull')
-export const upHasSucceeded = renamed(upHasCompleted, 'upHasSucceeded')

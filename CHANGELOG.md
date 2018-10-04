@@ -1,5 +1,22 @@
 # Karet XHR Changelog
 
+## 0.7.0
+
+Renamed
+* `upHasFailed` to `upHasErrored`,
+* `downHasFailed` to `downHasErrored`, and
+* `hasFailed` to `hasErrored`
+and also introduced new function
+* `hasFailed`.
+
+`template` and `apply` were changed to process XHRs in parallel using the newly
+added `IdentityParallel` algebra, because that is what one more often wants.
+Note that this doesn't change the behaviour of the `IdentitySucceeded` algebra.
+
+## 0.6.7
+
+`apply` was changed to accept both XHRs and plain values.
+
 ## 0.6.2
 
 Fix work around for IE11 where `'progress'` events may be sent after `'load'`
