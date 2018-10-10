@@ -271,6 +271,17 @@ describe('XHR', () => {
         ])
       )
   )
+  testEq(['Hello, world! HELLO, WORLD!'], () => {
+    let text = ''
+    return I.seq(
+      XHR.perform('http://localhost:3000/text'),
+      XHR.tap(result => {
+        text = result.toUpperCase()
+      }),
+      XHR.map(original => original + ' ' + text),
+      XHR.result
+    )
+  })
   testEq(true, () => XHR.isXHR(XHR.template([1, 2, {x: 3}])))
   testEq(
     {

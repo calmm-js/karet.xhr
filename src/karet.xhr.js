@@ -480,6 +480,10 @@ export const apply = I.curry(function apply(f, xs) {
   return map(xs => f.apply(null, xs), template(xs))
 })
 
+export const tap = I.curryN(2, function tap(action) {
+  return map(result => (action(result), result))
+})
+
 const renamed =
   process.env.NODE_ENV === 'production'
     ? x => x

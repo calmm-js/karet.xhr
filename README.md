@@ -98,6 +98,7 @@ Examples:
       * [`XHR.of(response) ~> xhr`](#XHR-of)
     * [Additional happy path combinators](#additional-happy-path-combinators)
       * [`XHR.apply((...responseAs) => responseB, [...xhrAs]) ~> xhrB`](#XHR-apply)
+      * [`XHR.tap(response => ignored, xhr) ~> xhr`](#XHR-tap)
       * [`XHR.template([ ... xhr ... ] | { ... xhr ... }) ~> xhr`](#XHR-template)
   * [Auxiliary](#auxiliary)
     * [`XHR.isHttpSuccess(number) ~> boolean`](#XHR-isHttpSuccess)
@@ -548,6 +549,21 @@ function for composing succeeding XHRs.
 ##### <a id="XHR-apply"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-apply) [`XHR.apply((...responseAs) => responseB, [...xhrAs]) ~> xhrB`](#XHR-apply)
 
 `XHR.apply` maps the given XHRs through the given function.
+
+##### <a id="XHR-tap"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-tap) [`XHR.tap(response => ignored, xhr) ~> xhr`](#XHR-tap)
+
+`XHR.tap` wraps the XHR so that the given action is called with the response
+after the XHR has succeeded.  If the XHR does not succeed, the action will not
+be called.
+
+Note that `XHR.tap(action)` is roughly equivalent to
+
+```jsx
+XHR.map(response => {
+  action(response)
+  return response
+})
+```
 
 ##### <a id="XHR-template"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-template) [`XHR.template([ ... xhr ... ] | { ... xhr ... }) ~> xhr`](#XHR-template)
 
