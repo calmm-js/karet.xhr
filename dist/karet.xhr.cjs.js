@@ -379,6 +379,12 @@ var apply = /*#__PURE__*/I.curry(function apply(f, xs) {
   }, template(xs));
 });
 
+var tap = /*#__PURE__*/I.curryN(2, function tap(action) {
+  return map(function (result) {
+    return action(result), result;
+  });
+});
+
 var renamed = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
 } : function renamed(fn, name) {
@@ -452,6 +458,7 @@ exports.isXHR = isXHR;
 exports.IdentitySucceeded = IdentitySucceeded;
 exports.template = template;
 exports.apply = apply;
+exports.tap = tap;
 exports.downHasSucceeded = downHasSucceeded;
 exports.headersReceived = headersReceived;
 exports.responseFull = responseFull;

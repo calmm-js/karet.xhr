@@ -373,6 +373,12 @@
     }, template(xs));
   });
 
+  var tap = /*#__PURE__*/I.curryN(2, function tap(action) {
+    return map(function (result) {
+      return action(result), result;
+    });
+  });
+
   var renamed = function renamed(fn, name) {
     var warned = false;
     return setName(function deprecated(x) {
@@ -444,6 +450,7 @@
   exports.IdentitySucceeded = IdentitySucceeded;
   exports.template = template;
   exports.apply = apply;
+  exports.tap = tap;
   exports.downHasSucceeded = downHasSucceeded;
   exports.headersReceived = headersReceived;
   exports.responseFull = responseFull;

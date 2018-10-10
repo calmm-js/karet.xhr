@@ -163,6 +163,7 @@ the API of this library as an example.</li>
 </li>
 <li><a href="#additional-happy-path-combinators">Additional happy path combinators</a><ul>
 <li><a href="#XHR-apply"><code>XHR.apply((...responseAs) =&gt; responseB, [...xhrAs]) ~&gt; xhrB</code></a></li>
+<li><a href="#XHR-tap"><code>XHR.tap(response =&gt; ignored, xhr) ~&gt; xhr</code></a></li>
 <li><a href="#XHR-template"><code>XHR.template([ ... xhr ... ] | { ... xhr ... }) ~&gt; xhr</code></a></li>
 </ul>
 </li>
@@ -526,6 +527,15 @@ function for composing succeeding XHRs.</p>
 <h4><a id="additional-happy-path-combinators"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#additional-happy-path-combinators">■</a> <a href="#additional-happy-path-combinators">Additional happy path combinators</a></h4>
 <h5><a id="XHR-apply"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-apply">■</a> <a href="#XHR-apply"><code>XHR.apply((...responseAs) =&gt; responseB, [...xhrAs]) ~&gt; xhrB</code></a></h5>
 <p><code>XHR.apply</code> maps the given XHRs through the given function.</p>
+<h5><a id="XHR-tap"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-tap">■</a> <a href="#XHR-tap"><code>XHR.tap(response =&gt; ignored, xhr) ~&gt; xhr</code></a></h5>
+<p><code>XHR.tap</code> wraps the XHR so that the given action is called with the response
+after the XHR has succeeded.  If the XHR does not succeed, the action will not
+be called.</p>
+<p>Note that <code>XHR.tap(action)</code> is roughly equivalent to</p>
+<pre><code class="hljs lang-jsx">XHR.map(response =&gt; {
+  action(response)
+  return response
+})</code></pre>
 <h5><a id="XHR-template"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-template">■</a> <a href="#XHR-template"><code>XHR.template([ ... xhr ... ] | { ... xhr ... }) ~&gt; xhr</code></a></h5>
 <p><code>XHR.template</code> transforms a nested template of plain arrays and objects possibly
 containing XHRs into a XHR.</p>
