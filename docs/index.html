@@ -6,7 +6,7 @@
     <link rel="icon" href="https://avatars1.githubusercontent.com/u/17234211">
     <link rel="stylesheet" type="text/css" href="fw/github.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/googlecode.min.css">
-    <link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/app.klipse.tech/css/codemirror.css">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/klipse@7.6.9/dist/codemirror.css">
     <link rel="stylesheet" type="text/css" href="fw/styles.css">
     <script type="text/javascript">startTime = Date.now()</script>
     <script type="text/javascript">(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-52808982-2','auto');ga('send','pageview');</script>
@@ -31,7 +31,7 @@
       plugin</a>.
     </p>
     <hr>
-    <h1><a id="karet-xhr"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#karet-xhr">■</a> <a href="#karet-xhr">Karet XHR</a> &middot; <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://github.com/calmm-js/karet.xhr"><img src="https://img.shields.io/github/stars/calmm-js/karet.xhr.svg?style=social" alt="GitHub stars"></a></h1>
+    <h1 id="a-idkaret-xhra-≡-■-karet-xhr--gitter-github-stars"><a id="karet-xhr"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#karet-xhr">■</a> <a href="#karet-xhr">Karet XHR</a> &middot; <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://github.com/calmm-js/karet.xhr"><img src="https://img.shields.io/github/stars/calmm-js/karet.xhr.svg?style=social" alt="GitHub stars"></a></h1>
 <p>This library provides a thin wrapper over the standard
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest"><code>XMLHttpRequest</code></a>
 API allowing one to perform XHRs by observing the state of ongoing requests as
@@ -54,7 +54,7 @@ the API of this library as an example.</li>
 <a href="https://codecov.io/github/calmm-js/karet.xhr?branch=master"><img src="https://img.shields.io/codecov/c/github/calmm-js/karet.xhr/master.svg" alt="Code Coverage"></a>
 <a href="https://david-dm.org/calmm-js/karet.xhr"><img src="https://david-dm.org/calmm-js/karet.xhr.svg" alt=""></a>
 <a href="https://david-dm.org/calmm-js/karet.xhr?type=dev"><img src="https://david-dm.org/calmm-js/karet.xhr/dev-status.svg" alt=""></a></p>
-<h2><a id="contents"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#contents">■</a> <a href="#contents">Contents</a></h2>
+<h2 id="a-idcontentsa-≡-■-contents"><a id="contents"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#contents">■</a> <a href="#contents">Contents</a></h2>
 <ul>
 <li><a href="#reference">Reference</a><ul>
 <li><a href="#convenience">Convenience</a><ul>
@@ -183,7 +183,7 @@ the API of this library as an example.</li>
 </ul>
 </li>
 </ul>
-<h2><a id="reference"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#reference">■</a> <a href="#reference">Reference</a></h2>
+<h2 id="a-idreferencea-≡-■-reference"><a id="reference"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#reference">■</a> <a href="#reference">Reference</a></h2>
 <p>The interface of this library consists of named exports.  Typically one just
 imports the library as:</p>
 <pre><code class="hljs lang-jsx">import * as XHR from &#39;karet.xhr&#39;</code></pre>
@@ -193,15 +193,15 @@ representing the state of an
 using <a href="#XHR-perform"><code>XHR.perform</code></a> and then observes the ongoing XHR state
 using the accessors for <a href="#overall-state">overall</a>, <a href="#download-state">download</a>,
 and <a href="#upload-state">upload</a> state.</p>
-<h3><a id="convenience"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#convenience">■</a> <a href="#convenience">Convenience</a></h3>
-<h4><a id="XHR-getJson"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-getJson">■</a> <a href="#XHR-getJson"><code>XHR.getJson(url | {url,[, ...]}) ~&gt; varies</code></a></h4>
+<h3 id="a-idconveniencea-≡-■-convenience"><a id="convenience"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#convenience">■</a> <a href="#convenience">Convenience</a></h3>
+<h4 id="a-idxhr-getjsona-≡-■-xhrgetjsonurl--url---varies"><a id="XHR-getJson"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-getJson">■</a> <a href="#XHR-getJson"><code>XHR.getJson(url | {url,[, ...]}) ~&gt; varies</code></a></h4>
 <p><code>XHR.getJson(arg)</code> returns an observable that emits the <a href="#XHR-result">full
 response</a> after the <a href="#XHR-hasSucceeded">XHR has succeeded</a>.  In
 case the XHR fails or times out, the XHR is emitted as an error.</p>
-<h4><a id="XHR-performJson"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-peformJson">■</a> <a href="#XHR-performJson"><code>XHR.performJson(url | {url[, ...]}) ~&gt; xhr</code></a></h4>
+<h4 id="a-idxhr-performjsona-≡-■-xhrperformjsonurl--url---xhr"><a id="XHR-performJson"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-peformJson">■</a> <a href="#XHR-performJson"><code>XHR.performJson(url | {url[, ...]}) ~&gt; xhr</code></a></h4>
 <p><code>XHR.performJson</code> is shorthand for <a href="#XHR-performWith"><code>XHR.performWith({responseType:
 &#39;json&#39;, headers: {&#39;Content-Type&#39;: &#39;application/json&#39;}})</code></a>.</p>
-<h4><a id="XHR-performWith"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-performWith">■</a> <a href="#XHR-performWith"><code>XHR.performWith(url | {...}, url | {...}) ~&gt; xhr</code></a></h4>
+<h4 id="a-idxhr-performwitha-≡-■-xhrperformwithurl---url----xhr"><a id="XHR-performWith"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-performWith">■</a> <a href="#XHR-performWith"><code>XHR.performWith(url | {...}, url | {...}) ~&gt; xhr</code></a></h4>
 <p><code>XHR.performWith</code> is a curried function that allows one to define a
 <a href="#XHR-perform"><code>XHR.perform</code></a> like function with default parameters.  The
 defaults (first parameter) are merged with the overrides (second parameter).
@@ -210,14 +210,14 @@ Headers are also merged.  See <a href="#XHR-perform"><code>XHR.perform</code></a
 <pre><code class="hljs lang-jsx">var get = XHR.performWith({responseType: &#39;json&#39;, timeout: 30*1000})
 // ...
 get(url)</code></pre>
-<h4><a id="XHR-hasSucceeded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-hasSucceeded">■</a> <a href="#XHR-hasSucceeded"><code>XHR.hasSucceeded(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-hassucceededa-≡-■-xhrhassucceededxhr--boolean"><a id="XHR-hasSucceeded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-hasSucceeded">■</a> <a href="#XHR-hasSucceeded"><code>XHR.hasSucceeded(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.hasSucceeded</code> returns a possibly observable boolean property of an ongoing
 XHR that is true if the XHR <a href="#XHR-isDone">is done</a>, its HTTP <a href="#XHR-statusIsHttpSuccess">status indicates
 success</a>, and neither
 <a href="#XHR-downHasCompleted">download</a> or <a href="#XHR-upHasCompleted">upload</a> has failed or
 timed out.</p>
-<h3><a id="starting"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#starting">■</a> <a href="#starting">Starting</a></h3>
-<h4><a id="XHR-perform"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-perform">■</a> <a href="#XHR-perform"><code>XHR.perform(url | {url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~&gt; xhr</code></a></h4>
+<h3 id="a-idstartinga-≡-■-starting"><a id="starting"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#starting">■</a> <a href="#starting">Starting</a></h3>
+<h4 id="a-idxhr-performa-≡-■-xhrperformurl--url-method-user-password-headers-overridemimetype-body-responsetype-timeout-withcredentials--xhr"><a id="XHR-perform"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-perform">■</a> <a href="#XHR-perform"><code>XHR.perform(url | {url[, method, user, password, headers, overrideMimeType, body, responseType, timeout, withCredentials]}) ~&gt; xhr</code></a></h4>
 <p><code>XHR.perform</code> creates an observable
 <a href="https://kefirjs.github.io/kefir/#about-observables">property</a> that represents
 the state of an ongoing
@@ -296,238 +296,238 @@ case setting <code>responseType</code> to <code>&#39;json&#39;</code> fails.  In
 parse, then <a href="#XHR-response"><code>XHR.response</code></a> returns <code>null</code>.</p>
 <p>See this live <a href="https://codesandbox.io/s/l5271q0r2l">GitHub repository search</a>
 CodeSandbox for an example.</p>
-<h3><a id="overall-state"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#overall-state">■</a> <a href="#overall-state">Overall state</a></h3>
-<h4><a id="XHR-isXHR"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isXHR">■</a> <a href="#XHR-isXHR"><code>XHR.isXHR(any) ~&gt; boolean</code></a></h4>
+<h3 id="a-idoverall-statea-≡-■-overall-state"><a id="overall-state"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#overall-state">■</a> <a href="#overall-state">Overall state</a></h3>
+<h4 id="a-idxhr-isxhra-≡-■-xhrisxhrany--boolean"><a id="XHR-isXHR"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isXHR">■</a> <a href="#XHR-isXHR"><code>XHR.isXHR(any) ~&gt; boolean</code></a></h4>
 <p><code>XHR.isXHR</code> returns a possibly observable boolean property that tells whether
 the given value is a XHR.</p>
-<h4><a id="progression"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#progression">■</a> <a href="#progression">Progression</a></h4>
-<h5><a id="XHR-isStatusAvailable"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isStatusAvailable">■</a> <a href="#XHR-isStatusAvailable"><code>XHR.isStatusAvailable(xhr) ~&gt; boolean</code></a></h5>
+<h4 id="a-idprogressiona-≡-■-progression"><a id="progression"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#progression">■</a> <a href="#progression">Progression</a></h4>
+<h5 id="a-idxhr-isstatusavailablea-≡-■-xhrisstatusavailablexhr--boolean"><a id="XHR-isStatusAvailable"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isStatusAvailable">■</a> <a href="#XHR-isStatusAvailable"><code>XHR.isStatusAvailable(xhr) ~&gt; boolean</code></a></h5>
 <p><code>XHR.isStatusAvailable</code> returns a possibly observable boolean property that
 tells whether HTTP status and response headers have been received and can be
 obtained.  See also <a href="#XHR-status"><code>XHR.status</code></a>,
 <a href="#XHR-statusText"><code>XHR.statusText</code></a>,
 <a href="#XHR-allResponseHeaders"><code>XHR.allResponseHeaders</code></a>, and
 <a href="#XHR-responseHeader"><code>XHR.responseHeader</code></a>.</p>
-<h5><a id="XHR-isDone"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isDone">■</a> <a href="#XHR-isDone"><code>XHR.isDone(xhr) ~&gt; boolean</code></a></h5>
+<h5 id="a-idxhr-isdonea-≡-■-xhrisdonexhr--boolean"><a id="XHR-isDone"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isDone">■</a> <a href="#XHR-isDone"><code>XHR.isDone(xhr) ~&gt; boolean</code></a></h5>
 <p><code>XHR.isDone</code> returns a possibly observable boolean property that tells whether
 the XHR operation is complete (whether success or failure).  See also
 <a href="#XHR-hasSucceeded"><code>XHR.hasSucceeded</code></a>.</p>
-<h5><a id="XHR-isProgressing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isProgressing">■</a> <a href="#XHR-isProgressing"><code>XHR.isProgressing(xhr) ~&gt; boolean</code></a></h5>
+<h5 id="a-idxhr-isprogressinga-≡-■-xhrisprogressingxhr--boolean"><a id="XHR-isProgressing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isProgressing">■</a> <a href="#XHR-isProgressing"><code>XHR.isProgressing(xhr) ~&gt; boolean</code></a></h5>
 <p><code>XHR.isProgressing</code> returns a possibly observable boolean property that tells
 whether the XHR operation has started, but has not yet <a href="#XHR-isDone">ended</a>.</p>
-<h4><a id="end-state"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#end-state">■</a> <a href="#end-state">End state</a></h4>
-<h5><a id="XHR-hasFailed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-hasFailed">■</a> <a href="#XHR-hasFailed"><code>XHR.hasFailed(xhr) ~&gt; boolean</code></a></h5>
+<h4 id="a-idend-statea-≡-■-end-state"><a id="end-state"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#end-state">■</a> <a href="#end-state">End state</a></h4>
+<h5 id="a-idxhr-hasfaileda-≡-■-xhrhasfailedxhr--boolean"><a id="XHR-hasFailed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-hasFailed">■</a> <a href="#XHR-hasFailed"><code>XHR.hasFailed(xhr) ~&gt; boolean</code></a></h5>
 <p><code>XHR.hasFailed</code> returns a possibly observable boolean property of an ongoing XHR
 that is true when either <a href="#XHR-downHasFailed">download</a> or
 <a href="#XHR-upHasFailed">upload</a> has failed.</p>
-<h5><a id="XHR-hasTimedOut"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-hasTimedOut">■</a> <a href="#XHR-hasTimedOut"><code>XHR.hasTimedOut(xhr) ~&gt; boolean</code></a></h5>
+<h5 id="a-idxhr-hastimedouta-≡-■-xhrhastimedoutxhr--boolean"><a id="XHR-hasTimedOut"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-hasTimedOut">■</a> <a href="#XHR-hasTimedOut"><code>XHR.hasTimedOut(xhr) ~&gt; boolean</code></a></h5>
 <p><code>XHR.hasTimedOut</code> returns a possibly observable boolean property of an ongoing
 XHR that is true when either <a href="#XHR-downHasTimedOut">download</a> or
 <a href="#XHR-upHasTimedOut">upload</a> has timed out.</p>
-<h4><a id="errors-on-failure"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#errors-on-failure">■</a> <a href="#errors-on-failure">Errors on failure</a></h4>
-<h5><a id="XHR-errors"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-errors">■</a> <a href="#XHR-errors"><code>XHR.errors(xhr) ~&gt; [...exceptions]</code></a></h5>
+<h4 id="a-iderrors-on-failurea-≡-■-errors-on-failure"><a id="errors-on-failure"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#errors-on-failure">■</a> <a href="#errors-on-failure">Errors on failure</a></h4>
+<h5 id="a-idxhr-errorsa-≡-■-xhrerrorsxhr--exceptions"><a id="XHR-errors"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-errors">■</a> <a href="#XHR-errors"><code>XHR.errors(xhr) ~&gt; [...exceptions]</code></a></h5>
 <p><code>XHR.errors</code> returns a possibly observable array of errors from
 <a href="#XHR-downError">download</a> and <a href="#XHR-upError">upload</a>.  The array will contain 0
 to 2 errors.</p>
-<h4><a id="request-status"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#request-status">■</a> <a href="#request-status">Request status</a></h4>
-<h5><a id="XHR-status"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-status">■</a> <a href="#XHR-status"><code>XHR.status(xhr) ~&gt; number</code></a></h5>
+<h4 id="a-idrequest-statusa-≡-■-request-status"><a id="request-status"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#request-status">■</a> <a href="#request-status">Request status</a></h4>
+<h5 id="a-idxhr-statusa-≡-■-xhrstatusxhr--number"><a id="XHR-status"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-status">■</a> <a href="#XHR-status"><code>XHR.status(xhr) ~&gt; number</code></a></h5>
 <p><code>XHR.status</code> returns a possibly observable property that emits the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/status"><code>status</code></a>
 after the HTTP status has been received.  When called on a non-observable XHR,
 <a href="#XHR-isStatusAvailable"><code>readyState</code> must be 2</a> or an <code>Error</code> will be thrown.</p>
-<h5><a id="XHR-statusIsHttpSuccess"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-statusIsHttpSuccess">■</a> <a href="#XHR-statusIsHttpSuccess"><code>XHR.statusIsHttpSuccess(xhr) ~&gt; boolean</code></a></h5>
+<h5 id="a-idxhr-statusishttpsuccessa-≡-■-xhrstatusishttpsuccessxhr--boolean"><a id="XHR-statusIsHttpSuccess"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-statusIsHttpSuccess">■</a> <a href="#XHR-statusIsHttpSuccess"><code>XHR.statusIsHttpSuccess(xhr) ~&gt; boolean</code></a></h5>
 <p><code>XHR.statusIsHttpSuccess(xhr)</code> is shorthand for
 <code>XHR.isHttpSuccess(XHR.status(xhr))</code>.  Note that HTTP status is usually received
 before the <a href="#XHR-downHasCompleted">download</a> and <a href="#XHR-upHasCompleted">upload</a>
 phases have completed.  See also <a href="#XHR-hasSucceeded"><code>XHR.hasSucceeded</code></a>,
 <a href="#XHR-status"><code>XHR.status</code></a> and <a href="#XHR-isHttpSuccess"><code>XHR.isHttpSuccess</code></a>.</p>
-<h5><a id="XHR-statusText"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-statusText">■</a> <a href="#XHR-statusText"><code>XHR.statusText(xhr) ~&gt; string</code></a></h5>
+<h5 id="a-idxhr-statustexta-≡-■-xhrstatustextxhr--string"><a id="XHR-statusText"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-statusText">■</a> <a href="#XHR-statusText"><code>XHR.statusText(xhr) ~&gt; string</code></a></h5>
 <p><code>XHR.statusText</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/statusText"><code>statusText</code></a>
 after the HTTP status has been received.  When called on a non-observable XHR,
 <a href="#XHR-isStatusAvailable"><code>readyState</code> must be 2</a> or an <code>Error</code> will be thrown.</p>
-<h4><a id="data-transfer"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#data-transfer">■</a> <a href="#data-transfer">Data transfer</a></h4>
-<h5><a id="XHR-loaded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-loaded">■</a> <a href="#XHR-loaded"><code>XHR.loaded(xhr) ~&gt; number</code></a></h5>
+<h4 id="a-iddata-transfera-≡-■-data-transfer"><a id="data-transfer"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#data-transfer">■</a> <a href="#data-transfer">Data transfer</a></h4>
+<h5 id="a-idxhr-loadeda-≡-■-xhrloadedxhr--number"><a id="XHR-loaded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-loaded">■</a> <a href="#XHR-loaded"><code>XHR.loaded(xhr) ~&gt; number</code></a></h5>
 <p><code>XHR.loaded</code> returns a possibly observable property of the sum of
 <a href="#XHR-downLoaded">downloaded</a> and <a href="#XHR-upLoaded">uploaded</a> bytes.</p>
-<h5><a id="XHR-total"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-total">■</a> <a href="#XHR-total"><code>XHR.total(xhr) ~&gt; number</code></a></h5>
+<h5 id="a-idxhr-totala-≡-■-xhrtotalxhr--number"><a id="XHR-total"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-total">■</a> <a href="#XHR-total"><code>XHR.total(xhr) ~&gt; number</code></a></h5>
 <p><code>XHR.loaded</code> returns a possibly observable property of the sum of <a href="#XHR-downTotal">total
 download</a> and <a href="#XHR-upTotal">total upload</a> bytes.</p>
-<h4><a id="response-headers"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#response-headers">■</a> <a href="#response-headers">Response headers</a></h4>
-<h5><a id="XHR-allResponseHeaders"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-allResponseHeaders">■</a> <a href="#XHR-allResponseHeaders"><code>XHR.allResponseHeaders(xhr) ~&gt; string</code></a></h5>
+<h4 id="a-idresponse-headersa-≡-■-response-headers"><a id="response-headers"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#response-headers">■</a> <a href="#response-headers">Response headers</a></h4>
+<h5 id="a-idxhr-allresponseheadersa-≡-■-xhrallresponseheadersxhr--string"><a id="XHR-allResponseHeaders"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-allResponseHeaders">■</a> <a href="#XHR-allResponseHeaders"><code>XHR.allResponseHeaders(xhr) ~&gt; string</code></a></h5>
 <p><code>XHR.allResponseHeaders</code> returns a possibly observable property that emits the
 value of
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders"><code>getAllResponseHeaders()</code></a>
 after the HTTP headers have been received.  When called on a non-observable XHR,
 its <a href="#XHR-isStatusAvailable"><code>readyState</code> must be 2</a> or an <code>Error</code> will be thrown.</p>
-<h5><a id="XHR-responseHeader"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseHeader">■</a> <a href="#XHR-responseHeader"><code>XHR.responseHeader(header, xhr) ~&gt; string</code></a></h5>
+<h5 id="a-idxhr-responseheadera-≡-■-xhrresponseheaderheader-xhr--string"><a id="XHR-responseHeader"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseHeader">■</a> <a href="#XHR-responseHeader"><code>XHR.responseHeader(header, xhr) ~&gt; string</code></a></h5>
 <p><code>XHR.responseHeader</code> returns a possibly observable property that emits the value
 of
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getResponseHeader"><code>getResponseHeader(header)</code></a>
 for specified <code>header</code> after the HTTP headers have been received.  When called
 on a non-observable XHR, its <a href="#XHR-isStatusAvailable"><code>readyState</code> must be 2</a> or
 an <code>Error</code> will be thrown.</p>
-<h4><a id="response-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#response-data">■</a> <a href="#response-data">Response data</a></h4>
-<h5><a id="XHR-response"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-response">■</a> <a href="#XHR-response"><code>XHR.response(xhr) ~&gt; varies</code></a></h5>
+<h4 id="a-idresponse-dataa-≡-■-response-data"><a id="response-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#response-data">■</a> <a href="#response-data">Response data</a></h4>
+<h5 id="a-idxhr-responsea-≡-■-xhrresponsexhr--varies"><a id="XHR-response"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-response">■</a> <a href="#XHR-response"><code>XHR.response(xhr) ~&gt; varies</code></a></h5>
 <p><code>XHR.response</code> returns a possibly observable property that emits the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response"><code>response</code></a>
 after the <a href="#XHR-downHasCompleted">download operation of the XHR has completed</a>.
 When called on a non-observable XHR, the download operation must be completed or
 an <code>Error</code> will be thrown.  See also <a href="#XHR-result"><code>XHR.result</code></a>, and
 <a href="#XHR-responseText"><code>XHR.responseText</code></a>.</p>
-<h5><a id="XHR-responseText"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseText">■</a> <a href="#XHR-responseText"><code>XHR.responseText(xhr) ~&gt; string</code></a></h5>
+<h5 id="a-idxhr-responsetexta-≡-■-xhrresponsetextxhr--string"><a id="XHR-responseText"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseText">■</a> <a href="#XHR-responseText"><code>XHR.responseText(xhr) ~&gt; string</code></a></h5>
 <p><code>XHR.responseText</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseText"><code>responseText</code></a>
 property of an ongoing XHR.  <code>XHR.responseText</code> is for observing the received
 response data before the data has been completely received.  See also
 <a href="#XHR-response"><code>XHR.response</code></a>.</p>
-<h5><a id="XHR-responseXML"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseXML">■</a> <a href="#XHR-responseXML"><code>XHR.responseXML(xhr) ~&gt; document</code></a></h5>
+<h5 id="a-idxhr-responsexmla-≡-■-xhrresponsexmlxhr--document"><a id="XHR-responseXML"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseXML">■</a> <a href="#XHR-responseXML"><code>XHR.responseXML(xhr) ~&gt; document</code></a></h5>
 <p><code>XHR.responseXML</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseXML"><code>responseXML</code></a>
 property after the XHR has completed.  When called on a non-observable XHR, the
 download operation must be completed or an <code>Error</code> will be thrown.  See also
 <a href="#XHR-response"><code>XHR.response</code></a>.</p>
-<h4><a id="response-url"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#response-url">■</a> <a href="#response-url">Response URL</a></h4>
-<h5><a id="XHR-responseURL"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseURL">■</a> <a href="#XHR-responseURL"><code>XHR.responseURL(xhr) ~&gt; string</code></a></h5>
+<h4 id="a-idresponse-urla-≡-■-response-url"><a id="response-url"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#response-url">■</a> <a href="#response-url">Response URL</a></h4>
+<h5 id="a-idxhr-responseurla-≡-■-xhrresponseurlxhr--string"><a id="XHR-responseURL"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseURL">■</a> <a href="#XHR-responseURL"><code>XHR.responseURL(xhr) ~&gt; string</code></a></h5>
 <p><code>XHR.responseURL</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseURL"><code>responseURL</code></a>
 property after the HTTP headers have been received.  When called on a
 non-observable XHR, its <a href="#XHR-isStatusAvailable"><code>readyState</code> must be 2</a> or an
 <code>Error</code> will be thrown.</p>
-<h4><a id="request-parameters"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#request-parameters">■</a> <a href="#request-parameters">Request parameters</a></h4>
-<h5><a id="XHR-responseType"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseType">■</a> <a href="#XHR-responseType"><code>XHR.responseType(xhr) ~&gt; string</code></a></h5>
+<h4 id="a-idrequest-parametersa-≡-■-request-parameters"><a id="request-parameters"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#request-parameters">■</a> <a href="#request-parameters">Request parameters</a></h4>
+<h5 id="a-idxhr-responsetypea-≡-■-xhrresponsetypexhr--string"><a id="XHR-responseType"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseType">■</a> <a href="#XHR-responseType"><code>XHR.responseType(xhr) ~&gt; string</code></a></h5>
 <p><code>XHR.responseType</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType"><code>responseType</code></a>
 of an ongoing XHR.</p>
-<h5><a id="XHR-timeout"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-timeout">■</a> <a href="#XHR-timeout"><code>XHR.timeout(xhr) ~&gt; number</code></a></h5>
+<h5 id="a-idxhr-timeouta-≡-■-xhrtimeoutxhr--number"><a id="XHR-timeout"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-timeout">■</a> <a href="#XHR-timeout"><code>XHR.timeout(xhr) ~&gt; number</code></a></h5>
 <p><code>XHR.timeout</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/timeout"><code>timeout</code></a>
 property of an ongoing XHR.</p>
-<h5><a id="XHR-withCredentials"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-withCredentials">■</a> <a href="#XHR-withCredentials"><code>XHR.withCredentials(xhr) ~&gt; boolean</code></a></h5>
+<h5 id="a-idxhr-withcredentialsa-≡-■-xhrwithcredentialsxhr--boolean"><a id="XHR-withCredentials"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-withCredentials">■</a> <a href="#XHR-withCredentials"><code>XHR.withCredentials(xhr) ~&gt; boolean</code></a></h5>
 <p><code>XHR.withCredentials</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials"><code>withCredentials</code></a>
 property of an ongoing XHR.</p>
-<h4><a id="ready-state"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#ready-state">■</a> <a href="#ready-state">Ready state</a></h4>
-<h5><a id="XHR-readyState"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-readyState">■</a> <a href="#XHR-readyState"><code>XHR.readyState(xhr) ~&gt; number</code></a></h5>
+<h4 id="a-idready-statea-≡-■-ready-state"><a id="ready-state"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#ready-state">■</a> <a href="#ready-state">Ready state</a></h4>
+<h5 id="a-idxhr-readystatea-≡-■-xhrreadystatexhr--number"><a id="XHR-readyState"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-readyState">■</a> <a href="#XHR-readyState"><code>XHR.readyState(xhr) ~&gt; number</code></a></h5>
 <p><code>XHR.readyState</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState"><code>readyState</code></a>
 of an ongoing XHR.</p>
-<h3><a id="download-state"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#download-state">■</a> <a href="#download-state">Download state</a></h3>
-<h4><a id="XHR-downError"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downError">■</a> <a href="#XHR-downError"><code>XHR.downError(xhr) ~&gt; exception</code></a></h4>
+<h3 id="a-iddownload-statea-≡-■-download-state"><a id="download-state"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#download-state">■</a> <a href="#download-state">Download state</a></h3>
+<h4 id="a-idxhr-downerrora-≡-■-xhrdownerrorxhr--exception"><a id="XHR-downError"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downError">■</a> <a href="#XHR-downError"><code>XHR.downError(xhr) ~&gt; exception</code></a></h4>
 <p><code>XHR.downError</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/error"><code>error</code></a> property of
 a failed XHR.</p>
-<h4><a id="XHR-downHasEnded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasEnded">■</a> <a href="#XHR-downHasEnded"><code>XHR.downHasEnded(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-downhasendeda-≡-■-xhrdownhasendedxhr--boolean"><a id="XHR-downHasEnded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasEnded">■</a> <a href="#XHR-downHasEnded"><code>XHR.downHasEnded(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.downHasEnded</code> returns a possibly observable boolean property that tells
 whether the download operation of an ongoing XHR has
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/loadend">ended</a>.</p>
-<h4><a id="XHR-downHasFailed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasFailed">■</a> <a href="#XHR-downHasFailed"><code>XHR.downHasFailed(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-downhasfaileda-≡-■-xhrdownhasfailedxhr--boolean"><a id="XHR-downHasFailed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasFailed">■</a> <a href="#XHR-downHasFailed"><code>XHR.downHasFailed(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.downHasFailed</code> returns a possibly observable boolean property that tells
 whether the download operation of an ongoing XHR has
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/error">failed</a>.</p>
-<h4><a id="XHR-downHasStarted"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasStarted">■</a> <a href="#XHR-downHasStarted"><code>XHR.downHasStarted(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-downhasstarteda-≡-■-xhrdownhasstartedxhr--boolean"><a id="XHR-downHasStarted"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasStarted">■</a> <a href="#XHR-downHasStarted"><code>XHR.downHasStarted(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.downHasStarted</code> returns a possibly observable boolean property that tells
 whether the download operation of an ongoing XHR has
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/loadstart">started</a>.</p>
-<h4><a id="XHR-downHasCompleted"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasCompleted">■</a> <a href="#XHR-downHasCompleted"><code>XHR.downHasCompleted(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-downhascompleteda-≡-■-xhrdownhascompletedxhr--boolean"><a id="XHR-downHasCompleted"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasCompleted">■</a> <a href="#XHR-downHasCompleted"><code>XHR.downHasCompleted(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.downHasCompleted</code> returns a possibly observable boolean property that tells
 whether the download operation of an ongoing XHR has been <a href="https://developer.mozilla.org/en-US/docs/Web/Events/load">completed
 successfully</a>.  Note
 that this does not take into account the HTTP response status, see
 <a href="#XHR-status"><code>XHR.status</code></a> and <a href="#XHR-isHttpSuccess"><code>XHR.isHttpSuccess</code></a>.</p>
-<h4><a id="XHR-downHasTimedOut"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasTimedOut">■</a> <a href="#XHR-downHasTimedOut"><code>XHR.downHasTimedOut(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-downhastimedouta-≡-■-xhrdownhastimedoutxhr--boolean"><a id="XHR-downHasTimedOut"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasTimedOut">■</a> <a href="#XHR-downHasTimedOut"><code>XHR.downHasTimedOut(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.downHasTimedOut</code> returns a possibly observable boolean property that tells
 whether the download operation of an ongoing XHR has <a href="https://developer.mozilla.org/en-US/docs/Web/Events/timeout">timed
 out</a>.</p>
-<h4><a id="XHR-downIsProgressing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downIsProgressing">■</a> <a href="#XHR-downIsProgressing"><code>XHR.downIsProgressing(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-downisprogressinga-≡-■-xhrdownisprogressingxhr--boolean"><a id="XHR-downIsProgressing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downIsProgressing">■</a> <a href="#XHR-downIsProgressing"><code>XHR.downIsProgressing(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.downIsProgressing</code> returns a possibly observable boolean property that
 tells whether the download operation of an ongoing XHR is
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/progress">progressing</a>.</p>
-<h4><a id="XHR-downLoaded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downLoaded">■</a> <a href="#XHR-downLoaded"><code>XHR.downLoaded(xhr) ~&gt; number</code></a></h4>
+<h4 id="a-idxhr-downloadeda-≡-■-xhrdownloadedxhr--number"><a id="XHR-downLoaded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downLoaded">■</a> <a href="#XHR-downLoaded"><code>XHR.downLoaded(xhr) ~&gt; number</code></a></h4>
 <p><code>XHR.downLoaded</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/progress"><code>loaded</code></a>
 property of an ongoing XHR.</p>
-<h4><a id="XHR-downTotal"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downTotal">■</a> <a href="#XHR-downTotal"><code>XHR.downTotal(xhr) ~&gt; number</code></a></h4>
+<h4 id="a-idxhr-downtotala-≡-■-xhrdowntotalxhr--number"><a id="XHR-downTotal"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downTotal">■</a> <a href="#XHR-downTotal"><code>XHR.downTotal(xhr) ~&gt; number</code></a></h4>
 <p><code>XHR.downTotal</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/progress"><code>total</code></a> property
 of an ongoing XHR.</p>
-<h3><a id="upload-state"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#upload-state">■</a> <a href="#upload-state">Upload state</a></h3>
-<h4><a id="XHR-upError"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upError">■</a> <a href="#XHR-upError"><code>XHR.upError(xhr) ~&gt; exception</code></a></h4>
+<h3 id="a-idupload-statea-≡-■-upload-state"><a id="upload-state"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#upload-state">■</a> <a href="#upload-state">Upload state</a></h3>
+<h4 id="a-idxhr-uperrora-≡-■-xhruperrorxhr--exception"><a id="XHR-upError"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upError">■</a> <a href="#XHR-upError"><code>XHR.upError(xhr) ~&gt; exception</code></a></h4>
 <p><code>XHR.upError</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/error"><code>error</code></a> property of
 a failed XHR.</p>
-<h4><a id="XHR-upHasEnded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasEnded">■</a> <a href="#XHR-upHasEnded"><code>XHR.upHasEnded(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-uphasendeda-≡-■-xhruphasendedxhr--boolean"><a id="XHR-upHasEnded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasEnded">■</a> <a href="#XHR-upHasEnded"><code>XHR.upHasEnded(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.upHasEnded</code> returns a possibly observable boolean property that tells
 whether the upload operation of an ongoing XHR has
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/loadend">ended</a>.</p>
-<h4><a id="XHR-upHasFailed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasFailed">■</a> <a href="#XHR-upHasFailed"><code>XHR.upHasFailed(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-uphasfaileda-≡-■-xhruphasfailedxhr--boolean"><a id="XHR-upHasFailed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasFailed">■</a> <a href="#XHR-upHasFailed"><code>XHR.upHasFailed(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.upHasFailed</code> returns a possibly observable boolean property that tells
 whether the upload operation of an ongoing XHR has
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/error">failed</a>.</p>
-<h4><a id="XHR-upHasStarted"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasStarted">■</a> <a href="#XHR-upHasStarted"><code>XHR.upHasStarted(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-uphasstarteda-≡-■-xhruphasstartedxhr--boolean"><a id="XHR-upHasStarted"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasStarted">■</a> <a href="#XHR-upHasStarted"><code>XHR.upHasStarted(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.upHasStarted</code> returns a possibly observable boolean property that tells
 whether the upload operation of an ongoing XHR has
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/loadstart">started</a>.</p>
-<h4><a id="XHR-upHasCompleted"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasCompleted">■</a> <a href="#XHR-upHasCompleted"><code>XHR.upHasCompleted(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-uphascompleteda-≡-■-xhruphascompletedxhr--boolean"><a id="XHR-upHasCompleted"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasCompleted">■</a> <a href="#XHR-upHasCompleted"><code>XHR.upHasCompleted(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.upHasCompleted</code> returns a possibly observable boolean property that tells
 whether the upload operation of an ongoing XHR has <a href="https://developer.mozilla.org/en-US/docs/Web/Events/load">completed
 successfully</a>.  Note
 that this does not take into account the HTTP response status, see
 <a href="#XHR-status"><code>XHR.status</code></a> and <a href="#XHR-isHttpSuccess"><code>XHR.isHttpSuccess</code></a>.</p>
-<h4><a id="XHR-upHasTimedOut"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasTimedOut">■</a> <a href="#XHR-upHasTimedOut"><code>XHR.upHasTimedOut(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-uphastimedouta-≡-■-xhruphastimedoutxhr--boolean"><a id="XHR-upHasTimedOut"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasTimedOut">■</a> <a href="#XHR-upHasTimedOut"><code>XHR.upHasTimedOut(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.upHasTimedOut</code> returns a possibly observable boolean property that tells
 whether the upload operation of an ongoing XHR has <a href="https://developer.mozilla.org/en-US/docs/Web/Events/timeout">timed
 out</a>.</p>
-<h4><a id="XHR-upIsProgressing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upIsProgressing">■</a> <a href="#XHR-upIsProgressing"><code>XHR.upIsProgressing(xhr) ~&gt; boolean</code></a></h4>
+<h4 id="a-idxhr-upisprogressinga-≡-■-xhrupisprogressingxhr--boolean"><a id="XHR-upIsProgressing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upIsProgressing">■</a> <a href="#XHR-upIsProgressing"><code>XHR.upIsProgressing(xhr) ~&gt; boolean</code></a></h4>
 <p><code>XHR.upIsProgressing</code> returns a possibly observable boolean property that tells
 whether the upload operation of an ongoing XHR is
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/progress">progressing</a>.</p>
-<h4><a id="XHR-upLoaded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upLoaded">■</a> <a href="#XHR-upLoaded"><code>XHR.upLoaded(xhr) ~&gt; number</code></a></h4>
+<h4 id="a-idxhr-uploadeda-≡-■-xhruploadedxhr--number"><a id="XHR-upLoaded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upLoaded">■</a> <a href="#XHR-upLoaded"><code>XHR.upLoaded(xhr) ~&gt; number</code></a></h4>
 <p><code>XHR.upLoaded</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/progress"><code>loaded</code></a>
 property of an ongoing XHR.</p>
-<h4><a id="XHR-upTotal"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upTotal">■</a> <a href="#XHR-upTotal"><code>XHR.upTotal(xhr) ~&gt; number</code></a></h4>
+<h4 id="a-idxhr-uptotala-≡-■-xhruptotalxhr--number"><a id="XHR-upTotal"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upTotal">■</a> <a href="#XHR-upTotal"><code>XHR.upTotal(xhr) ~&gt; number</code></a></h4>
 <p><code>XHR.upTotal</code> returns a possibly observable property of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/Events/progress"><code>total</code></a> property
 of an ongoing XHR.</p>
-<h3><a id="happy-path"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#happy-path">■</a> <a href="#happy-path">Happy path</a></h3>
-<h4><a id="XHR-result"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-result">■</a> <a href="#XHR-result"><code>XHR.result(xhr) ~&gt; varies</code></a></h4>
+<h3 id="a-idhappy-patha-≡-■-happy-path"><a id="happy-path"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#happy-path">■</a> <a href="#happy-path">Happy path</a></h3>
+<h4 id="a-idxhr-resulta-≡-■-xhrresultxhr--varies"><a id="XHR-result"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-result">■</a> <a href="#XHR-result"><code>XHR.result(xhr) ~&gt; varies</code></a></h4>
 <p><code>XHR.result</code> returns the response of a <a href="#XHR-hasSucceeded">succeeded</a> XHR.  Note
 that <a href="#XHR-response"><code>XHR.response</code></a> allows one to obtain the response before
 the XHR <a href="#XHR-isDone">is done</a> and even when the XHR has (partially) failed.</p>
-<h4><a id="happy-path-algebras"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#happy-path-algebras">■</a> <a href="#happy-path-algebras">Happy path algebras</a></h4>
-<h5><a id="XHR-Succeeded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-Succeeded">■</a> <a href="#XHR-Succeeded"><code>XHR.Succeeded ~&gt; Monad</code></a></h5>
+<h4 id="a-idhappy-path-algebrasa-≡-■-happy-path-algebras"><a id="happy-path-algebras"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#happy-path-algebras">■</a> <a href="#happy-path-algebras">Happy path algebras</a></h4>
+<h5 id="a-idxhr-succeededa-≡-■-xhrsucceeded--monad"><a id="XHR-Succeeded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-Succeeded">■</a> <a href="#XHR-Succeeded"><code>XHR.Succeeded ~&gt; Monad</code></a></h5>
 <p><code>XHR.Succeeded</code> is a static land compatible
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad">monad</a>
 comprised of the <a href="#XHR-ap"><code>XHR.ap</code></a>, <a href="#XHR-chain"><code>XHR.chain</code></a>,
 <a href="#XHR-map"><code>XHR.map</code></a>, and <a href="#XHR-of"><code>XHR.of</code></a> combinators that allows one to
 compose sequences of XHR requests that stop as soon as the first XHR does not
 <a href="#XHR-hasSucceeded">succeed</a>.</p>
-<h5><a id="XHR-IdentitySucceeded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-IdentitySucceeded">■</a> <a href="#XHR-IdentitySucceeded"><code>XHR.IdentitySucceeded ~&gt; Monad</code></a></h5>
+<h5 id="a-idxhr-identitysucceededa-≡-■-xhridentitysucceeded--monad"><a id="XHR-IdentitySucceeded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-IdentitySucceeded">■</a> <a href="#XHR-IdentitySucceeded"><code>XHR.IdentitySucceeded ~&gt; Monad</code></a></h5>
 <p><code>XHR.IdentitySucceeded</code> is a static land compatible
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad">monad</a>
 that manipulates XHRs like <a href="#XHR-Succeeded"><code>XHR.Succeeded</code></a> or plain data.</p>
-<h4><a id="monadic-happy-path-combinators"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#monadic-happy-path-combinators">■</a> <a href="#monadic-happy-path-combinators">Monadic happy path combinators</a></h4>
-<h5><a id="XHR-ap"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-ap">■</a> <a href="#XHR-ap"><code>XHR.ap(xhrAtoB, xhrA) ~&gt; xhrB</code></a></h5>
+<h4 id="a-idmonadic-happy-path-combinatorsa-≡-■-monadic-happy-path-combinators"><a id="monadic-happy-path-combinators"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#monadic-happy-path-combinators">■</a> <a href="#monadic-happy-path-combinators">Monadic happy path combinators</a></h4>
+<h5 id="a-idxhr-apa-≡-■-xhrapxhratob-xhra--xhrb"><a id="XHR-ap"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-ap">■</a> <a href="#XHR-ap"><code>XHR.ap(xhrAtoB, xhrA) ~&gt; xhrB</code></a></h5>
 <p><code>XHR.ap</code> implements a static land compatible
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#apply"><code>ap</code></a>
 function for composing succeeding XHRs.</p>
-<h5><a id="XHR-chain"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-chain">■</a> <a href="#XHR-chain"><code>XHR.chain(responseA =&gt; xhrB, xhrA) ~&gt; xhrB</code></a></h5>
+<h5 id="a-idxhr-chaina-≡-■-xhrchainresponsea--xhrb-xhra--xhrb"><a id="XHR-chain"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-chain">■</a> <a href="#XHR-chain"><code>XHR.chain(responseA =&gt; xhrB, xhrA) ~&gt; xhrB</code></a></h5>
 <p><code>XHR.chain</code> implements a static land compatible
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#chain"><code>chain</code></a>
 function for composing succeeding XHRs.</p>
-<h5><a id="XHR-map"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-map">■</a> <a href="#XHR-map"><code>XHR.map(responseA =&gt; responseB, xhrA) ~&gt; xhrB</code></a></h5>
+<h5 id="a-idxhr-mapa-≡-■-xhrmapresponsea--responseb-xhra--xhrb"><a id="XHR-map"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-map">■</a> <a href="#XHR-map"><code>XHR.map(responseA =&gt; responseB, xhrA) ~&gt; xhrB</code></a></h5>
 <p><code>XHR.map</code> implements a static land compatible
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor"><code>map</code></a>
 function for composing succeeding XHRs.</p>
-<h5><a id="XHR-of"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-of">■</a> <a href="#XHR-of"><code>XHR.of(response) ~&gt; xhr</code></a></h5>
+<h5 id="a-idxhr-ofa-≡-■-xhrofresponse--xhr"><a id="XHR-of"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-of">■</a> <a href="#XHR-of"><code>XHR.of(response) ~&gt; xhr</code></a></h5>
 <p><code>XHR.of</code> implements a static land compatible
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative"><code>of</code></a>
 function for composing succeeding XHRs.</p>
-<h4><a id="additional-happy-path-combinators"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#additional-happy-path-combinators">■</a> <a href="#additional-happy-path-combinators">Additional happy path combinators</a></h4>
-<h5><a id="XHR-apply"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-apply">■</a> <a href="#XHR-apply"><code>XHR.apply((...responseAs) =&gt; responseB, [...xhrAs]) ~&gt; xhrB</code></a></h5>
+<h4 id="a-idadditional-happy-path-combinatorsa-≡-■-additional-happy-path-combinators"><a id="additional-happy-path-combinators"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#additional-happy-path-combinators">■</a> <a href="#additional-happy-path-combinators">Additional happy path combinators</a></h4>
+<h5 id="a-idxhr-applya-≡-■-xhrapplyresponseas--responseb-xhras--xhrb"><a id="XHR-apply"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-apply">■</a> <a href="#XHR-apply"><code>XHR.apply((...responseAs) =&gt; responseB, [...xhrAs]) ~&gt; xhrB</code></a></h5>
 <p><code>XHR.apply</code> maps the given XHRs through the given function.</p>
-<h5><a id="XHR-tap"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-tap">■</a> <a href="#XHR-tap"><code>XHR.tap(response =&gt; ignored, xhr) ~&gt; xhr</code></a></h5>
+<h5 id="a-idxhr-tapa-≡-■-xhrtapresponse--ignored-xhr--xhr"><a id="XHR-tap"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-tap">■</a> <a href="#XHR-tap"><code>XHR.tap(response =&gt; ignored, xhr) ~&gt; xhr</code></a></h5>
 <p><code>XHR.tap</code> wraps the XHR so that the given action is called with the response
 after the XHR has succeeded.  If the XHR does not succeed, the action will not
 be called.</p>
@@ -536,25 +536,25 @@ be called.</p>
   action(response)
   return response
 })</code></pre>
-<h5><a id="XHR-template"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-template">■</a> <a href="#XHR-template"><code>XHR.template([ ... xhr ... ] | { ... xhr ... }) ~&gt; xhr</code></a></h5>
+<h5 id="a-idxhr-templatea-≡-■-xhrtemplate--xhr------xhr----xhr"><a id="XHR-template"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-template">■</a> <a href="#XHR-template"><code>XHR.template([ ... xhr ... ] | { ... xhr ... }) ~&gt; xhr</code></a></h5>
 <p><code>XHR.template</code> transforms a nested template of plain arrays and objects possibly
 containing XHRs into a XHR.</p>
-<h3><a id="auxiliary"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#auxiliary">■</a> <a href="#auxiliary">Auxiliary</a></h3>
-<h4><a id="XHR-isHttpSuccess"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isHttpSuccess">■</a> <a href="#XHR-isHttpSuccess"><code>XHR.isHttpSuccess(number) ~&gt; boolean</code></a></h4>
+<h3 id="a-idauxiliarya-≡-■-auxiliary"><a id="auxiliary"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#auxiliary">■</a> <a href="#auxiliary">Auxiliary</a></h3>
+<h4 id="a-idxhr-ishttpsuccessa-≡-■-xhrishttpsuccessnumber--boolean"><a id="XHR-isHttpSuccess"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-isHttpSuccess">■</a> <a href="#XHR-isHttpSuccess"><code>XHR.isHttpSuccess(number) ~&gt; boolean</code></a></h4>
 <p><code>XHR.isHttpSuccess</code> returns a possibly observable property of whether the given
 numeric property is in the range 2xx of <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#2xx_Success">HTTP success
 codes</a>.
 See also <a href="#XHR-statusIsHttpSuccess"><code>XHR.statusIsHttpSuccess</code></a>.</p>
-<h3><a id="deprecated"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#deprecated">■</a> <a href="#deprecated">Deprecated</a></h3>
-<h4><a id="XHR-downHasSucceeded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasSucceeded">■</a> <del><a href="#XHR-downHasSucceeded"><code>XHR.downHasSucceeded(xhr) ~&gt; boolean</code></a></del></h4>
+<h3 id="a-iddeprecateda-≡-■-deprecated"><a id="deprecated"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#deprecated">■</a> <a href="#deprecated">Deprecated</a></h3>
+<h4 id="a-idxhr-downhassucceededa-≡-■-xhrdownhassucceededxhr--boolean"><a id="XHR-downHasSucceeded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-downHasSucceeded">■</a> <del><a href="#XHR-downHasSucceeded"><code>XHR.downHasSucceeded(xhr) ~&gt; boolean</code></a></del></h4>
 <p><code>XHR.downHasSucceeded</code> has been renamed to
 <a href="#XHR-downHasCompleted"><code>XHR.downHasCompleted</code></a>.</p>
-<h4><a id="XHR-headersReceived"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-headersReceived">■</a> <del><a href="#XHR-headersReceived"><code>XHR.headersReceived(xhr) ~&gt; boolean</code></a></del></h4>
+<h4 id="a-idxhr-headersreceiveda-≡-■-xhrheadersreceivedxhr--boolean"><a id="XHR-headersReceived"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-headersReceived">■</a> <del><a href="#XHR-headersReceived"><code>XHR.headersReceived(xhr) ~&gt; boolean</code></a></del></h4>
 <p><code>XHR.headersReceived</code> has been renamed to
 <a href="#XHR-isStatusAvailable"><code>XHR.isStatusAvailable</code></a>.</p>
-<h4><a id="XHR-responseFull"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseFull">■</a> <del><a href="#XHR-responseFull"><code>XHR.responseFull(xhr) ~&gt; varies</code></a></del></h4>
+<h4 id="a-idxhr-responsefulla-≡-■-xhrresponsefullxhr--varies"><a id="XHR-responseFull"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-responseFull">■</a> <del><a href="#XHR-responseFull"><code>XHR.responseFull(xhr) ~&gt; varies</code></a></del></h4>
 <p><code>XHR.responseFull</code> has been renamed to <a href="#XHR-response"><code>XHR.response</code></a>.</p>
-<h4><a id="XHR-upHasSucceeded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasSucceeded">■</a> <del><a href="#XHR-upHasSucceeded"><code>XHR.upHasSucceeded(xhr) ~&gt; boolean</code></a></del></h4>
+<h4 id="a-idxhr-uphassucceededa-≡-■-xhruphassucceededxhr--boolean"><a id="XHR-upHasSucceeded"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/karet.xhr/blob/master/README.md#XHR-upHasSucceeded">■</a> <del><a href="#XHR-upHasSucceeded"><code>XHR.upHasSucceeded(xhr) ~&gt; boolean</code></a></del></h4>
 <p><code>XHR.upHasSucceeded</code> has been renamed to
 <a href="#XHR-upHasCompleted"><code>XHR.upHasCompleted</code></a>.</p>
 
@@ -576,7 +576,7 @@ See also <a href="#XHR-statusIsHttpSuccess"><code>XHR.statusIsHttpSuccess</code>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="https://unpkg.com/ramda/dist/ramda.min.js"></script>
     <script type="text/javascript" src="fw/klipse-settings.js"></script>
-    <script type="text/javascript" src="https://storage.googleapis.com/app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/klipse@7.6.9/dist/klipse_plugin.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/javascript.min.js"></script>
     <script type="text/javascript" src="fw/init-hljs.js"></script>
