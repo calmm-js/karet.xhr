@@ -25,6 +25,7 @@ Examples:
 
 ## <a id="contents"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#contents) [Contents](#contents)
 
+* [Introduction](#introduction)
 * [Reference](#reference)
   * [Convenience](#convenience)
     * [`XHR.getJson(url | {url[, ...]}) ~> varies`](#XHR-getJson)
@@ -107,6 +108,32 @@ Examples:
     * ~~[`XHR.headersReceived(xhr) ~> boolean`](#XHR-headersReceived)~~
     * ~~[`XHR.responseFull(xhr) ~> varies`](#XHR-responseFull)~~
     * ~~[`XHR.upHasSucceeded(xhr) ~> boolean`](#XHR-upHasSucceeded)~~
+
+## <a id="introduction"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#introduction) [Introduction](#introduction)
+
+To-Be-Done
+
+```js
+const searchRepositories = q => XHR.performJson(
+  U.string`https://api.github.com/search/repositories?q=${U.encodeURIComponent(q)}&sort=stars&order=desc`
+)
+
+const logValues = observable => {
+  const value = console.log
+  setTimeout(() => U.on({value}, observable), 0)
+}
+
+const xhr = searchRepositories('karet')
+
+logValues(U.string`${XHR.downLoaded(xhr)} bytes loaded`)
+logValues(
+  L.collectAs(
+    ({full_name, stargazers_count}) => `${stargazers_count} ${full_name}`,
+    L.flat('items'),
+    XHR.responseFull(xhr)
+  )
+)
+```
 
 ## <a id="reference"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#reference) [Reference](#reference)
 
