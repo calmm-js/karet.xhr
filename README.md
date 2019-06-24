@@ -34,6 +34,7 @@ Examples:
   * [Compose](#compose)
     * [Basic combinators](#basic-combinators)
       * [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)
+      * [`XHR.apParallel(xhrAtoB, xhrA) ~> xhrB`](#XHR-apParallel)
       * [`XHR.chain(A => xhrB, xhrA) ~> xhrB`](#XHR-chain)
       * [`XHR.map(A => B, xhrA) ~> xhrB`](#XHR-map)
       * [`XHR.of(A) ~> xhrA`](#XHR-of)
@@ -209,8 +210,9 @@ Headers are also merged.  See [`XHR.perform`](#XHR-perform) for the parameters.
 For example:
 
 ```jsx
-const get = XHR.performWith({responseType: 'json', timeout: 30*100e
-// ..eete(url)
+const get = XHR.performWith({responseType: 'json', timeout: 30*1000})
+// ...
+get(url)
 ```
 
 ### <a id="compose"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#compose) [Compose](#compose)
@@ -224,8 +226,15 @@ single XHR.
 
 `XHR.ap` implements a static land compatible
 [`ap`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#apply)
-function for composing succeeding XHRs.  The XHRs are performed sequentially.
-See also [`XHR.apply`](#XHR-apply).
+function for composing succeeding XHRs. The XHRs are performed sequentially.
+See also [`XHR.apParallel`](#XHR-ap-parallel) and [`XHR.apply`](#XHR-apply).
+
+##### <a id="XHR-ap-parallel"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-ap-parallel) [`XHR.apParallel(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap-parallel)
+
+`XHR.apParallel` implements a static land compatible
+[`ap`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#apply)
+function for composing succeeding XHRs. The XHRs are performed in parallel.
+See also [`XHR.ap`](#XHR-ap) and [`XHR.apply`](#XHR-apply).
 
 ##### <a id="XHR-chain"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-chain) [`XHR.chain(A => xhrB, xhrA) ~> xhrB`](#XHR-chain)
 

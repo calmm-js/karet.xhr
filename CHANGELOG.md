@@ -1,8 +1,9 @@
 # Karet XHR Changelog
 
-## 0.7.0
+## 1.0.0
 
 Renamed
+
 * `upHasFailed` to `upHasErrored`,
 * `downHasFailed` to `downHasErrored`, and
 * `hasFailed` to `hasErrored`
@@ -12,6 +13,10 @@ and also introduced new function
 `template` and `apply` were changed to process XHRs in parallel using the newly
 added `IdentityParallel` algebra, because that is what one more often wants.
 Note that this doesn't change the behaviour of the `IdentitySucceeded` algebra.
+
+## 0.6.8
+
+`tap` added to perform side-effects and return the XHR
 
 ## 0.6.7
 
