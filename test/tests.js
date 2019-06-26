@@ -1,6 +1,6 @@
 import * as I from 'infestines'
 import * as K from 'kefir'
-import * as R from 'ramda'
+import * as R from 'kefir.ramda'
 
 import * as XHR from './generated/dist/karet.xhr.es.js'
 
@@ -155,7 +155,7 @@ describe('XHR', () => {
     )
   )
   testEq([false], () =>
-    XHR.hasFailed(
+    XHR.hasErrored(
       startingWithNonXHRs(XHR.performJson({url: 'http://localhost:3000/json'}))
     )
   )
@@ -257,20 +257,43 @@ describe('XHR', () => {
   testEq(
     [
       [
-        {simonSays: 'Hello, world!'},
-        ['constant'],
-        ['message from', {user: 'world'}]
+        29,
+        [
+          {simonSays: 'Hello, world!'},
+          ['constant'],
+          ['message from', {user: 'world'}]
+        ]
       ]
     ],
-    () =>
-      XHR.result(
-        XHR.apply((x, y, z) => [x, y, z], [
-          {simonSays: XHR.perform('http://localhost:3000/text')},
-          [K.constant('constant')],
-          ['message from', XHR.performJson('http://localhost:3000/json')]
-        ])
-      )
+    () => {
+      const xhr = XHR.apply((x, y, z) => [x, y, z], [
+        {simonSays: XHR.perform('http://localhost:3000/text')},
+        [K.constant('constant')],
+        ['message from', XHR.performJson('http://localhost:3000/json')]
+      ])
+      return R.pair(XHR.total(xhr), XHR.result(xhr))
+    }
   )
+  testEq([[29, ['Hello, world!', {user: 'world'}]]], () => {
+    const xhr = XHR.chain(
+      x =>
+        XHR.chain(
+          y => XHR.of([x, y]),
+          XHR.performJson('http://localhost:3000/json')
+        ),
+      XHR.perform('http://localhost:3000/text')
+    )
+    return R.pair(XHR.total(xhr), XHR.result(xhr))
+  })
+  testEq([true], () =>
+    XHR.result(
+      XHR.apParallel(
+        XHR.map(R.equals, XHR.perform('http://localhost:3000/slow?ms=5')),
+        XHR.perform('http://localhost:3000/slow?ms=200')
+      )
+    )
+  )
+
   testEq(['Hello, world! HELLO, WORLD!'], () => {
     let text = ''
     return I.seq(
@@ -287,6 +310,7 @@ describe('XHR', () => {
     {
       allResponseHeaders: '',
       errors: [],
+      hasErrored: false,
       hasFailed: false,
       hasTimedOut: false,
       isDone: true,
@@ -303,6 +327,7 @@ describe('XHR', () => {
       R.map(fn => fn(XHR.of(101)), {
         allResponseHeaders: XHR.allResponseHeaders,
         errors: XHR.errors,
+        hasErrored: XHR.hasErrored,
         hasFailed: XHR.hasFailed,
         hasTimedOut: XHR.hasTimedOut,
         isDone: XHR.isDone,
@@ -315,12 +340,6 @@ describe('XHR', () => {
         statusText: XHR.statusText,
         total: XHR.total
       })
-  )
-})
-
-describe('XHR deprecated', () => {
-  testEq([false, true], () =>
-    XHR.downHasSucceeded(XHR.perform('http://localhost:3000/json'))
   )
 })
 
