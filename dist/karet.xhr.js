@@ -1,8 +1,53 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('karet.lift'), require('infestines'), require('kefir'), require('kefir.partial.lenses'), require('partial.lenses.validation')) :
   typeof define === 'function' && define.amd ? define(['exports', 'karet.lift', 'infestines', 'kefir', 'kefir.partial.lenses', 'partial.lenses.validation'], factory) :
-  (factory((global.karet = global.karet || {}, global.karet.xhr = {}),global.karet.lift,global.I,global.Kefir,global.Kefir.partial.lenses,global.V));
-}(this, (function (exports,F,I,K,L,V) { 'use strict';
+  (global = global || self, factory((global.karet = global.karet || {}, global.karet.xhr = {}), global.karet.lift, global.I, global.Kefir, global.Kefir.partial.lenses, global.V));
+}(this, function (exports, F, I, K, L, V) { 'use strict';
+
+  var TIMER = 't';
+  var SOURCE = 's';
+  var HANDLER = 'h';
+
+  var TYPE = 'type';
+  var VALUE = 'value';
+  var END = 'end';
+
+  var DelayUnsub = /*#__PURE__*/I.inherit(function DelayUnsub(source) {
+    var self = this;
+    K.Property.call(self);
+    self[SOURCE] = source;
+    self[HANDLER] = self[TIMER] = 0;
+  }, K.Property, {
+    _onActivation: function _onActivation() {
+      var self = this;
+      if (self[TIMER]) {
+        clearTimeout(self[TIMER]);
+        self[TIMER] = 0;
+      } else {
+        self[SOURCE].onAny(self[HANDLER] = function (e) {
+          var t = e[TYPE];
+          if (t === VALUE) {
+            self._emitValue(e[VALUE]);
+          } else if (t === END) {
+            self._emitEnd();
+          } else {
+            self._emitError(e[VALUE]);
+          }
+        });
+      }
+    },
+    _onDeactivation: function _onDeactivation() {
+      var self = this;
+      self[TIMER] = setTimeout(function () {
+        self[SOURCE].offAny(self[HANDLER]);
+        self[HANDLER] = self[TIMER] = 0;
+      }, 0);
+    }
+  });
+
+  var delayUnsub = function delayUnsub(source) {
+    return new DelayUnsub(source);
+  };
 
   //
 
@@ -36,8 +81,12 @@
     }
   });
 
-  var flatMapLatestToProperty = /*#__PURE__*/I.curry(function flatMapLatestToProperty(fn, x) {
-    return isObservable(x) ? toProperty(x.flatMapLatest(I.pipe2U(fn, toObservable))) : toProperty(fn(x));
+  var flatMapProperty = /*#__PURE__*/I.curry(function flatMapProperty(xyO, x) {
+    return isObservable(x) ? toProperty(x.flatMapLatest(I.pipe2U(xyO, toObservable))) : toProperty(xyO(x));
+  });
+
+  var mapProperty = /*#__PURE__*/I.curry(function map(xy, x) {
+    return isObservable(x) ? toProperty(x.map(xy)) : xy(x);
   });
 
   //
@@ -82,7 +131,7 @@
   var STATUS_TEXT = 'statusText';
   var TIMEOUT = 'timeout';
   var TOTAL = 'total';
-  var TYPE = 'type';
+  var TYPE$1 = 'type';
   var UP = 'up';
   var WITH_CREDENTIALS = 'withCredentials';
   var XHR = 'xhr';
@@ -91,7 +140,7 @@
   var typeLoadend = /*#__PURE__*/I.freeze({ type: LOADEND });
   var typeLoad = /*#__PURE__*/I.freeze({ type: LOAD });
 
-  var eventTypes = [LOADSTART, PROGRESS, TIMEOUT, LOAD, ERROR];
+  var eventTypes = [LOADSTART, PROGRESS, LOAD, TIMEOUT, ERROR];
 
   var hasKeys = function hasKeys(x) {
     return I.isFunction(x.keys);
@@ -120,7 +169,7 @@
     timeout: V.optional(number),
     withCredentials: V.optional(boolean)
   })), V.accept)))(function perform(args) {
-    return K.stream(function (_ref) {
+    return delayUnsub(K.stream(function (_ref) {
       var emit = _ref.emit,
           end = _ref.end;
 
@@ -167,7 +216,7 @@
       return function () {
         if (!xhr[STATUS]) xhr.abort();
       };
-    });
+    }));
   });
 
   var toLowerKeyedObject = /*#__PURE__*/L.get([/*#__PURE__*/L.array( /*#__PURE__*/L.cross([/*#__PURE__*/L.reread(toLower), L.identity])), /*#__PURE__*/L.inverse(L.keyed)]);
@@ -180,7 +229,7 @@
     headers: /*#__PURE__*/L.cond([isNil, /*#__PURE__*/L.setOp(I.object0)], [I.isArray, /*#__PURE__*/L.modifyOp(toLowerKeyedObject)], [hasKeys, /*#__PURE__*/L.modifyOp( /*#__PURE__*/I.pipe2U(Array.from, toLowerKeyedObject))], [[L.keys, /*#__PURE__*/L.modifyOp(toLower)]])
   }))));
 
-  var perform = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(normalizeOptions, /*#__PURE__*/flatMapLatestToProperty(performPlain)), 'perform');
+  var perform = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(normalizeOptions, /*#__PURE__*/flatMapProperty(performPlain)), 'perform');
 
   function tryParse(json) {
     try {
@@ -194,16 +243,18 @@
     return values.includes(value);
   });
   var is = /*#__PURE__*/I.curry(function (values, dir) {
-    return L.get([dir, TYPE, isOneOf(values)]);
+    return L.get([dir, TYPE$1, isOneOf(values)]);
   });
   var hasStartedOn = /*#__PURE__*/is(eventTypes);
   var isProgressingOn = /*#__PURE__*/is([PROGRESS, LOADSTART]);
   var load = [LOAD];
   var hasCompletedOn = /*#__PURE__*/is(load);
-  var hasFailedOn = /*#__PURE__*/is([ERROR]);
+  var hasErroredOn = /*#__PURE__*/is([ERROR]);
   var hasTimedOutOn = /*#__PURE__*/is([TIMEOUT]);
-  var ended = [LOAD, ERROR, TIMEOUT];
+  var ended = [LOAD, TIMEOUT, ERROR];
   var hasEndedOn = /*#__PURE__*/is(ended);
+  var failed = [ERROR, TIMEOUT];
+  var hasFailedOn = /*#__PURE__*/is(failed);
 
   var event = /*#__PURE__*/I.curry(function (prop, op, dir) {
     return op([dir, EVENT, prop]);
@@ -225,7 +276,8 @@
   var upHasStarted = /*#__PURE__*/setName( /*#__PURE__*/hasStartedOn(UP), 'upHasStarted');
   var upIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressingOn(UP), 'upIsProgressing');
   var upHasCompleted = /*#__PURE__*/setName( /*#__PURE__*/hasCompletedOn(UP), 'upHasCompleted');
-  var upHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailedOn(UP), 'upHasFailed');
+  var upHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasErroredOn(UP), 'upHasFailed');
+  var upHasErrored = /*#__PURE__*/setName( /*#__PURE__*/hasErroredOn(UP), 'upHasErrored');
   var upHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOutOn(UP), 'upHasTimedOut');
   var upHasEnded = /*#__PURE__*/setName( /*#__PURE__*/hasEndedOn(UP), 'upHasEnded');
   var upLoaded = /*#__PURE__*/setName( /*#__PURE__*/loadedOn(UP), 'upLoaded');
@@ -236,6 +288,7 @@
   var downIsProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressingOn(DOWN), 'downIsProgressing');
   var downHasCompleted = /*#__PURE__*/setName( /*#__PURE__*/hasCompletedOn(DOWN), 'downHasCompleted');
   var downHasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailedOn(DOWN), 'downHasFailed');
+  var downHasErrored = /*#__PURE__*/setName( /*#__PURE__*/hasErroredOn(DOWN), 'downHasErrored');
   var downHasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOutOn(DOWN), 'downHasTimedOut');
   var downHasEnded = /*#__PURE__*/setName( /*#__PURE__*/hasEndedOn(DOWN), 'downHasEnded');
   var downLoaded = /*#__PURE__*/setName( /*#__PURE__*/loadedOn(DOWN), 'downLoaded');
@@ -248,7 +301,7 @@
   }]), 'isStatusAvailable');
   var isDone = /*#__PURE__*/setName( /*#__PURE__*/is([LOADEND], EVENT), 'isDone');
   var isProgressing = /*#__PURE__*/setName( /*#__PURE__*/isProgressingOn(either), 'isProgressing');
-  var hasFailed = /*#__PURE__*/setName( /*#__PURE__*/hasFailedOn(either), 'hasFailed');
+  var hasErrored = /*#__PURE__*/setName( /*#__PURE__*/hasErroredOn(either), 'hasErrored');
   var hasTimedOut = /*#__PURE__*/setName( /*#__PURE__*/hasTimedOutOn(either), 'hasTimedOut');
   var loaded = /*#__PURE__*/setName( /*#__PURE__*/loadedOn(either), 'loaded');
   var total = /*#__PURE__*/setName( /*#__PURE__*/totalOn(either), 'total');
@@ -295,19 +348,23 @@
     headers: { 'Content-Type': 'application/json' }
   }), 'performJson');
 
-  var typeIsSuccess = [TYPE, /*#__PURE__*/isOneOf([INITIAL, LOAD])];
+  var typeIsSuccess = [TYPE$1, /*#__PURE__*/isOneOf([INITIAL, LOAD])];
 
   var hasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/L.and( /*#__PURE__*/L.branch({
-    event: [TYPE, /*#__PURE__*/L.is(LOADEND)],
+    event: [TYPE$1, /*#__PURE__*/L.is(LOADEND)],
     up: typeIsSuccess,
     down: typeIsSuccess,
     xhr: [STATUS, isHttpSuccessU]
   })), 'hasSucceeded');
 
-  var getJson = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(performJson, /*#__PURE__*/flatMapLatestToProperty(function (xhr) {
+  var hasFailed = /*#__PURE__*/F.lift(function hasFailed(xhr) {
+    return isStatusAvailable(xhr) && !statusIsHttpSuccess(xhr) || downHasFailed(xhr) || upHasFailed(xhr);
+  });
+
+  var getJson = /*#__PURE__*/setName( /*#__PURE__*/I.pipe2U(performJson, /*#__PURE__*/flatMapProperty(function (xhr) {
     if (hasSucceeded(xhr)) {
       return response(xhr);
-    } else if (isDone(xhr) && (hasFailed(xhr) || hasTimedOut(xhr))) {
+    } else if (isDone(xhr) && (hasErrored(xhr) || hasTimedOut(xhr))) {
       return K.constantError(xhr);
     } else {
       return never;
@@ -315,6 +372,36 @@
   })), 'getJson');
 
   var result = /*#__PURE__*/setName( /*#__PURE__*/getAfter(hasSucceeded, response), 'result');
+
+  //
+
+  var mergeTypes = function mergeTypes(x, y) {
+    var xIndex = eventTypes.indexOf(x);
+    var yIndex = eventTypes.indexOf(y);
+    return xIndex < yIndex ? x : y;
+  };
+
+  var mergeEvents = function mergeEvents(x, y) {
+    return {
+      type: mergeTypes(x[TYPE$1], y[TYPE$1]),
+      event: {
+        total: (L.get(TOTAL, x[EVENT]) || 0) + (L.get(TOTAL, y[EVENT]) || 0),
+        loaded: (L.get(LOADED, x[EVENT]) || 0) + (L.get(LOADED, y[EVENT]) || 0)
+      }
+    };
+  };
+
+  var mergeXHRs = function mergeXHRs(x, y) {
+    return {
+      event: y[EVENT][TYPE$1] === LOADEND ? x[EVENT] : y[EVENT],
+      xhr: y[XHR],
+      up: mergeEvents(x[UP], y[UP]),
+      down: mergeEvents(x[DOWN], y[DOWN]),
+      map: y[MAP]
+    };
+  };
+
+  //
 
   var getAllResponseHeaders = /*#__PURE__*/I.always('');
   var getResponseHeader = /*#__PURE__*/I.always(null);
@@ -336,25 +423,41 @@
     };
   };
 
-  var chain = /*#__PURE__*/I.curry(function chain(fn, xhr) {
-    return flatMapLatestToProperty(function (x) {
-      return hasSucceeded(x) ? fn(response(x)) : x;
-    }, xhr);
+  var chain = /*#__PURE__*/I.curryN(2, function chain(xy) {
+    return flatMapProperty(function (x) {
+      return hasSucceeded(x) ? mapProperty(function (y) {
+        return hasFailed(y) ? y : mergeXHRs(x, y);
+      }, xy(response(x))) : x;
+    });
   });
 
-  var map = /*#__PURE__*/I.curry(function map(fn, xhr) {
-    return chain(I.pipe2U(fn, of), xhr);
+  var map = /*#__PURE__*/I.curryN(2, function map(xy) {
+    return chain(function (x) {
+      return of(xy(x));
+    });
   });
 
-  var ap = /*#__PURE__*/I.curry(function ap(f, x) {
-    return chain(function (f) {
-      return map(f, x);
-    }, f);
+  var ap = /*#__PURE__*/I.curry(function ap(xy, x) {
+    return chain(function (xy) {
+      return map(xy, x);
+    }, xy);
   });
 
   var Succeeded = /*#__PURE__*/I.Monad(map, of, ap, chain);
 
-  var typeIsString = [TYPE, I.isString];
+  //
+
+  var apParallel = /*#__PURE__*/I.curry(function apParallel(xy, x) {
+    return flatMapProperty(function (xy) {
+      return hasFailed(xy) ? xy : mapProperty(function (x) {
+        return hasSucceeded(xy) ? hasSucceeded(x) ? mergeXHRs(mergeXHRs(xy, x), of(response(xy)(response(x)))) : hasFailed(x) ? x : mergeXHRs(xy, x) : mergeXHRs(xy, x);
+      }, x);
+    }, xy);
+  });
+
+  var Parallel = /*#__PURE__*/I.Applicative(map, of, apParallel);
+
+  var typeIsString = [TYPE$1, I.isString];
 
   var isXHR = /*#__PURE__*/setName( /*#__PURE__*/L.and( /*#__PURE__*/L.branch({
     xhr: [READY_STATE, I.isNumber],
@@ -364,12 +467,13 @@
   })), 'isXHR');
 
   var IdentitySucceeded = /*#__PURE__*/I.IdentityOrU(isXHR, Succeeded);
+  var IdentityParallel = /*#__PURE__*/I.IdentityOrU(isXHR, Parallel);
 
-  var template = /*#__PURE__*/setName( /*#__PURE__*/L.get([/*#__PURE__*/L.traverse(IdentitySucceeded, I.id, /*#__PURE__*/F.inTemplate(isXHR)), /*#__PURE__*/L.ifElse(isXHR, [], of)]), 'template');
+  var template = /*#__PURE__*/setName( /*#__PURE__*/L.get([/*#__PURE__*/L.traverse(IdentityParallel, I.id, /*#__PURE__*/F.inTemplate(isXHR)), /*#__PURE__*/L.ifElse(isXHR, [], of)]), 'template');
 
-  var apply = /*#__PURE__*/I.curry(function apply(f, xs) {
+  var apply = /*#__PURE__*/I.curry(function apply(xsy, xs) {
     return map(function (xs) {
-      return f.apply(null, xs);
+      return xsy.apply(null, xs);
     }, template(xs));
   });
 
@@ -379,27 +483,12 @@
     });
   });
 
-  var renamed = function renamed(fn, name) {
-    var warned = false;
-    return setName(function deprecated(x) {
-      if (!warned) {
-        warned = true;
-        console.warn('karet.xhr: `' + name + '` has been renamed to `' + fn.name + '`');
-      }
-      return fn(x);
-    }, name);
-  };
-
-  var downHasSucceeded = /*#__PURE__*/renamed(downHasCompleted, 'downHasSucceeded');
-  var headersReceived = /*#__PURE__*/renamed(isStatusAvailable, 'headersReceived');
-  var responseFull = /*#__PURE__*/renamed(response, 'responseFull');
-  var upHasSucceeded = /*#__PURE__*/renamed(upHasCompleted, 'upHasSucceeded');
-
   exports.perform = perform;
   exports.upHasStarted = upHasStarted;
   exports.upIsProgressing = upIsProgressing;
   exports.upHasCompleted = upHasCompleted;
   exports.upHasFailed = upHasFailed;
+  exports.upHasErrored = upHasErrored;
   exports.upHasTimedOut = upHasTimedOut;
   exports.upHasEnded = upHasEnded;
   exports.upLoaded = upLoaded;
@@ -409,6 +498,7 @@
   exports.downIsProgressing = downIsProgressing;
   exports.downHasCompleted = downHasCompleted;
   exports.downHasFailed = downHasFailed;
+  exports.downHasErrored = downHasErrored;
   exports.downHasTimedOut = downHasTimedOut;
   exports.downHasEnded = downHasEnded;
   exports.downLoaded = downLoaded;
@@ -418,7 +508,7 @@
   exports.isStatusAvailable = isStatusAvailable;
   exports.isDone = isDone;
   exports.isProgressing = isProgressing;
-  exports.hasFailed = hasFailed;
+  exports.hasErrored = hasErrored;
   exports.hasTimedOut = hasTimedOut;
   exports.loaded = loaded;
   exports.total = total;
@@ -439,6 +529,7 @@
   exports.performWith = performWith;
   exports.performJson = performJson;
   exports.hasSucceeded = hasSucceeded;
+  exports.hasFailed = hasFailed;
   exports.getJson = getJson;
   exports.result = result;
   exports.of = of;
@@ -446,16 +537,15 @@
   exports.map = map;
   exports.ap = ap;
   exports.Succeeded = Succeeded;
+  exports.apParallel = apParallel;
+  exports.Parallel = Parallel;
   exports.isXHR = isXHR;
   exports.IdentitySucceeded = IdentitySucceeded;
+  exports.IdentityParallel = IdentityParallel;
   exports.template = template;
   exports.apply = apply;
   exports.tap = tap;
-  exports.downHasSucceeded = downHasSucceeded;
-  exports.headersReceived = headersReceived;
-  exports.responseFull = responseFull;
-  exports.upHasSucceeded = upHasSucceeded;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
