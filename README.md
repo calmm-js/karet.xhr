@@ -1,18 +1,19 @@
 # <a id="karet-xhr"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#karet-xhr) [Karet XHR](#karet-xhr) &middot; [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![GitHub stars](https://img.shields.io/github/stars/calmm-js/karet.xhr.svg?style=social)](https://github.com/calmm-js/karet.xhr)
 
-This library allows one to [*declare*](#declare)
+This library allows one to [_declare_](#declare)
 [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)s,
-[*compose*](#compose) them, and [*observe*](#observe) them through
+[_compose_](#compose) them, and [_observe_](#observe) them through
 [Kefir](https://kefirjs.github.io/kefir/)
-[properties](https://kefirjs.github.io/kefir/#about-observables).  This makes it
+[properties](https://kefirjs.github.io/kefir/#about-observables). This makes it
 easy to implement many kinds of use cases ranging from just getting the response
 data to visualizing the progress of non-trivial compositions of ongoing upload
 and/or download requests and displaying potential errors.
 
 Examples:
-* The [Giphy](https://codesandbox.io/s/q9j8v8w1nq) CodeSandbox uses this library
+
+- The [Giphy](https://codesandbox.io/s/q9j8v8w1nq) CodeSandbox uses this library
   to do simple JSON GET requests.
-* The [GitHub repository search](https://codesandbox.io/s/l5271q0r2l)
+- The [GitHub repository search](https://codesandbox.io/s/l5271q0r2l)
   CodeSandbox uses this library to do JSON GET requests and exercises much of
   the API of this library as an example.
 
@@ -24,93 +25,93 @@ Examples:
 
 ## <a id="contents"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#contents) [Contents](#contents)
 
-* [Reference](#reference)
-  * [Just give me the data!](#just-give-me-the-data)
-    * [`XHR.getJson(url | {url[, ...options]}) ~> varies`](#XHR-getJson)
-  * [Declare](#declare)
-    * [`XHR.perform(url | {url[, ...options]}) ~> xhr`](#XHR-perform)
-    * [`XHR.performJson(url | {url[, ...options]}) ~> xhr`](#XHR-performJson)
-    * [`XHR.performWith(url | {...options}, url | {...options}) ~> xhr`](#XHR-performWith)
-  * [Compose](#compose)
-    * [Basic combinators](#basic-combinators)
-      * [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)
-      * [`XHR.apParallel(xhrAtoB, xhrA) ~> xhrB`](#XHR-apParallel)
-      * [`XHR.chain(A => xhrB, xhrA) ~> xhrB`](#XHR-chain)
-      * [`XHR.map(A => B, xhrA) ~> xhrB`](#XHR-map)
-      * [`XHR.of(A) ~> xhrA`](#XHR-of)
-    * [Additional combinators](#additional-combinators)
-      * [`XHR.apply((...As) => B, [...xhrAs]) ~> xhrB`](#XHR-apply)
-      * [`XHR.tap(A => ignored, xhrA) ~> xhrA`](#XHR-tap)
-      * [`XHR.template([ ... xhr ... ] | { ... xhr ... }) ~> xhr`](#XHR-template)
-    * [Algebras](#algebras)
-      * [`XHR.IdentityParallel ~> applicative`](#XHR-IdentityParallel)
-      * [`XHR.IdentitySucceeded ~> monad`](#XHR-IdentitySucceeded)
-      * [`XHR.Parallel ~> applicative`](#XHR-Parallel)
-      * [`XHR.Succeeded ~> monad`](#XHR-Succeeded)
-  * [Observe](#observe)
-    * [Result](#result)
-      * [`XHR.hasFailed(xhr) ~> boolean`](#XHR-hasFailed)
-      * [`XHR.hasSucceeded(xhr) ~> boolean`](#XHR-hasSucceeded)
-      * [`XHR.result(xhrA) ~> A`](#XHR-result)
-    * [Overall state](#overall-state)
-      * [Progression](#progression)
-        * [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
-        * [`XHR.isProgressing(xhr) ~> boolean`](#XHR-isProgressing)
-        * [`XHR.isStatusAvailable(xhr) ~> boolean`](#XHR-isStatusAvailable)
-      * [End state](#end-state)
-        * [`XHR.hasErrored(xhr) ~> boolean`](#XHR-hasErrored)
-        * [`XHR.hasTimedOut(xhr) ~> boolean`](#XHR-hasTimedOut)
-      * [Errors on failure](#errors-on-failure)
-        * [`XHR.errors(xhr) ~> [...exceptions]`](#XHR-errors)
-      * [Request status](#request-status)
-        * [`XHR.status(xhr) ~> number`](#XHR-status)
-        * [`XHR.statusIsHttpSuccess(xhr) ~> boolean`](#XHR-statusIsHttpSuccess)
-        * [`XHR.statusText(xhr) ~> string`](#XHR-statusText)
-      * [Data transfer](#data-transfer)
-        * [`XHR.loaded(xhr) ~> number`](#XHR-loaded)
-        * [`XHR.total(xhr) ~> number`](#XHR-total)
-      * [Response headers](#response-headers)
-        * [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
-        * [`XHR.responseHeader(header, xhr) ~> string`](#XHR-responseHeader)
-      * [Response data](#response-data)
-        * [`XHR.response(xhr) ~> varies`](#XHR-response)
-        * [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
-        * [`XHR.responseXML(xhr) ~> document`](#XHR-responseXML)
-      * [Response URL](#response-url)
-        * [`XHR.responseURL(xhr) ~> string`](#XHR-responseURL)
-      * [Request parameters](#request-parameters)
-        * [`XHR.responseType(xhr) ~> string`](#XHR-responseType)
-        * [`XHR.timeout(xhr) ~> number`](#XHR-timeout)
-        * [`XHR.withCredentials(xhr) ~> boolean`](#XHR-withCredentials)
-      * [Ready state](#ready-state)
-        * [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
-    * [Download state](#download-state)
-      * [`XHR.downError(xhr) ~> exception`](#XHR-downError)
-      * [`XHR.downHasCompleted(xhr) ~> boolean`](#XHR-downHasCompleted)
-      * [`XHR.downHasEnded(xhr) ~> boolean`](#XHR-downHasEnded)
-      * [`XHR.downHasErrored(xhr) ~> boolean`](#XHR-downHasErrored)
-      * [`XHR.downHasStarted(xhr) ~> boolean`](#XHR-downHasStarted)
-      * [`XHR.downHasTimedOut(xhr) ~> boolean`](#XHR-downHasTimedOut)
-      * [`XHR.downIsProgressing(xhr) ~> boolean`](#XHR-downIsProgressing)
-      * [`XHR.downLoaded(xhr) ~> number`](#XHR-downLoaded)
-      * [`XHR.downTotal(xhr) ~> number`](#XHR-downTotal)
-    * [Upload state](#upload-state)
-      * [`XHR.upError(xhr) ~> exception`](#XHR-upError)
-      * [`XHR.upHasCompleted(xhr) ~> boolean`](#XHR-upHasCompleted)
-      * [`XHR.upHasEnded(xhr) ~> boolean`](#XHR-upHasEnded)
-      * [`XHR.upHasErrored(xhr) ~> boolean`](#XHR-upHasErrored)
-      * [`XHR.upHasStarted(xhr) ~> boolean`](#XHR-upHasStarted)
-      * [`XHR.upHasTimedOut(xhr) ~> boolean`](#XHR-upHasTimedOut)
-      * [`XHR.upIsProgressing(xhr) ~> boolean`](#XHR-upIsProgressing)
-      * [`XHR.upLoaded(xhr) ~> number`](#XHR-upLoaded)
-      * [`XHR.upTotal(xhr) ~> number`](#XHR-upTotal)
-  * [Auxiliary](#auxiliary)
-    * [`XHR.isHttpSuccess(number) ~> boolean`](#XHR-isHttpSuccess)
-    * [`XHR.isXHR(any) ~> boolean`](#XHR-isXHR)
+- [Reference](#reference)
+  - [Just give me the data!](#just-give-me-the-data)
+    - [`XHR.getJson(url | {url[, ...options]}) ~> varies`](#XHR-getJson)
+  - [Declare](#declare)
+    - [`XHR.perform(url | {url[, ...options]}) ~> xhr`](#XHR-perform)
+    - [`XHR.performJson(url | {url[, ...options]}) ~> xhr`](#XHR-performJson)
+    - [`XHR.performWith(url | {...options}, url | {...options}) ~> xhr`](#XHR-performWith)
+  - [Compose](#compose)
+    - [Basic combinators](#basic-combinators)
+      - [`XHR.ap(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap)
+      - [`XHR.apParallel(xhrAtoB, xhrA) ~> xhrB`](#XHR-apParallel)
+      - [`XHR.chain(A => xhrB, xhrA) ~> xhrB`](#XHR-chain)
+      - [`XHR.map(A => B, xhrA) ~> xhrB`](#XHR-map)
+      - [`XHR.of(A) ~> xhrA`](#XHR-of)
+    - [Additional combinators](#additional-combinators)
+      - [`XHR.apply((...As) => B, [...xhrAs]) ~> xhrB`](#XHR-apply)
+      - [`XHR.tap(A => ignored, xhrA) ~> xhrA`](#XHR-tap)
+      - [`XHR.template([ ... xhr ... ] | { ... xhr ... }) ~> xhr`](#XHR-template)
+    - [Algebras](#algebras)
+      - [`XHR.IdentityParallel ~> applicative`](#XHR-IdentityParallel)
+      - [`XHR.IdentitySucceeded ~> monad`](#XHR-IdentitySucceeded)
+      - [`XHR.Parallel ~> applicative`](#XHR-Parallel)
+      - [`XHR.Succeeded ~> monad`](#XHR-Succeeded)
+  - [Observe](#observe)
+    - [Result](#result)
+      - [`XHR.hasFailed(xhr) ~> boolean`](#XHR-hasFailed)
+      - [`XHR.hasSucceeded(xhr) ~> boolean`](#XHR-hasSucceeded)
+      - [`XHR.result(xhrA) ~> A`](#XHR-result)
+    - [Overall state](#overall-state)
+      - [Progression](#progression)
+        - [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
+        - [`XHR.isProgressing(xhr) ~> boolean`](#XHR-isProgressing)
+        - [`XHR.isStatusAvailable(xhr) ~> boolean`](#XHR-isStatusAvailable)
+      - [End state](#end-state)
+        - [`XHR.hasErrored(xhr) ~> boolean`](#XHR-hasErrored)
+        - [`XHR.hasTimedOut(xhr) ~> boolean`](#XHR-hasTimedOut)
+      - [Errors on failure](#errors-on-failure)
+        - [`XHR.errors(xhr) ~> [...exceptions]`](#XHR-errors)
+      - [Request status](#request-status)
+        - [`XHR.status(xhr) ~> number`](#XHR-status)
+        - [`XHR.statusIsHttpSuccess(xhr) ~> boolean`](#XHR-statusIsHttpSuccess)
+        - [`XHR.statusText(xhr) ~> string`](#XHR-statusText)
+      - [Data transfer](#data-transfer)
+        - [`XHR.loaded(xhr) ~> number`](#XHR-loaded)
+        - [`XHR.total(xhr) ~> number`](#XHR-total)
+      - [Response headers](#response-headers)
+        - [`XHR.allResponseHeaders(xhr) ~> string`](#XHR-allResponseHeaders)
+        - [`XHR.responseHeader(header, xhr) ~> string`](#XHR-responseHeader)
+      - [Response data](#response-data)
+        - [`XHR.response(xhr) ~> varies`](#XHR-response)
+        - [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
+        - [`XHR.responseXML(xhr) ~> document`](#XHR-responseXML)
+      - [Response URL](#response-url)
+        - [`XHR.responseURL(xhr) ~> string`](#XHR-responseURL)
+      - [Request parameters](#request-parameters)
+        - [`XHR.responseType(xhr) ~> string`](#XHR-responseType)
+        - [`XHR.timeout(xhr) ~> number`](#XHR-timeout)
+        - [`XHR.withCredentials(xhr) ~> boolean`](#XHR-withCredentials)
+      - [Ready state](#ready-state)
+        - [`XHR.readyState(xhr) ~> number`](#XHR-readyState)
+    - [Download state](#download-state)
+      - [`XHR.downError(xhr) ~> exception`](#XHR-downError)
+      - [`XHR.downHasCompleted(xhr) ~> boolean`](#XHR-downHasCompleted)
+      - [`XHR.downHasEnded(xhr) ~> boolean`](#XHR-downHasEnded)
+      - [`XHR.downHasErrored(xhr) ~> boolean`](#XHR-downHasErrored)
+      - [`XHR.downHasStarted(xhr) ~> boolean`](#XHR-downHasStarted)
+      - [`XHR.downHasTimedOut(xhr) ~> boolean`](#XHR-downHasTimedOut)
+      - [`XHR.downIsProgressing(xhr) ~> boolean`](#XHR-downIsProgressing)
+      - [`XHR.downLoaded(xhr) ~> number`](#XHR-downLoaded)
+      - [`XHR.downTotal(xhr) ~> number`](#XHR-downTotal)
+    - [Upload state](#upload-state)
+      - [`XHR.upError(xhr) ~> exception`](#XHR-upError)
+      - [`XHR.upHasCompleted(xhr) ~> boolean`](#XHR-upHasCompleted)
+      - [`XHR.upHasEnded(xhr) ~> boolean`](#XHR-upHasEnded)
+      - [`XHR.upHasErrored(xhr) ~> boolean`](#XHR-upHasErrored)
+      - [`XHR.upHasStarted(xhr) ~> boolean`](#XHR-upHasStarted)
+      - [`XHR.upHasTimedOut(xhr) ~> boolean`](#XHR-upHasTimedOut)
+      - [`XHR.upIsProgressing(xhr) ~> boolean`](#XHR-upIsProgressing)
+      - [`XHR.upLoaded(xhr) ~> number`](#XHR-upLoaded)
+      - [`XHR.upTotal(xhr) ~> number`](#XHR-upTotal)
+  - [Auxiliary](#auxiliary)
+    - [`XHR.isHttpSuccess(number) ~> boolean`](#XHR-isHttpSuccess)
+    - [`XHR.isXHR(any) ~> boolean`](#XHR-isXHR)
 
 ## <a id="reference"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#reference) [Reference](#reference)
 
-The interface of this library consists of named exports.  Typically one just
+The interface of this library consists of named exports. Typically one just
 imports the library as:
 
 ```jsx
@@ -130,8 +131,8 @@ If you just want to GET some JSON...
 #### <a id="XHR-getJson"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-getJson) [`XHR.getJson(url | {url,[, ...options]}) ~> varies`](#XHR-getJson)
 
 `XHR.getJson` returns an observable that emits the [full response](#XHR-result)
-after the [XHR has succeeded](#XHR-hasSucceeded).  In case the XHR produces an
-error or times out, the XHR is emitted as an error event.  See
+after the [XHR has succeeded](#XHR-hasSucceeded). In case the XHR produces an
+error or times out, the XHR is emitted as an error event. See
 [`XHR.perform`](#XHR-perform) for the options.
 
 Note that this function is provided for simplistic usages where one does not
@@ -162,23 +163,23 @@ the state of an ongoing
 [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest).
 The request is started once the property is subscribed to and is automatically
 [aborted](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort)
-in case the property is fully unsubscribed from before it has ended.  See also
+in case the property is fully unsubscribed from before it has ended. See also
 [`XHR.performWith`](#XHR-performWith) and [`XHR.performJson`](#XHR-performJson).
 
-Only the `url` parameter is required and can be passed as a string.  Other
+Only the `url` parameter is required and can be passed as a string. Other
 parameters have their XHR default values:
 
-| Parameter | Default | Explanation
-| --------- | ------- | -----------
-| [`method`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open) | `'GET'` | [HTTP request method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) to use.
-| [`user`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open) | `null` | User name for authentication.
-| [`password`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open) | `null` | Password for authentication.
-| [`headers`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/setRequestHeader) | `null` | An array of `[header, value]` pairs, a plain object of `{header: value}` properties, a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), or a [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object mapping headers to values.
-| [`overrideMimeType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/overrideMimeType) | `undefined` | If specified overrides the MIME type provided by the server.
-| [`body`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send) | `null` | A body of data to be sent.
-| [`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType) | `''` | Specifies type of [response](#XHR-response) data.
-| [`timeout`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/timeout) | `0` | Number of milliseconds or `0` for infinite.
-| [`withCredentials`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials) | `false` | Whether cross-site `Access-Control` should use credentials.
+| Parameter                                                                                              | Default     | Explanation                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`method`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open)                       | `'GET'`     | [HTTP request method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) to use.                                                                                                                                                                                                           |
+| [`user`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open)                         | `null`      | User name for authentication.                                                                                                                                                                                                                                                                      |
+| [`password`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open)                     | `null`      | Password for authentication.                                                                                                                                                                                                                                                                       |
+| [`headers`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/setRequestHeader)          | `null`      | An array of `[header, value]` pairs, a plain object of `{header: value}` properties, a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), or a [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object mapping headers to values. |
+| [`overrideMimeType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/overrideMimeType) | `undefined` | If specified overrides the MIME type provided by the server.                                                                                                                                                                                                                                       |
+| [`body`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send)                         | `null`      | A body of data to be sent.                                                                                                                                                                                                                                                                         |
+| [`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType)         | `''`        | Specifies type of [response](#XHR-response) data.                                                                                                                                                                                                                                                  |
+| [`timeout`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/timeout)                   | `0`         | Number of milliseconds or `0` for infinite.                                                                                                                                                                                                                                                        |
+| [`withCredentials`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials)   | `false`     | Whether cross-site `Access-Control` should use credentials.                                                                                                                                                                                                                                        |
 
 In addition to a plain object, the argument to `XHR.perform` is allowed to be an
 observable property or contain observable properties, in which case the property
@@ -190,27 +191,26 @@ rather computes a desired view of the property, such as a view of the succeeded
 [response](#XHR-result), and combines that further into some more interesting
 property.
 
-WARNING: Setting `responseType` to `'json'` is not supported by IE 11.  This
+WARNING: Setting `responseType` to `'json'` is not supported by IE 11. This
 library implements a workaround by calling `JSON.parse` on the returned data in
-case setting `responseType` to `'json'` fails.  In case the response does not
+case setting `responseType` to `'json'` fails. In case the response does not
 parse, then [`XHR.response`](#XHR-response) returns `null`.
 
 #### <a id="XHR-performJson"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-peformJson) [`XHR.performJson(url | {url[, ...options]}) ~> xhr`](#XHR-performJson)
 
-`XHR.performJson` is shorthand for [`XHR.performWith({responseType:
-'json', headers: {'Content-Type': 'application/json'}})`](#XHR-performWith).
+`XHR.performJson` is shorthand for [`XHR.performWith({responseType: 'json', headers: {'Content-Type': 'application/json'}})`](#XHR-performWith).
 
 #### <a id="XHR-performWith"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-performWith) [`XHR.performWith(url | {...options}, url | {...options}) ~> xhr`](#XHR-performWith)
 
 `XHR.performWith` is a curried function that allows one to define a
-[`XHR.perform`](#XHR-perform) like function with default parameters.  The
+[`XHR.perform`](#XHR-perform) like function with default parameters. The
 defaults (first parameter) are merged with the overrides (second parameter).
-Headers are also merged.  See [`XHR.perform`](#XHR-perform) for the parameters.
+Headers are also merged. See [`XHR.perform`](#XHR-perform) for the parameters.
 
 For example:
 
 ```jsx
-const get = XHR.performWith({responseType: 'json', timeout: 30*1000})
+const get = XHR.performWith({responseType: 'json', timeout: 30 * 1000})
 // ...
 get(url)
 ```
@@ -227,9 +227,9 @@ single XHR.
 `XHR.ap` implements a static land compatible
 [`ap`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#apply)
 function for composing succeeding XHRs. The XHRs are performed sequentially.
-See also [`XHR.apParallel`](#XHR-ap-parallel) and [`XHR.apply`](#XHR-apply).
+See also [`XHR.apParallel`](#XHR-apParallel) and [`XHR.apply`](#XHR-apply).
 
-##### <a id="XHR-ap-parallel"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-ap-parallel) [`XHR.apParallel(xhrAtoB, xhrA) ~> xhrB`](#XHR-ap-parallel)
+##### <a id="XHR-apParallel"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-apParallel) [`XHR.apParallel(xhrAtoB, xhrA) ~> xhrB`](#XHR-apParallel)
 
 `XHR.apParallel` implements a static land compatible
 [`ap`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#apply)
@@ -258,13 +258,13 @@ function for composing succeeding XHRs.
 
 ##### <a id="XHR-apply"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-apply) [`XHR.apply((...As) => B, [...xhrAs]) ~> xhrB`](#XHR-apply)
 
-`XHR.apply` maps the given XHRs through the given function.  Unlike with
+`XHR.apply` maps the given XHRs through the given function. Unlike with
 [`XHR.ap`](#XHR-ap), the XHRs are performed in parallel.
 
 ##### <a id="XHR-tap"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-tap) [`XHR.tap(A => ignored, xhrA) ~> xhrA`](#XHR-tap)
 
 `XHR.tap` wraps the XHR so that the given action is called with the response
-after the XHR has succeeded.  If the XHR does not succeed, the action will not
+after the XHR has succeeded. If the XHR does not succeed, the action will not
 be called.
 
 Note that `XHR.tap(action)` is roughly equivalent to
@@ -279,7 +279,7 @@ XHR.map(response => {
 ##### <a id="XHR-template"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-template) [`XHR.template([ ... xhr ... ] | { ... xhr ... }) ~> xhr`](#XHR-template)
 
 `XHR.template` transforms a nested template of plain arrays and objects possibly
-containing XHRs into a XHR.  The XHRs are performed in parallel.
+containing XHRs into a XHR. The XHRs are performed in parallel.
 
 #### <a id="algebras"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#algebras) [Algebras](#algebras)
 
@@ -292,7 +292,9 @@ For example:
 
 ```js
 I.seq(
-  XHR.performJson(`https://api.github.com/search/repositories?q=user:calmm-js&sort=stars`),
+  XHR.performJson(
+    `https://api.github.com/search/repositories?q=user:calmm-js&sort=stars`
+  ),
   XHR.map(
     L.collect([
       'items',
@@ -307,14 +309,15 @@ I.seq(
   XHR.chain(
     L.traverse(
       XHR.Parallel,
-      issues => I.seq(
-        XHR.performJson(issues.replace(/{.*}$/, '')),
-        XHR.map(
-          L.collect(
-            L.limit(3, L.flat(L.pick({title: 'title', url: 'html_url'})))
+      issues =>
+        I.seq(
+          XHR.performJson(issues.replace(/{.*}$/, '')),
+          XHR.map(
+            L.collect(
+              L.limit(3, L.flat(L.pick({title: 'title', url: 'html_url'})))
+            )
           )
-        )
-      ),
+        ),
       [L.elems, 'issues']
     )
   ),
@@ -339,8 +342,8 @@ that manipulates XHRs like [`XHR.Succeeded`](#XHR-Succeeded) or plain data.
 
 `XHR.Parallel` is a static land compatible
 [applicative](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative)
-that allows one to compose parallel XHR requests.  In case any XHR fails, the
-composed XHR produces the first failed XHR.  In case all XHRs succeed, the
+that allows one to compose parallel XHR requests. In case any XHR fails, the
+composed XHR produces the first failed XHR. In case all XHRs succeed, the
 composed XHR produces the combined XHR as the [result](#XHR-result).
 
 ##### <a id="XHR-Succeeded"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-Succeeded) [`XHR.Succeeded ~> monad`](#XHR-Succeeded)
@@ -376,7 +379,7 @@ or timed out.
 
 ##### <a id="XHR-result"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-result) [`XHR.result(xhrA) ~> A`](#XHR-result)
 
-`XHR.result` returns the response of a [succeeded](#XHR-hasSucceeded) XHR.  Note
+`XHR.result` returns the response of a [succeeded](#XHR-hasSucceeded) XHR. Note
 that [`XHR.response`](#XHR-response) allows one to obtain the response before
 the XHR [is done](#XHR-isDone) and even when the XHR has (partially) failed.
 
@@ -388,7 +391,7 @@ the XHR [is done](#XHR-isDone) and even when the XHR has (partially) failed.
 
 `XHR.isStatusAvailable` returns a possibly observable boolean property that
 tells whether HTTP status and response headers have been received and can be
-obtained.  See also [`XHR.status`](#XHR-status),
+obtained. See also [`XHR.status`](#XHR-status),
 [`XHR.statusText`](#XHR-statusText),
 [`XHR.allResponseHeaders`](#XHR-allResponseHeaders), and
 [`XHR.responseHeader`](#XHR-responseHeader).
@@ -396,7 +399,7 @@ obtained.  See also [`XHR.status`](#XHR-status),
 ###### <a id="XHR-isDone"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-isDone) [`XHR.isDone(xhr) ~> boolean`](#XHR-isDone)
 
 `XHR.isDone` returns a possibly observable boolean property that tells whether
-the XHR operation is complete (whether success or failure).  See also
+the XHR operation is complete (whether success or failure). See also
 [`XHR.hasSucceeded`](#XHR-hasSucceeded).
 
 ###### <a id="XHR-isProgressing"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-isProgressing) [`XHR.isProgressing(xhr) ~> boolean`](#XHR-isProgressing)
@@ -423,7 +426,7 @@ XHR that is true when either [download](#XHR-downHasTimedOut) or
 ###### <a id="XHR-errors"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-errors) [`XHR.errors(xhr) ~> [...exceptions]`](#XHR-errors)
 
 `XHR.errors` returns a possibly observable array of errors from
-[download](#XHR-downError) and [upload](#XHR-upError).  The array will contain 0
+[download](#XHR-downError) and [upload](#XHR-upError). The array will contain 0
 to 2 errors.
 
 ##### <a id="request-status"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#request-status) [Request status](#request-status)
@@ -432,22 +435,22 @@ to 2 errors.
 
 `XHR.status` returns a possibly observable property that emits the
 [`status`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/status)
-after the HTTP status has been received.  When called on a non-observable XHR,
+after the HTTP status has been received. When called on a non-observable XHR,
 [`readyState` must be 2](#XHR-isStatusAvailable) or an `Error` will be thrown.
 
 ###### <a id="XHR-statusIsHttpSuccess"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-statusIsHttpSuccess) [`XHR.statusIsHttpSuccess(xhr) ~> boolean`](#XHR-statusIsHttpSuccess)
 
 `XHR.statusIsHttpSuccess(xhr)` is shorthand for
-`XHR.isHttpSuccess(XHR.status(xhr))`.  Note that HTTP status is usually received
+`XHR.isHttpSuccess(XHR.status(xhr))`. Note that HTTP status is usually received
 before the [download](#XHR-downHasCompleted) and [upload](#XHR-upHasCompleted)
-phases have completed.  See also [`XHR.hasSucceeded`](#XHR-hasSucceeded),
+phases have completed. See also [`XHR.hasSucceeded`](#XHR-hasSucceeded),
 [`XHR.status`](#XHR-status) and [`XHR.isHttpSuccess`](#XHR-isHttpSuccess).
 
 ###### <a id="XHR-statusText"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-statusText) [`XHR.statusText(xhr) ~> string`](#XHR-statusText)
 
 `XHR.statusText` returns a possibly observable property of the
 [`statusText`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/statusText)
-after the HTTP status has been received.  When called on a non-observable XHR,
+after the HTTP status has been received. When called on a non-observable XHR,
 [`readyState` must be 2](#XHR-isStatusAvailable) or an `Error` will be thrown.
 
 ##### <a id="data-transfer"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#data-transfer) [Data transfer](#data-transfer)
@@ -469,7 +472,7 @@ download](#XHR-downTotal) and [total upload](#XHR-upTotal) bytes.
 `XHR.allResponseHeaders` returns a possibly observable property that emits the
 value of
 [`getAllResponseHeaders()`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders)
-after the HTTP headers have been received.  When called on a non-observable XHR,
+after the HTTP headers have been received. When called on a non-observable XHR,
 its [`readyState` must be 2](#XHR-isStatusAvailable) or an `Error` will be thrown.
 
 ###### <a id="XHR-responseHeader"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-responseHeader) [`XHR.responseHeader(header, xhr) ~> string`](#XHR-responseHeader)
@@ -477,7 +480,7 @@ its [`readyState` must be 2](#XHR-isStatusAvailable) or an `Error` will be throw
 `XHR.responseHeader` returns a possibly observable property that emits the value
 of
 [`getResponseHeader(header)`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getResponseHeader)
-for specified `header` after the HTTP headers have been received.  When called
+for specified `header` after the HTTP headers have been received. When called
 on a non-observable XHR, its [`readyState` must be 2](#XHR-isStatusAvailable) or
 an `Error` will be thrown.
 
@@ -489,23 +492,23 @@ an `Error` will be thrown.
 [`response`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/response)
 after the [download operation of the XHR has completed](#XHR-downHasCompleted).
 When called on a non-observable XHR, the download operation must be completed or
-an `Error` will be thrown.  See also [`XHR.result`](#XHR-result), and
+an `Error` will be thrown. See also [`XHR.result`](#XHR-result), and
 [`XHR.responseText`](#XHR-responseText).
 
 ###### <a id="XHR-responseText"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-responseText) [`XHR.responseText(xhr) ~> string`](#XHR-responseText)
 
 `XHR.responseText` returns a possibly observable property of the
 [`responseText`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseText)
-property of an ongoing XHR.  `XHR.responseText` is for observing the received
-response data before the data has been completely received.  See also
+property of an ongoing XHR. `XHR.responseText` is for observing the received
+response data before the data has been completely received. See also
 [`XHR.response`](#XHR-response).
 
 ###### <a id="XHR-responseXML"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-responseXML) [`XHR.responseXML(xhr) ~> document`](#XHR-responseXML)
 
 `XHR.responseXML` returns a possibly observable property of the
 [`responseXML`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseXML)
-property after the XHR has completed.  When called on a non-observable XHR, the
-download operation must be completed or an `Error` will be thrown.  See also
+property after the XHR has completed. When called on a non-observable XHR, the
+download operation must be completed or an `Error` will be thrown. See also
 [`XHR.response`](#XHR-response).
 
 ##### <a id="response-url"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#response-url) [Response URL](#response-url)
@@ -514,7 +517,7 @@ download operation must be completed or an `Error` will be thrown.  See also
 
 `XHR.responseURL` returns a possibly observable property of the
 [`responseURL`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseURL)
-property after the HTTP headers have been received.  When called on a
+property after the HTTP headers have been received. When called on a
 non-observable XHR, its [`readyState` must be 2](#XHR-isStatusAvailable) or an
 `Error` will be thrown.
 
@@ -576,7 +579,7 @@ whether the download operation of an ongoing XHR has
 
 `XHR.downHasCompleted` returns a possibly observable boolean property that tells
 whether the download operation of an ongoing XHR has been [completed
-successfully](https://developer.mozilla.org/en-US/docs/Web/Events/load).  Note
+successfully](https://developer.mozilla.org/en-US/docs/Web/Events/load). Note
 that this does not take into account the HTTP response status, see
 [`XHR.status`](#XHR-status) and [`XHR.isHttpSuccess`](#XHR-isHttpSuccess).
 
@@ -634,7 +637,7 @@ whether the upload operation of an ongoing XHR has
 
 `XHR.upHasCompleted` returns a possibly observable boolean property that tells
 whether the upload operation of an ongoing XHR has [completed
-successfully](https://developer.mozilla.org/en-US/docs/Web/Events/load).  Note
+successfully](https://developer.mozilla.org/en-US/docs/Web/Events/load). Note
 that this does not take into account the HTTP response status, see
 [`XHR.status`](#XHR-status) and [`XHR.isHttpSuccess`](#XHR-isHttpSuccess).
 
