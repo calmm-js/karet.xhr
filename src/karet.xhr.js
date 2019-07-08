@@ -93,6 +93,13 @@ const typeLoad = I.freeze({type: LOAD})
 
 const eventTypes = [LOADSTART, PROGRESS, LOAD, TIMEOUT, ERROR]
 
+const simpleSettings = [
+  OVERRIDE_MIME_TYPE,
+  RESPONSE_TYPE,
+  TIMEOUT,
+  WITH_CREDENTIALS
+]
+
 const hasKeys = x => I.isFunction(x.keys)
 
 const isNil = x => null == x
@@ -110,15 +117,15 @@ const performPlain = (process.env.NODE_ENV === 'production'
       V.freeFn(
         V.tuple(
           V.props({
-            url: string,
-            method: V.optional(string),
-            user: V.optional(string),
-            password: V.optional(string),
-            headers: V.propsOr(headerValue, I.object0),
-            overrideMimeType: V.optional(string),
             body: V.optional(V.accept),
+            headers: V.propsOr(headerValue, I.object0),
+            method: V.optional(string),
+            overrideMimeType: V.optional(string),
+            password: V.optional(string),
             responseType: V.optional(string),
             timeout: V.optional(number),
+            url: string,
+            user: V.optional(string),
             withCredentials: V.optional(boolean)
           })
         ),
@@ -127,22 +134,17 @@ const performPlain = (process.env.NODE_ENV === 'production'
     ))(function perform(args) {
   return delayUnsub(
     K.stream(({emit, end}) => {
-      const url = args.url
       const method = args.method
       const user = args.user
       const password = args.password
       const headers = args.headers
-      const overrideMimeType = args[OVERRIDE_MIME_TYPE]
       const body = args.body
-      const responseType = args[RESPONSE_TYPE]
-      const timeout = args[TIMEOUT]
-      const withCredentials = args[WITH_CREDENTIALS]
 
       const xhr = new XMLHttpRequest()
-      let state = {xhr, up: typeInitial, down: typeInitial, map: I.id}
+      let state = {down: typeInitial, map: I.id, up: typeInitial, xhr}
       const update = (dir, type) => event => {
         if (type !== PROGRESS || state[dir].type !== LOAD)
-          emit((state = L.set(dir, {type, event}, state)))
+          emit((state = L.set(dir, {event, type}, state)))
       }
       eventTypes.forEach(type => {
         xhr[ADD_EVENT_LISTENER](type, update(DOWN, type))
@@ -156,22 +158,22 @@ const performPlain = (process.env.NODE_ENV === 'production'
       })
       xhr.open(
         isNil(method) ? 'GET' : method,
-        url,
+        args.url,
         true,
         isNil(user) ? null : user,
         isNil(password) ? null : password
       )
-      if (responseType) {
-        xhr[RESPONSE_TYPE] = responseType
-        if (responseType === JSON_ && xhr[RESPONSE_TYPE] !== JSON_)
-          state = L.set(MAP, tryParse, state)
+      simpleSettings.forEach(key => {
+        const value = args[key]
+        if (value) xhr[key] = value
+      })
+      if (args[RESPONSE_TYPE] === JSON_ && xhr[RESPONSE_TYPE] !== JSON_) {
+        // IE11 workaround
+        state = L.set(MAP, tryParse, state)
       }
-      if (timeout) xhr[TIMEOUT] = timeout
-      if (withCredentials) xhr[WITH_CREDENTIALS] = withCredentials
       for (const header in headers) {
         xhr.setRequestHeader(header, headers[header])
       }
-      if (overrideMimeType) xhr[OVERRIDE_MIME_TYPE](overrideMimeType)
       xhr.send(isNil(body) ? null : body)
       return () => {
         if (!xhr[STATUS]) xhr.abort()
@@ -213,7 +215,7 @@ const normalizeOptions = (process.env.NODE_ENV === 'production'
   L.transform(
     L.ifElse(
       I.isString,
-      L.modifyOp(url => ({url, headers: I.object0})),
+      L.modifyOp(url => ({headers: I.object0, url})),
       L.branch({
         headers: L.cond(
           [isNil, L.setOp(I.object0)],
@@ -390,8 +392,8 @@ export const performWith = I.curry(function performWith(defaults, overrides) {
 
 export const performJson = setName(
   performWith({
-    responseType: JSON_,
-    headers: {'Content-Type': 'application/json'}
+    headers: {'Content-Type': 'application/json'},
+    responseType: JSON_
   }),
   'performJson'
 )
@@ -401,9 +403,9 @@ const typeIsSuccess = [TYPE, isOneOf([INITIAL, LOAD])]
 export const hasSucceeded = setName(
   L.and(
     L.branch({
+      down: typeIsSuccess,
       event: [TYPE, L.is(LOADEND)],
       up: typeIsSuccess,
-      down: typeIsSuccess,
       xhr: [STATUS, isHttpSuccessU]
     })
   ),
@@ -445,19 +447,19 @@ const mergeTypes = (x, y) => {
 }
 
 const mergeEvents = (x, y) => ({
-  type: mergeTypes(x[TYPE], y[TYPE]),
   event: {
-    total: (L.get(TOTAL, x[EVENT]) || 0) + (L.get(TOTAL, y[EVENT]) || 0),
-    loaded: (L.get(LOADED, x[EVENT]) || 0) + (L.get(LOADED, y[EVENT]) || 0)
-  }
+    loaded: (L.get(LOADED, x[EVENT]) || 0) + (L.get(LOADED, y[EVENT]) || 0),
+    total: (L.get(TOTAL, x[EVENT]) || 0) + (L.get(TOTAL, y[EVENT]) || 0)
+  },
+  type: mergeTypes(x[TYPE], y[TYPE])
 })
 
 const mergeXHRs = (x, y) => ({
-  event: y[EVENT][TYPE] === LOADEND ? x[EVENT] : y[EVENT],
-  xhr: y[XHR],
-  up: mergeEvents(x[UP], y[UP]),
   down: mergeEvents(x[DOWN], y[DOWN]),
-  map: y[MAP]
+  event: y[EVENT][TYPE] === LOADEND ? x[EVENT] : y[EVENT],
+  map: y[MAP],
+  up: mergeEvents(x[UP], y[UP]),
+  xhr: y[XHR]
 })
 
 //
@@ -466,9 +468,10 @@ const getAllResponseHeaders = I.always('')
 const getResponseHeader = I.always(null)
 
 export const of = response => ({
-  event: typeLoadend,
-  up: typeInitial,
   down: typeLoad,
+  event: typeLoadend,
+  map: I.id,
+  up: typeInitial,
   xhr: {
     getAllResponseHeaders,
     getResponseHeader,
@@ -476,8 +479,7 @@ export const of = response => ({
     response,
     status: 200,
     statusText: 'OK'
-  },
-  map: I.id
+  }
 })
 
 export const chain = I.curryN(2, function chain(xy) {
@@ -527,10 +529,10 @@ const typeIsString = [TYPE, I.isString]
 export const isXHR = setName(
   L.and(
     L.branch({
-      xhr: [READY_STATE, I.isNumber],
-      up: typeIsString,
       down: typeIsString,
-      map: I.isFunction
+      map: I.isFunction,
+      up: typeIsString,
+      xhr: [READY_STATE, I.isNumber]
     })
   ),
   'isXHR'
