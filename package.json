@@ -48,7 +48,7 @@
     "kefir": "^3.8.5",
     "kefir.ramda": "^0.26.0",
     "klipse-github-docs-generator": "^0.3.8",
-    "livereload": "^0.7.0",
+    "livereload": "^0.8.0",
     "mocha": "^5.2.0",
     "mocha-headless-chrome": "^2.0.1",
     "nyc": "^12.0.1",
