@@ -128,7 +128,7 @@ the accessors for the [result](#result), [overall](#overall-state),
 
 If you just want to GET some JSON...
 
-#### <a id="XHR-getJson"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-getJson) [`XHR.getJson(url | {url,[, ...options]}) ~> varies`](#XHR-getJson)
+#### <a id="XHR-getJson"></a> [≡](#contents) [▶](https://calmm-js.github.io/karet.xhr/index.html#XHR-getJson) [`XHR.getJson(url | {url[, ...options]}) ~> varies`](#XHR-getJson)
 
 `XHR.getJson` returns an observable that emits the [full response](#XHR-result)
 after the [XHR has succeeded](#XHR-hasSucceeded). In case the XHR produces an
