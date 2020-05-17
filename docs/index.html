@@ -368,15 +368,15 @@ XHRs.</p>
   XHR.chain(
     L.traverse(
       XHR.Parallel,
-      issues =&gt;
-        I.seq(
-          XHR.performJson(issues.replace(/{.*}$/, &#39;&#39;)),
-          XHR.map(
-            L.collect(
-              L.limit(3, L.flat(L.pick({title: &#39;title&#39;, url: &#39;html_url&#39;})))
-            )
+      R.pipe(
+        R.replace(/{.*}$/, &#39;&#39;),
+        XHR.performJson,
+        XHR.map(
+          L.collect(
+            L.limit(3, L.flat(L.pick({title: &#39;title&#39;, url: &#39;html_url&#39;})))
           )
-        ),
+        )
+      ),
       [L.elems, &#39;issues&#39;]
     )
   ),

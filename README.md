@@ -309,15 +309,15 @@ I.seq(
   XHR.chain(
     L.traverse(
       XHR.Parallel,
-      issues =>
-        I.seq(
-          XHR.performJson(issues.replace(/{.*}$/, '')),
-          XHR.map(
-            L.collect(
-              L.limit(3, L.flat(L.pick({title: 'title', url: 'html_url'})))
-            )
+      R.pipe(
+        R.replace(/{.*}$/, ''),
+        XHR.performJson,
+        XHR.map(
+          L.collect(
+            L.limit(3, L.flat(L.pick({title: 'title', url: 'html_url'})))
           )
-        ),
+        )
+      ),
       [L.elems, 'issues']
     )
   ),
