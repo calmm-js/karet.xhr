@@ -3,6 +3,5 @@ notifications:
   email: false
 node_js:
   - "10"
-  - "8"
 script:
   - npm run report-coverage
