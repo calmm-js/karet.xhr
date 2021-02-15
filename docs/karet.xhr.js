@@ -105,7 +105,7 @@
 
   //
 
-  var setName = I.defineNameU;
+  var setName =  I.defineNameU;
 
   var ADD_EVENT_LISTENER = 'addEventListener';
   var DOWN = 'down';
@@ -142,6 +142,8 @@
 
   var eventTypes = [LOADSTART, PROGRESS, LOAD, TIMEOUT, ERROR];
 
+  var simpleSettings = [OVERRIDE_MIME_TYPE, RESPONSE_TYPE, TIMEOUT, WITH_CREDENTIALS];
+
   var hasKeys = function hasKeys(x) {
     return I.isFunction(x.keys);
   };
@@ -157,38 +159,33 @@
     return new Map(xs);
   }));
 
-  var performPlain = /*#__PURE__*/(V.validate(V.freeFn(V.tuple(V.props({
-    url: string,
-    method: V.optional(string),
-    user: V.optional(string),
-    password: V.optional(string),
-    headers: V.propsOr(headerValue, I.object0),
-    overrideMimeType: V.optional(string),
+  var performPlain = /*#__PURE__*/( V.validate(V.freeFn(V.tuple(V.props({
     body: V.optional(V.accept),
+    headers: V.propsOr(headerValue, I.object0),
+    method: V.optional(string),
+    overrideMimeType: V.optional(string),
+    password: V.optional(string),
     responseType: V.optional(string),
     timeout: V.optional(number),
+    url: string,
+    user: V.optional(string),
     withCredentials: V.optional(boolean)
   })), V.accept)))(function perform(args) {
     return delayUnsub(K.stream(function (_ref) {
       var emit = _ref.emit,
           end = _ref.end;
 
-      var url = args.url;
       var method = args.method;
       var user = args.user;
       var password = args.password;
       var headers = args.headers;
-      var overrideMimeType = args[OVERRIDE_MIME_TYPE];
       var body = args.body;
-      var responseType = args[RESPONSE_TYPE];
-      var timeout = args[TIMEOUT];
-      var withCredentials = args[WITH_CREDENTIALS];
 
       var xhr = new XMLHttpRequest();
-      var state = { xhr: xhr, up: typeInitial, down: typeInitial, map: I.id };
+      var state = { down: typeInitial, map: I.id, up: typeInitial, xhr: xhr };
       var update = function update(dir, type) {
         return function (event) {
-          if (type !== PROGRESS || state[dir].type !== LOAD) emit(state = L.set(dir, { type: type, event: event }, state));
+          if (type !== PROGRESS || state[dir].type !== LOAD) emit(state = L.set(dir, { event: event, type: type }, state));
         };
       };
       eventTypes.forEach(function (type) {
@@ -201,17 +198,18 @@
       xhr[ADD_EVENT_LISTENER](LOADEND, function (event) {
         end(emit(state = L.set(EVENT, event, state)));
       });
-      xhr.open(isNil(method) ? 'GET' : method, url, true, isNil(user) ? null : user, isNil(password) ? null : password);
-      if (responseType) {
-        xhr[RESPONSE_TYPE] = responseType;
-        if (responseType === JSON_ && xhr[RESPONSE_TYPE] !== JSON_) state = L.set(MAP, tryParse, state);
+      xhr.open(isNil(method) ? 'GET' : method, args.url, true, isNil(user) ? null : user, isNil(password) ? null : password);
+      simpleSettings.forEach(function (key) {
+        var value = args[key];
+        if (value) xhr[key] = value;
+      });
+      if (args[RESPONSE_TYPE] === JSON_ && xhr[RESPONSE_TYPE] !== JSON_) {
+        // IE11 workaround
+        state = L.set(MAP, tryParse, state);
       }
-      if (timeout) xhr[TIMEOUT] = timeout;
-      if (withCredentials) xhr[WITH_CREDENTIALS] = withCredentials;
       for (var header in headers) {
         xhr.setRequestHeader(header, headers[header]);
       }
-      if (overrideMimeType) xhr[OVERRIDE_MIME_TYPE](overrideMimeType);
       xhr.send(isNil(body) ? null : body);
       return function () {
         if (!xhr[STATUS]) xhr.abort();
@@ -221,10 +219,10 @@
 
   var toLowerKeyedObject = /*#__PURE__*/L.get([/*#__PURE__*/L.array( /*#__PURE__*/L.cross([/*#__PURE__*/L.reread(toLower), L.identity])), /*#__PURE__*/L.inverse(L.keyed)]);
 
-  var normalizeOptions = /*#__PURE__*/(V.validate(V.modifyAfter(V.freeFn(V.tuple(V.or(string, V.propsOr(V.accept, {
+  var normalizeOptions = /*#__PURE__*/( V.validate(V.modifyAfter(V.freeFn(V.tuple(V.or(string, V.propsOr(V.accept, {
     headers: V.optional(V.cases([isNil, V.accept], [I.isArray, headersArray], [hasKeys, headersMap], [V.propsOr(headerValue, I.object0)]))
   }))), V.accept), F.lift)))( /*#__PURE__*/L.transform( /*#__PURE__*/L.ifElse(I.isString, /*#__PURE__*/L.modifyOp(function (url) {
-    return { url: url, headers: I.object0 };
+    return { headers: I.object0, url: url };
   }), /*#__PURE__*/L.branch({
     headers: /*#__PURE__*/L.cond([isNil, /*#__PURE__*/L.setOp(I.object0)], [I.isArray, /*#__PURE__*/L.modifyOp(toLowerKeyedObject)], [hasKeys, /*#__PURE__*/L.modifyOp( /*#__PURE__*/I.pipe2U(Array.from, toLowerKeyedObject))], [[L.keys, /*#__PURE__*/L.modifyOp(toLower)]])
   }))));
@@ -344,16 +342,16 @@
   });
 
   var performJson = /*#__PURE__*/setName( /*#__PURE__*/performWith({
-    responseType: JSON_,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
+    responseType: JSON_
   }), 'performJson');
 
   var typeIsSuccess = [TYPE$1, /*#__PURE__*/isOneOf([INITIAL, LOAD])];
 
   var hasSucceeded = /*#__PURE__*/setName( /*#__PURE__*/L.and( /*#__PURE__*/L.branch({
+    down: typeIsSuccess,
     event: [TYPE$1, /*#__PURE__*/L.is(LOADEND)],
     up: typeIsSuccess,
-    down: typeIsSuccess,
     xhr: [STATUS, isHttpSuccessU]
   })), 'hasSucceeded');
 
@@ -383,21 +381,21 @@
 
   var mergeEvents = function mergeEvents(x, y) {
     return {
-      type: mergeTypes(x[TYPE$1], y[TYPE$1]),
       event: {
-        total: (L.get(TOTAL, x[EVENT]) || 0) + (L.get(TOTAL, y[EVENT]) || 0),
-        loaded: (L.get(LOADED, x[EVENT]) || 0) + (L.get(LOADED, y[EVENT]) || 0)
-      }
+        loaded: (L.get(LOADED, x[EVENT]) || 0) + (L.get(LOADED, y[EVENT]) || 0),
+        total: (L.get(TOTAL, x[EVENT]) || 0) + (L.get(TOTAL, y[EVENT]) || 0)
+      },
+      type: mergeTypes(x[TYPE$1], y[TYPE$1])
     };
   };
 
   var mergeXHRs = function mergeXHRs(x, y) {
     return {
-      event: y[EVENT][TYPE$1] === LOADEND ? x[EVENT] : y[EVENT],
-      xhr: y[XHR],
-      up: mergeEvents(x[UP], y[UP]),
       down: mergeEvents(x[DOWN], y[DOWN]),
-      map: y[MAP]
+      event: y[EVENT][TYPE$1] === LOADEND ? x[EVENT] : y[EVENT],
+      map: y[MAP],
+      up: mergeEvents(x[UP], y[UP]),
+      xhr: y[XHR]
     };
   };
 
@@ -408,9 +406,10 @@
 
   var of = function of(response) {
     return {
-      event: typeLoadend,
-      up: typeInitial,
       down: typeLoad,
+      event: typeLoadend,
+      map: I.id,
+      up: typeInitial,
       xhr: {
         getAllResponseHeaders: getAllResponseHeaders,
         getResponseHeader: getResponseHeader,
@@ -418,8 +417,7 @@
         response: response,
         status: 200,
         statusText: 'OK'
-      },
-      map: I.id
+      }
     };
   };
 
@@ -460,10 +458,10 @@
   var typeIsString = [TYPE$1, I.isString];
 
   var isXHR = /*#__PURE__*/setName( /*#__PURE__*/L.and( /*#__PURE__*/L.branch({
-    xhr: [READY_STATE, I.isNumber],
-    up: typeIsString,
     down: typeIsString,
-    map: I.isFunction
+    map: I.isFunction,
+    up: typeIsString,
+    xhr: [READY_STATE, I.isNumber]
   })), 'isXHR');
 
   var IdentitySucceeded = /*#__PURE__*/I.IdentityOrU(isXHR, Succeeded);
@@ -483,68 +481,68 @@
     });
   });
 
-  exports.perform = perform;
-  exports.upHasStarted = upHasStarted;
-  exports.upIsProgressing = upIsProgressing;
-  exports.upHasCompleted = upHasCompleted;
-  exports.upHasFailed = upHasFailed;
-  exports.upHasErrored = upHasErrored;
-  exports.upHasTimedOut = upHasTimedOut;
-  exports.upHasEnded = upHasEnded;
-  exports.upLoaded = upLoaded;
-  exports.upTotal = upTotal;
-  exports.upError = upError;
-  exports.downHasStarted = downHasStarted;
-  exports.downIsProgressing = downIsProgressing;
+  exports.IdentityParallel = IdentityParallel;
+  exports.IdentitySucceeded = IdentitySucceeded;
+  exports.Parallel = Parallel;
+  exports.Succeeded = Succeeded;
+  exports.allResponseHeaders = allResponseHeaders;
+  exports.ap = ap;
+  exports.apParallel = apParallel;
+  exports.apply = apply;
+  exports.chain = chain;
+  exports.downError = downError;
   exports.downHasCompleted = downHasCompleted;
-  exports.downHasFailed = downHasFailed;
-  exports.downHasErrored = downHasErrored;
-  exports.downHasTimedOut = downHasTimedOut;
   exports.downHasEnded = downHasEnded;
+  exports.downHasErrored = downHasErrored;
+  exports.downHasFailed = downHasFailed;
+  exports.downHasStarted = downHasStarted;
+  exports.downHasTimedOut = downHasTimedOut;
+  exports.downIsProgressing = downIsProgressing;
   exports.downLoaded = downLoaded;
   exports.downTotal = downTotal;
-  exports.downError = downError;
-  exports.readyState = readyState;
-  exports.isStatusAvailable = isStatusAvailable;
-  exports.isDone = isDone;
-  exports.isProgressing = isProgressing;
-  exports.hasErrored = hasErrored;
-  exports.hasTimedOut = hasTimedOut;
-  exports.loaded = loaded;
-  exports.total = total;
   exports.errors = errors;
+  exports.getJson = getJson;
+  exports.hasErrored = hasErrored;
+  exports.hasFailed = hasFailed;
+  exports.hasSucceeded = hasSucceeded;
+  exports.hasTimedOut = hasTimedOut;
+  exports.isDone = isDone;
+  exports.isHttpSuccess = isHttpSuccess;
+  exports.isProgressing = isProgressing;
+  exports.isStatusAvailable = isStatusAvailable;
+  exports.isXHR = isXHR;
+  exports.loaded = loaded;
+  exports.map = map;
+  exports.of = of;
+  exports.perform = perform;
+  exports.performJson = performJson;
+  exports.performWith = performWith;
+  exports.readyState = readyState;
   exports.response = response;
+  exports.responseHeader = responseHeader;
+  exports.responseText = responseText;
   exports.responseType = responseType;
   exports.responseURL = responseURL;
-  exports.responseText = responseText;
   exports.responseXML = responseXML;
+  exports.result = result;
   exports.status = status;
   exports.statusIsHttpSuccess = statusIsHttpSuccess;
   exports.statusText = statusText;
-  exports.responseHeader = responseHeader;
-  exports.allResponseHeaders = allResponseHeaders;
-  exports.timeout = timeout;
-  exports.withCredentials = withCredentials;
-  exports.isHttpSuccess = isHttpSuccess;
-  exports.performWith = performWith;
-  exports.performJson = performJson;
-  exports.hasSucceeded = hasSucceeded;
-  exports.hasFailed = hasFailed;
-  exports.getJson = getJson;
-  exports.result = result;
-  exports.of = of;
-  exports.chain = chain;
-  exports.map = map;
-  exports.ap = ap;
-  exports.Succeeded = Succeeded;
-  exports.apParallel = apParallel;
-  exports.Parallel = Parallel;
-  exports.isXHR = isXHR;
-  exports.IdentitySucceeded = IdentitySucceeded;
-  exports.IdentityParallel = IdentityParallel;
-  exports.template = template;
-  exports.apply = apply;
   exports.tap = tap;
+  exports.template = template;
+  exports.timeout = timeout;
+  exports.total = total;
+  exports.upError = upError;
+  exports.upHasCompleted = upHasCompleted;
+  exports.upHasEnded = upHasEnded;
+  exports.upHasErrored = upHasErrored;
+  exports.upHasFailed = upHasFailed;
+  exports.upHasStarted = upHasStarted;
+  exports.upHasTimedOut = upHasTimedOut;
+  exports.upIsProgressing = upIsProgressing;
+  exports.upLoaded = upLoaded;
+  exports.upTotal = upTotal;
+  exports.withCredentials = withCredentials;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
