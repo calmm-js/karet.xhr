@@ -120,6 +120,7 @@ const performPlain = (process.env.NODE_ENV === 'production'
             body: V.optional(V.accept),
             headers: V.propsOr(headerValue, I.object0),
             method: V.optional(string),
+            onAbort: V.optional(I.isFunction),
             overrideMimeType: V.optional(string),
             password: V.optional(string),
             responseType: V.optional(string),
@@ -135,6 +136,7 @@ const performPlain = (process.env.NODE_ENV === 'production'
   return delayUnsub(
     K.stream(({emit, end}) => {
       const method = args.method
+      const onAbort = args.onAbort
       const user = args.user
       const password = args.password
       const headers = args.headers
@@ -176,7 +178,10 @@ const performPlain = (process.env.NODE_ENV === 'production'
       }
       xhr.send(isNil(body) ? null : body)
       return () => {
-        if (!xhr[STATUS]) xhr.abort()
+        if (!xhr[STATUS]) {
+          xhr.abort()
+          onAbort && onAbort()
+        }
       }
     })
   )
