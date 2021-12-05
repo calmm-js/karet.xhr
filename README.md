@@ -18,7 +18,7 @@ Examples:
   the API of this library as an example.
 
 [![npm version](https://badge.fury.io/js/karet.xhr.svg)](http://badge.fury.io/js/karet.xhr)
-[![Build Status](https://travis-ci.org/calmm-js/karet.xhr.svg?branch=master)](https://travis-ci.org/calmm-js/karet.xhr)
+[![Build Status](https://github.com/calmm-js/karet.xhr/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/calmm-js/karet.xhr/actions?query=workflow%3ACI)
 [![Code Coverage](https://img.shields.io/codecov/c/github/calmm-js/karet.xhr/master.svg)](https://codecov.io/github/calmm-js/karet.xhr?branch=master)
 [![](https://david-dm.org/calmm-js/karet.xhr.svg)](https://david-dm.org/calmm-js/karet.xhr)
 [![](https://david-dm.org/calmm-js/karet.xhr/dev-status.svg)](https://david-dm.org/calmm-js/karet.xhr?type=dev)
